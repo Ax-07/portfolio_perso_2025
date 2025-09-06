@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://xavieraffringue.dev/sitemap.xml
+
+# Bloquer les fichiers sensibles
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Bloquer les pages de développement
+Disallow: /_next/static/chunks/
+Disallow: /_next/static/css/
+
+# Autoriser les images et ressources
+Allow: /images/
+Allow: /favicon.ico
+Allow: /*.css
+Allow: /*.js

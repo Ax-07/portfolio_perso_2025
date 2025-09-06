@@ -1,0 +1,274 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Définition des couleurs personnalisées basées sur les variables CSS */
+  --color-primary: oklch(0.596 0.156 var(--primary-hue));
+  --color-primary-foreground: oklch(0.99 0.002 var(--primary-hue));
+  --color-primary-50: oklch(0.97 0.03 var(--primary-hue));
+  --color-primary-100: oklch(0.93 0.06 var(--primary-hue));
+  --color-primary-200: oklch(0.87 0.09 var(--primary-hue));
+  --color-primary-300: oklch(0.79 0.12 var(--primary-hue));
+  --color-primary-400: oklch(0.68 0.14 var(--primary-hue));
+  --color-primary-500: oklch(0.65 0.15 var(--primary-hue));
+  --color-primary-600: oklch(0.596 0.156 var(--primary-hue)); /* Couleur principale */
+  --color-primary-700: oklch(0.54 0.15 var(--primary-hue));
+  --color-primary-800: oklch(0.45 0.13 var(--primary-hue));
+  --color-primary-900: oklch(0.37 0.11 var(--primary-hue));
+  --color-primary-950: oklch(0.23 0.07 var(--primary-hue));
+
+  --color-secondary: oklch(0.96 0.005 var(--secondary-hue));
+  --color-secondary-foreground: oklch(0.25 0.02 var(--secondary-hue));
+  --color-secondary-50: oklch(0.97 0.03 var(--secondary-hue));
+  --color-secondary-100: oklch(0.93 0.06 var(--secondary-hue));
+  --color-secondary-200: oklch(0.87 0.09 var(--secondary-hue));
+  --color-secondary-300: oklch(0.79 0.12 var(--secondary-hue));
+  --color-secondary-400: oklch(0.68 0.14 var(--secondary-hue));
+  --color-secondary-500: oklch(0.65 0.15 var(--secondary-hue));
+  --color-secondary-600: oklch(0.596 0.156 var(--secondary-hue)); /* Couleur secondaire */
+  --color-secondary-700: oklch(0.54 0.15 var(--secondary-hue));
+  --color-secondary-800: oklch(0.45 0.13 var(--secondary-hue));
+  --color-secondary-900: oklch(0.37 0.11 var(--secondary-hue));
+  --color-secondary-950: oklch(0.23 0.07 var(--secondary-hue));
+
+  /* Couleurs de status cohérentes */
+  --color-success: oklch(0.596 0.156 162.68);
+  --color-success-foreground: oklch(0.99 0.002 240);
+  --color-warning: oklch(0.75 0.15 85);
+  --color-warning-foreground: oklch(0.15 0.01 240);
+  --color-error: oklch(0.6 0.2 25);
+  --color-error-foreground: oklch(0.99 0.002 240);
+  --color-info: oklch(0.65 0.15 240);
+  --color-info-foreground: oklch(0.99 0.002 240);
+
+  /* base */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+}
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    --emerald-hue: 162.68;
+    --orange-hue: 70;
+    --purple-hue: 270;
+    --blue-hue: 240;
+    --red-hue: 25;
+    --green-hue: 120;
+
+    /* Variable globale pour la teinte principale - Changez cette valeur pour modifier toute la palette */
+    --primary-hue: var(--blue-hue); /* Changez cette valeur pour une nouvelle couleur */
+    
+    /* Options de couleurs secondaires - Décommentez celle que vous préférez */
+    --secondary-hue: calc(var(--primary-hue) + 30); /* Analogue proche - Harmonieuse */
+    /* --secondary-hue: calc(var(--primary-hue) + 180); /* Complémentaire - Contrastée */
+    /* --secondary-hue: calc(var(--primary-hue) + 120); /* Triadique - Équilibrée */
+    /* --secondary-hue: calc(var(--primary-hue) + 90); /* Tétradique - Dynamique */
+    /* --secondary-hue: calc(var(--primary-hue) - 30); /* Analogue éloignée - Douce */
+
+    /* Theme corporate clair */
+    --background: oklch(0.99 0.002 var(--primary-hue));
+    --foreground: oklch(0.15 0.01 var(--primary-hue));
+    --card: oklch(1 0 var(--primary-hue) / 70%);
+    --card-foreground: oklch(0.15 0.01 var(--primary-hue));
+    --popover: oklch(1 0 0 / 95%);
+    --popover-foreground: oklch(0.15 0.01 var(--primary-hue));
+    --primary: oklch(0.596 0.156 var(--primary-hue)); /* Emerald-600 */
+    --primary-foreground: oklch(0.99 0.002 var(--primary-hue));
+    --secondary: oklch(0.96 0.005 var(--secondary-hue));
+    --secondary-foreground: oklch(0.25 0.02 var(--secondary-hue));
+    --muted: oklch(0.97 0.00143 var(--primary-hue));
+    --muted-foreground: oklch(0.55 0.01387 var(--primary-hue));
+    --accent: oklch(0.7 0.17 var(--primary-hue)); /* Emerald néon */
+    --accent-foreground: oklch(0.99 0.002 var(--primary-hue));
+    --destructive: oklch(0.6 0.2 25);
+    --border: oklch(0.9 0.01 var(--primary-hue) / 40%);
+    --input: oklch(0.95 0.005 var(--primary-hue) / 80%);
+    --ring: oklch(0.596 0.156 var(--primary-hue));
+  }
+
+  .dark {
+    /* Theme corporate sombre avec glassmorphism */
+    --background: oklch(0.08 0.02 var(--primary-hue));
+    --foreground: oklch(0.95 0.01 var(--primary-hue));
+    --card: oklch(0.7 0.17 var(--primary-hue) 0.2); /* Emerald néon */
+    --card-foreground: oklch(0.95 0.01 var(--primary-hue));
+    --popover: oklch(0.12 0.02 var(--primary-hue) / 90%);
+    --popover-foreground: oklch(0.95 0.01 var(--primary-hue));
+    --primary: oklch(0.7 0.17 var(--primary-hue)); /* Emerald néon */
+    --primary-foreground: oklch(0.08 0.02 var(--primary-hue));
+    --secondary: oklch(0.15 0.02 var(--primary-hue) / 80%);
+    --secondary-foreground: oklch(0.95 0.01 var(--primary-hue));
+    --muted: oklch(0.27 0.00003 var(--primary-hue) / 60%);
+    --muted-foreground: oklch(0.71 0.01302 var(--primary-hue));
+    --accent: oklch(0.75 0.18 var(--primary-hue)); /* Emerald plus vif */
+    --accent-foreground: oklch(0.08 0.02 var(--primary-hue));
+    --destructive: oklch(0.65 0.2 25);
+    --border: oklch(0.25 0.02 var(--primary-hue) / 30%);
+    --input: oklch(0.2 0.02 var(--primary-hue) / 70%);
+    --ring: oklch(0.7 0.17 var(--primary-hue));
+  }
+
+  * {
+    border-color: oklch(var(--border));
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Styles Corporate avec Glassmorphism et Emerald */
+.glass-card {
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 32px oklch(0 0 0 / 0.1), 0 1px 3px oklch(0 0 0 / 0.05);
+}
+
+.glass-nav {
+  background: oklch(var(--background) / 80%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.emerald-glow {
+  box-shadow: 0 0 20px oklch(0.596 0.156 var(--primary-hue) / 0.3), 0 0 40px oklch(0.596 0.156 var(--primary-hue) / 0.1);
+}
+
+.emerald-text-glow {
+  text-shadow: 0 0 10px oklch(0.596 0.156 var(--primary-hue) / 0.5),
+    0 0 20px oklch(0.596 0.156 var(--primary-hue) / 0.3);
+}
+
+.corporate-gradient {
+  background: linear-gradient(
+    135deg,
+    oklch(var(--primary) / 0.1) 0%,
+    oklch(var(--accent) / 0.05) 50%,
+    transparent 100%
+  );
+}
+
+.floating-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px oklch(0 0 0 / 0.15), 0 0 30px oklch(0.596 0.156 var(--primary-hue) / 0.2);
+}
+
+.professional-button {
+  background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-600) 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-600) 100%);
+}
+
+.bg-gradient-primary-light {
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-200) 100%);
+}
+
+.bg-gradient-primary-dark {
+  background: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-900) 100%);
+}
+
+button:hover, [data-slot="button"]:hover {
+  box-shadow: 0 8px 25px oklch(0.596 0.156 var(--primary-hue) / 0.4),
+    0 0 20px oklch(0.596 0.156 var(--primary-hue) / 0.3);
+}
+
+.professional-button:hover {
+  box-shadow: 0 8px 25px oklch(0.596 0.156 var(--primary-hue) / 0.4),
+    0 0 20px oklch(0.596 0.156 var(--primary-hue) / 0.3);
+}
+
+.section-divider {
+  background: linear-gradient(90deg, transparent 0%, oklch(var(--primary) / 0.3) 50%, transparent 100%);
+  height: 1px;
+}
+
+.corporate-grid {
+  background-image: radial-gradient(circle at 1px 1px, oklch(var(--primary) / 0.1) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+@keyframes emerald-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px oklch(var(--primary) / 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px oklch(var(--primary) / 0.8));
+  }
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}

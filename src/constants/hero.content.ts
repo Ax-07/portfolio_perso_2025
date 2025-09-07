@@ -25,7 +25,6 @@ export const HERO_CONTENT = {
     title: "Suivez-moi :",
     github: ONLINE_PRESENCE.social.find(s => s.name === "GitHub")?.url || "https://github.com",
     linkedin: ONLINE_PRESENCE.social.find(s => s.name === "LinkedIn")?.url || "https://linkedin.com",
-    cv: "/cv.pdf"
   },
   stats: [
     { value: PERSONAL_INFO.stats.experience, label: PERSONAL_INFO.stats.experienceLabel },

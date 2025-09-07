@@ -10,9 +10,6 @@ export function useActiveSection() {
         // Intersection Observer pour détecter la section la plus visible
         const observer = new IntersectionObserver(
             (entries) => {
-                // Ne pas mettre à jour si on est en navigation manuelle
-                if (isManualNavigation.current) return;
-
                 // Trier les entrées par ordre de visibilité (ratio d'intersection)
                 const visibleEntries = entries
                     .filter(entry => entry.isIntersecting)
@@ -21,15 +18,17 @@ export function useActiveSection() {
                 // Prendre la section la plus visible
                 if (visibleEntries.length > 0) {
                     const mostVisible = visibleEntries[0];
-                    if (mostVisible.intersectionRatio > 0.1) { // Au moins 20% visible
+                    if (mostVisible.intersectionRatio > 0.1) { // Au moins 10% visible
                         const newSection = mostVisible.target.id;
                         setActiveSection(newSection);
                         
-                        // Mettre à jour l'URL automatiquement lors du scroll
-                        const newUrl = newSection === "hero" ? "/" : `#${newSection}`;
-                        const currentUrl = window.location.pathname + window.location.hash;
-                        if (currentUrl !== newUrl) {
-                            window.history.replaceState(null, '', newUrl);
+                        // Mettre à jour l'URL automatiquement SEULEMENT si on n'est PAS en navigation manuelle
+                        if (!isManualNavigation.current) {
+                            const newUrl = newSection === "hero" ? "/" : `#${newSection}`;
+                            const currentUrl = window.location.pathname + window.location.hash;
+                            if (currentUrl !== newUrl) {
+                                window.history.replaceState(null, '', newUrl);
+                            }
                         }
                     }
                 }
@@ -46,16 +45,15 @@ export function useActiveSection() {
 
         // Écouter le scroll uniquement comme fallback pour les cas extrêmes
         const handleScroll = () => {
-            // Ne pas mettre à jour si on est en navigation manuelle
-            if (isManualNavigation.current) return;
-
             // Uniquement si on est tout en haut pour forcer hero
             if (window.scrollY < 50) {
                 setActiveSection("hero");
-                // Mettre à jour l'URL pour la section hero
-                const currentUrl = window.location.pathname + window.location.hash;
-                if (currentUrl !== "/") {
-                    window.history.replaceState(null, '', '/');
+                // Mettre à jour l'URL pour la section hero SEULEMENT si on n'est PAS en navigation manuelle
+                if (!isManualNavigation.current) {
+                    const currentUrl = window.location.pathname + window.location.hash;
+                    if (currentUrl !== "/") {
+                        window.history.replaceState(null, '', '/');
+                    }
                 }
             }
         };
@@ -69,7 +67,7 @@ export function useActiveSection() {
     }, []);
 
     const isActiveLink = (href: string) => {
-        if (href === "/") {
+        if (href === "/" || href === "#") {
             return activeSection === "" || activeSection === "hero";
         }
         return href === `#${activeSection}`;
@@ -79,7 +77,7 @@ export function useActiveSection() {
         // Activer le verrouillage pour empêcher les conflits
         isManualNavigation.current = true;
 
-        if (href === "/") {
+        if (href === "/" || href === "#") {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -87,8 +85,12 @@ export function useActiveSection() {
             
             // Mettre à jour l'état immédiatement pour éviter les conflits
             setActiveSection("hero");
-            // Nettoyer l'URL en supprimant le hash
-            window.history.pushState(null, '', '/');
+            // Mettre à jour l'URL selon le cas
+            if (href === "/") {
+                window.history.pushState(null, '', '/');
+            } else {
+                window.history.pushState(null, '', '#');
+            }
         } else if (href.startsWith('#')) {
             const sectionId = href.substring(1);
             const element = document.getElementById(sectionId);
@@ -116,7 +118,7 @@ export function useActiveSection() {
     };
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        if (href.startsWith('#') || href === '/') {
+        if (href.startsWith('#') || href === '/' || href === '#') {
             e.preventDefault();
             scrollToSection(href);
         }

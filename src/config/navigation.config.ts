@@ -12,7 +12,7 @@ import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase 
 export const MAIN_NAVIGATION = [
   {
     name: "Accueil",
-    href: "/",
+    href: "#",
     icon: Home,
     description: "Retour à l'accueil"
   },

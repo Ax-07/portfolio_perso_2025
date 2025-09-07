@@ -33,7 +33,19 @@ export function useSmoothScroll() {
           if (url.pathname === window.location.pathname || href.startsWith('#')) {
             const hash = url.hash;
             
-            if (hash && hash.length > 1) {
+            // Cas spécial pour # (retour au début de la page)
+            if (hash === '#' || hash === '') {
+              event.preventDefault();
+              
+              // Smooth scroll vers le haut de la page
+              window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+              });
+              
+              // Mettre à jour l'URL
+              window.history.pushState(null, '', '#');
+            } else if (hash && hash.length > 1) {
               event.preventDefault();
               
               // Supprimer le # et faire le smooth scroll
@@ -54,11 +66,19 @@ export function useSmoothScroll() {
     // Gérer le cas où l'utilisateur arrive sur la page avec une ancre dans l'URL
     const handleInitialHash = () => {
       const hash = window.location.hash;
-      if (hash && hash.length > 1) {
+      if (hash) {
         // Délai pour s'assurer que la page est entièrement chargée
         setTimeout(() => {
-          const elementId = hash.substring(1);
-          smoothScrollTo(elementId);
+          if (hash === '#') {
+            // Retour au début de la page
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+          } else if (hash.length > 1) {
+            const elementId = hash.substring(1);
+            smoothScrollTo(elementId);
+          }
         }, 100);
       }
     };

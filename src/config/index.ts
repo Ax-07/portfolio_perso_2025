@@ -6,7 +6,6 @@
 // Configuration SEO et métadonnées
 export {
   SEO_CONFIG,
-  SITE_METADATA,
   generatePageMetadata,
   getStructuredData
 } from './seo.config';
@@ -28,3 +27,6 @@ export {
   FOOTER_NAVIGATION,
   SECTIONS
 } from './navigation.config';
+
+// Métadonnées globales du site
+export { SITE_METADATA } from './site-metadata';

@@ -24,6 +24,7 @@ export {
 // Configuration navigation
 export {
   MAIN_NAVIGATION,
+  EXTERNAL_LINKS,
   FOOTER_NAVIGATION,
   SECTIONS
 } from './navigation.config';

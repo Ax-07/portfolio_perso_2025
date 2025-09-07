@@ -36,7 +36,13 @@ export function ColorThemeControl({}: ColorThemeControlProps) {
   return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="relative">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="relative" 
+            aria-label={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}
+            title={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}
+          >
             <Palette className="h-4 w-4" />
             <div 
               className="absolute bottom-1 right-1 w-2 h-2 rounded-full border border-background transition-colors duration-300"

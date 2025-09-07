@@ -90,7 +90,7 @@ export const ABOUT_CONTENT = {
     },
     secondary: {
       text: "Voir mes réalisations",
-      href: "#portfolio",
+      href: "/portfolio",
     },
   },
 } as const;

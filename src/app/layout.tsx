@@ -21,7 +21,7 @@ const homeMetadata = generatePageMetadata('home');
 
 export const metadata: Metadata = {
   ...homeMetadata,
-  metadataBase: new URL('https://xavieraffringue.dev'),
+  metadataBase: new URL('https://portfolio-perso-2025.vercel.app'),
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

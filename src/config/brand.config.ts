@@ -31,7 +31,7 @@ export const PERSONAL_INFO = {
   
   // Statistiques professionnelles
   stats: {
-    experience: "4+",
+    experience: "3+",
     experienceLabel: "Années d'expérience",
     projects: "15+", 
     projectsLabel: "Projets réalisés",
@@ -81,8 +81,8 @@ export const CONTACT_INFO = {
 export const ONLINE_PRESENCE = {
   // Site principal
   website: {
-    url: "https://xavieraffringue.dev",
-    domain: "xavieraffringue.dev"
+    url: "https://portfolio-perso-2025.vercel.app",
+    domain: "portfolio-perso-2025.vercel.app"
   },
   
   // Réseaux sociaux et profils
@@ -90,7 +90,7 @@ export const ONLINE_PRESENCE = {
     {
       name: "GitHub",
       username: "xavier",
-      url: "https://github.com/xavier",
+      url: "https://github.com/Ax-07",
       icon: Github,
       primary: true
     },
@@ -149,7 +149,7 @@ export const VISUAL_BRAND = {
   
   // Images pour SEO et réseaux sociaux
   images: {
-    ogImage: "/og-image.jpg",
+    ogImage: "/og-image.png",
     profilePicture: "/images/profile.jpg",
     dimensions: {
       ogImage: { width: 1200, height: 630 },

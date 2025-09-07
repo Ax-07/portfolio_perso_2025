@@ -110,7 +110,7 @@ export function PortfolioPage() {
                 className="group"
               >
                 <Card 
-                  className="glass-card border-primary-200/50 dark:border-primary-800/50 floating-card group-hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  className="glass-card border-primary-200/50 dark:border-primary-800/50 floating-card group-hover:shadow-xl transition-all duration-300 cursor-pointer pt-0"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Image du projet */}

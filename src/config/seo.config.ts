@@ -26,8 +26,8 @@ const OPEN_GRAPH = {
 
 const TWITTER_CARD = {
   handle: ONLINE_PRESENCE.platforms.twitter,
-  site: ONLINE_PRESENCE.platforms.twitter,
-  cardType: 'summary_large_image',
+  site: SITE_METADATA.url,
+  card: 'summary_large_image',
   title: SITE_METADATA.title,
   description: SITE_METADATA.description,
   image: `${SITE_METADATA.url}/og-image`,

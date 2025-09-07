@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ABOUT_CONTENT } from "@/constants";
+import Link from "next/link";
 
 export function AboutSection() {
   return (
@@ -178,19 +179,19 @@ export function AboutSection() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Button asChild className="professional-button w-full sm:w-auto">
-                <a href={ABOUT_CONTENT.cta.primary.href}>
+                <Link href={ABOUT_CONTENT.cta.primary.href}>
                   <Coffee className="h-4 w-4 mr-2" />
                   <span className="text-sm sm:text-base">{ABOUT_CONTENT.cta.primary.text}</span>
-                </a>
+                </Link>
               </Button>
               <Button
                 variant="outline"
                 asChild
                 className="border-primary-500/50 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/50 w-full sm:w-auto"
               >
-                <a href={ABOUT_CONTENT.cta.secondary.href}>
+                <Link href={ABOUT_CONTENT.cta.secondary.href}>
                   <span className="text-sm sm:text-base">{ABOUT_CONTENT.cta.secondary.text}</span>
-                </a>
+                </Link>
               </Button>
             </div>
           </div>

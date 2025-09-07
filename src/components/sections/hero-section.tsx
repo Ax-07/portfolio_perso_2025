@@ -43,7 +43,7 @@ export function HeroSection() {
       <div className="absolute inset-0 corporate-gradient" />
       {/* Overlay radial et grille */}
       <span className="absolute inset-0 z-[2] bg-radial from-0% from-transparent to-70% to-background"></span>
-      <GridlineBackground className="z-[1] text-primary opacity-20" />
+      <GridlineBackground className="z-[1] text-primary opacity-40" />
       
       {/* Éléments flottants */}
       <div className="absolute z-[2] top-10 sm:top-20 left-10 sm:left-20 w-32 sm:w-72 h-32 sm:h-72 bg-primary-500/10 rounded-full blur-3xl animate-pulse" />

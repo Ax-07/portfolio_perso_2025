@@ -39,7 +39,7 @@ export function Footer() {
                   {SOCIAL_LINKS.map((link, idx) => {
                     const IconComponent = link.icon;
                     return (
-                      <a
+                      <Link
                         key={idx}
                         href={link.href}
                         target={link.href.startsWith('http') ? '_blank' : undefined}
@@ -48,7 +48,7 @@ export function Footer() {
                         title={link.name}
                       >
                         <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-primary-600 transition-colors" />
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>

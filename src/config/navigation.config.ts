@@ -3,7 +3,7 @@
 // ====================================================================
 // ⚠️ Les informations personnelles proviennent maintenant de brand.ts
 
-import { User, Mail, Home, Code2, FolderOpen } from "lucide-react";
+import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase } from "lucide-react";
 
 // ==================================
 // NAVIGATION PRINCIPALE (Header)
@@ -29,16 +29,41 @@ export const MAIN_NAVIGATION = [
     description: "Mes réalisations"
   },
   {
-    name: "Portfolio",
-    href: "/portfolio",
-    icon: FolderOpen,
-    description: "Tous mes projets en détail"
-  },
-  {
     name: "Contact",
     href: "#contact",
     icon: Mail,
     description: "Travaillons ensemble"
+  },
+] as const;
+
+// ==================================
+// LIENS EXTERNES (Pages séparées)
+// ==================================
+
+export const EXTERNAL_LINKS = [
+  {
+    name: "SAAS",
+    href: "/portfolio/demo-saas",
+    icon: CloudFog,
+    description: "Application SaaS complète"
+  },
+  {
+    name: "E-commerce",
+    href: "/portfolio/demo-ecommerce",
+    icon: ShoppingCart,
+    description: "Boutique en ligne fonctionnelle"
+  },
+  {
+    name: "Site vitrine",
+    href: "/portfolio/demo-portfolio",
+    icon: Briefcase,
+    description: "Site portfolio professionnel"
+  },
+  {
+    name: "Voir tous",
+    href: "/portfolio",
+    icon: FolderOpen,
+    description: "Tous mes projets en détail"
   },
 ] as const;
 
@@ -48,6 +73,7 @@ export const MAIN_NAVIGATION = [
 
 export const FOOTER_NAVIGATION = {
   main: MAIN_NAVIGATION,
+  external: EXTERNAL_LINKS,
   legal: [
     { name: "Mentions légales", href: "/mentions-legales" },
     { name: "Politique de confidentialité", href: "/politique-confidentialite" }

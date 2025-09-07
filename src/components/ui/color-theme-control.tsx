@@ -39,7 +39,7 @@ export function ColorThemeControl({}: ColorThemeControlProps) {
           <Button 
             variant="outline" 
             size="icon" 
-            className="relative" 
+            className="relative cursor-pointer" 
             aria-label={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}
             title={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}
           >

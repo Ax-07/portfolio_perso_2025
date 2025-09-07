@@ -15,7 +15,7 @@ export function ThemeToggle() {
       variant="outline"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden cursor-pointer"
       aria-label={`Basculer vers le mode ${theme === "light" ? "sombre" : "clair"}`}
       title={`Basculer vers le mode ${theme === "light" ? "sombre" : "clair"}`}
     >

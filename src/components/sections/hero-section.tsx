@@ -113,17 +113,33 @@ export function HeroSection() {
             <span className="text-sm sm:text-base text-muted-foreground">{HERO_CONTENT.social.title}</span>
             <div className="flex space-x-2 sm:space-x-3">
               <Button variant="ghost" size="sm" asChild className="hover:bg-primary/20  p-2">
-                <a href={HERO_CONTENT.social.github} target="_blank" rel="noopener noreferrer">
+                <a 
+                  href={HERO_CONTENT.social.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Voir mon profil GitHub (ouvre dans un nouvel onglet)"
+                >
+                  <span className="sr-only">Voir mon profil GitHub</span>
                   <GitHubIcon className="size-6 hover:text-white" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" asChild className="hover:bg-primary/20 p-2">
-                <a href={HERO_CONTENT.social.linkedin} target="_blank" rel="noopener noreferrer">
+                <a 
+                  href={HERO_CONTENT.social.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Voir mon profil LinkedIn (ouvre dans un nouvel onglet)"
+                >
+                  <span className="sr-only">Voir mon profil LinkedIn</span>
                   <LinkedInIcon className="size-6 hover:text-white" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm" asChild className="hover:text-primary hover:bg-primary/20 p-2">
-                <a href={HERO_CONTENT.social.cv} download>
+                <a 
+                  href={HERO_CONTENT.social.cv} 
+                  download
+                  aria-label="Télécharger mon CV"
+                >
                   <Download className="size-6 mr-1" />
                   <span className="text-xs sm:text-sm">CV</span>
                 </a>

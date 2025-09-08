@@ -14,6 +14,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { PROJECTS_CONTENT } from "@/constants";
+import { TechList } from "@/components/ui/tech-list";
 const { projects, categories } = PROJECTS_CONTENT;
 
 export function ProjectsSection() {
@@ -138,27 +139,17 @@ export function ProjectsSection() {
                     </div>
                     
                     <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                      {project.description}
+                      {project.description.short}
                     </p>
                   </div>
 
                   {/* Technologies principales seulement */}
-                  <div className="flex flex-wrap gap-1">
-                    {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                      <Badge 
-                        key={techIndex} 
-                        variant="secondary" 
-                        className="text-xs bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-950/30 dark:text-primary-400 dark:border-primary-800"
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
-                    {project.technologies.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{project.technologies.length - 3}
-                      </Badge>
-                    )}
-                  </div>
+                  <TechList 
+                    technologies={project.technologies}
+                    maxVisible={3}
+                    size="sm"
+                    showCounter={true}
+                  />
 
                   {/* Actions simplifiées */}
                   <div className="flex gap-2 pt-2">

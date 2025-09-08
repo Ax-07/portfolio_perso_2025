@@ -5,7 +5,9 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { ColorThemeInitializer } from "@/components/ui/color-theme-initializer";
 import { generatePageMetadata, getStructuredData } from "@/config";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
+import { Header } from "@/components/layouts/header";
+import { Footer } from "@/components/layouts/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,17 +20,17 @@ const geistMono = Geist_Mono({
 });
 
 // Métadonnées SEO optimisées pour la page d'accueil
-const homeMetadata = generatePageMetadata('home');
+const homeMetadata = generatePageMetadata("home");
 
 export const metadata: Metadata = {
   ...homeMetadata,
-  metadataBase: new URL('https://portfolio-perso-2025.vercel.app'),
+  metadataBase: new URL("https://portfolio-perso-2025.vercel.app"),
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
-  manifest: '/site.webmanifest',
+  manifest: "/site.webmanifest",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
   },
@@ -40,9 +42,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // Données structurées pour le SEO
-  const personSchema = getStructuredData('person');
-  const websiteSchema = getStructuredData('website');
-  const organizationSchema = getStructuredData('organization');
+  const personSchema = getStructuredData("person");
+  const websiteSchema = getStructuredData("website");
+  const organizationSchema = getStructuredData("organization");
 
   return (
     <html lang="fr" suppressHydrationWarning>
@@ -51,24 +53,24 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personSchema)
+            __html: JSON.stringify(personSchema),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema)
+            __html: JSON.stringify(websiteSchema),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema)
+            __html: JSON.stringify(organizationSchema),
           }}
         />
-        
+
         {/* Script de gestion des thèmes couleur */}
-        <script 
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -107,21 +109,16 @@ export default function RootLayout({
                   applyTheme(COLOR_HUES[0].hue);
                 }
               })();
-            `
+            `,
           }}
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Analytics />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ColorThemeInitializer />
-          <SmoothScrollProvider />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

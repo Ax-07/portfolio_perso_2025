@@ -5,10 +5,12 @@ import { Separator } from "@/components/ui/separator";
 import { ContactSection } from "@/components/sections/contact-section";
 import { Footer } from "@/components/layouts/footer";
 import { Header } from "@/components/layouts/header";
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
+      <SmoothScrollProvider />
       <Header />
       <main>
         <HeroSection />
@@ -19,7 +21,6 @@ export default function Home() {
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
         <ContactSection />
       </main>
-      <Footer />
     </div>
   );
 }

@@ -5,7 +5,7 @@ export const TextAnimation: React.FC<{ text: string }> = ({ text }) => {
     const displayedText = text ? text : defaultText;
     const textRef = useRef<SVGTextElement | null>(null);
     const duration = "1.5s";
-    const delay = "1s";
+    const delay = "1.5s";
     const primaryColor = "var(--primary)";
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export const TextAnimation: React.FC<{ text: string }> = ({ text }) => {
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                     <feDropShadow dx="0" dy="0" stdDeviation="0" floodColor={"#fff"}>
                         <animate attributeName="flood-opacity" values="0;1;0.1" dur={duration} begin={delay} repeatCount="0" fill='freeze'/>
-                        <animate attributeName="stdDeviation" values="0;2;0" dur="1.5s" begin="2.5s" repeatCount="0" fill='freeze'/>
+                        <animate attributeName="stdDeviation" values="0;2;0" dur={duration} begin={delay} repeatCount="0" fill='freeze'/>
                     </feDropShadow>                
                 </filter>
             </defs>
@@ -61,7 +61,7 @@ export const TextAnimation: React.FC<{ text: string }> = ({ text }) => {
                 filter="url(#shadow)"
             >
                 {displayedText}
-                <animate attributeName="stroke-dashoffset" from="700" to="0" dur={"3s"} fill="freeze" />
+                <animate attributeName="stroke-dashoffset" from="700" to="0" dur={duration} fill="freeze" />
             </text>
         </svg>
     )

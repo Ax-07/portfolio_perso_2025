@@ -13,40 +13,19 @@ import {
   CheckCircle
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { PROJECTS_CONTENT } from "@/constants";
+import { ProjectStatusBadge } from "@/components/ui/project-status-badge";
+import { ProjectImage } from "@/components/ui/project-image";
+import { TechList } from "@/components/ui/tech-list";
 
 const { projects, categories } = PROJECTS_CONTENT;
 
 export function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = React.useState("Tous");
-  const [imageErrors, setImageErrors] = React.useState<Record<number, boolean>>({});
   
   const filteredProjects = selectedCategory === "Tous" 
     ? projects 
     : projects.filter(project => project.category === selectedCategory);
-
-  const handleImageError = (projectId: number) => {
-    setImageErrors(prev => ({ ...prev, [projectId]: true }));
-  };
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      "Terminé": { color: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400", icon: CheckCircle },
-      "En cours": { color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400", icon: Clock },
-      "Planifié": { color: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400", icon: Calendar }
-    };
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig["Planifié"];
-    const IconComponent = config.icon;
-    
-    return (
-      <Badge variant="outline" className={config.color}>
-        <IconComponent className="h-3 w-3 mr-1" />
-        {status}
-      </Badge>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,43 +86,30 @@ export function PortfolioPage() {
               <Link 
                 key={project.id}
                 href={`/portfolio/${project.slug}`}
-                className="group"
+                className="group h-full"
               >
                 <Card 
-                  className="glass-card border-primary-200/50 dark:border-primary-800/50 floating-card group-hover:shadow-xl transition-all duration-300 cursor-pointer pt-0"
+                  className="glass-card h-full border-primary-200/50 dark:border-primary-800/50 floating-card group-hover:shadow-xl transition-all duration-300 cursor-pointer pt-0"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Image du projet */}
                   <div className="relative overflow-hidden rounded-t-lg">
-                    <div className="aspect-video bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-primary-900 flex items-center justify-center">
-                      {imageErrors[project.id] ? (
-                        <div className="text-primary-600 dark:text-primary-400">
-                          <Globe className="h-12 w-12" />
+                    <ProjectImage
+                      src={project.image}
+                      alt={project.title}
+                      overlay={true}
+                      overlayContent={
+                        <div className="bg-white text-black px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2">
+                          <Eye className="h-4 w-4" />
+                          Voir les détails
                         </div>
-                      ) : (
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
-                          onError={() => handleImageError(project.id)}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      )}
-                    </div>
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                      }
+                    />
                     <div className="absolute top-3 left-3 flex gap-2">
-                      {getStatusBadge(project.status)}
+                      <ProjectStatusBadge status={project.status} size="sm" />
                       <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs">
                         {project.year}
                       </Badge>
-                    </div>
-                    {/* Overlay avec indication "voir détails" */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <div className="bg-white text-black px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2">
-                        <Eye className="h-4 w-4" />
-                        Voir les détails
-                      </div>
                     </div>
                   </div>
 
@@ -159,27 +125,28 @@ export function PortfolioPage() {
                       </div>
                       
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                        {project.description}
+                        {project.description.short}
                       </p>
                     </div>
 
-                    {/* Technologies principales */}
-                    <div className="flex flex-wrap gap-1">
-                      {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                        <Badge 
-                          key={techIndex} 
-                          variant="secondary" 
-                          className="text-xs bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-950/30 dark:text-primary-400 dark:border-primary-800"
+                   <div className="flex flex-wrap gap-1">
+                      {project.features.map((feature, index) => (
+                        <Badge
+                          key={index}
+                          className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800"
                         >
-                          {tech}
+                          <span className="text-xs font-medium text-green-700 dark:text-green-300">{feature}</span>
                         </Badge>
                       ))}
-                      {project.technologies.length > 3 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{project.technologies.length - 3}
-                        </Badge>
-                      )}
                     </div>
+
+                    {/* Technologies principales */}
+                    <TechList 
+                      technologies={project.technologies}
+                      maxVisible={3}
+                      size="sm"
+                      showCounter={true}
+                    />
                   </CardContent>
                 </Card>
               </Link>

@@ -4,79 +4,101 @@
 // ⚠️ Utilise brand.ts comme source de vérité pour les informations personnelles
 
 import { SOCIAL_LINKS } from '@/config';
-import type { ProjectsContent } from '@/types/project';
+import type { Project, ProjectsContent } from '@/types/project';
+
+const PROJECTS: Project[] = [
+  {
+    id: 1,
+    slug: "pileah",
+    title: "Pileah",
+    description: {
+      short: "Annuaire de praticiens en médecines alternatives avec recherche géolocalisée",
+      long: `
+      Application web full-stack développée en TypeScript avec React/Vite et Node.js/Express. 
+      Implémentation d'une architecture client/serveur intégrant géolocalisation, validation Zod cross-stack et interface multilingue. 
+      Gestion des données avec PostgreSQL/Prisma et déploiement sur Vercel.
+      `
+    },
+    image: "/images/pileah/landing_pileah.png",
+    category: "Full Stack",
+    objectif: "Développer une application web complète pour rechercher des praticiens en médecines alternatives.",
+    defi: "Créer une architecture client/serveur robuste avec une interface utilisateur intuitive et des fonctionnalités avancées telles que la géolocalisation et l'affichage des résultats sur une carte interactive.",
+    technologies: {
+      frontend: {
+        language: "TypeScript",
+        frameworks: ["React", "Vite"],
+        styling: ["Tailwind CSS"],
+        uiLibraries: ["shadcn/ui"],
+        stateManagement: ["Redux"],
+        libraries: ["React Hook Form", "React Leaflet", "Leaflet", "i18next"]
+      },
+      backend: {
+        language: "TypeScript",
+        runtime: ["Node.js"],
+        frameworks: ["Express"],
+        apiTypes: ["REST"],
+        security: ["Helmet", "CORS", "CSRF"],
+        libraries: ["Nodemailer"]
+      },
+      database: {
+        databases: ["PostgreSQL"],
+        orm: ["Prisma"]
+      },
+      tools: ["ESLint", "Zod"],
+      deployment: {
+        platforms: ["Vercel"],
+        ciCd: []
+      }
+    },
+    pages: [
+      {
+        nom: "Accueil",
+        description: "Page d'accueil avec recherche de praticiens par spécialité et localisation"
+      },
+      {
+        nom: "Résultats",
+        description: "Page d'affichage des résultats de recherche avec filtre et carte interactive"
+      },
+      {
+        nom: "Contact",
+        description: "Page de contact pour contacter l'équipe"
+      },
+      {
+        nom: "Articles",
+        description: "Section d'articles sur les médecines douces et spécialités"
+      }
+    ],
+    features: [
+      "Recherche géolocalisée de praticiens",
+      "Filtrage par spécialité, distance et prix",
+      "Carte interactive avec marqueurs",
+      "Interface multilingue (FR/EN/NL)",
+      "Formulaire de contact sécurisé",
+      "Interface responsive"
+    ],
+    technicalHighlights: [
+      "Architecture client/serveur séparée",
+      "Protection CORS, CSRF et Rate Limiting",
+      "Géolocalisation avec API externe",
+      "Validation Zod côté client et serveur",
+      "Persistance Redux avec session storage",
+      "Configuration SEO et métadonnées complètes",
+    ],
+    links: {
+      demo: "https://pileah.com",
+      github: "https://github.com/FrePileah/Pileah"
+    },
+    status: "Terminé",
+    year: "2025"
+  },
+]
 
 export const PROJECTS_CONTENT: ProjectsContent = {
   badge: "Portfolio",
   title: "Mes dernières",
   titleHighlight: "réalisations",
   description: "Découvrez une sélection de projets sur lesquels j'ai travaillé, mettant en avant mes compétences en développement web et ma capacité à transformer des idées en solutions concrètes.",
-  projects: [
-    {
-      id: 1,
-      slug: "e-commerce-moderne",
-      title: "E-commerce Moderne",
-      description: "Plateforme e-commerce complète avec Next.js 15, Stripe et authentification avancée. Interface admin, gestion des stocks et analytics en temps réel.",
-      image: "/images/project-ecommerce.jpg",
-      category: "Full Stack",
-      technologies: ["Next.js", "TypeScript", "Prisma", "Stripe", "Tailwind"],
-      features: ["Paiements Stripe", "Dashboard Admin", "SEO Optimisé", "Analytics"],
-      links: {
-        demo: "https://demo-ecommerce.com",
-        github: "https://github.com/xavier/ecommerce"
-      },
-      status: "Terminé",
-      year: "2024"
-    },
-    {
-      id: 2,
-      slug: "application-saas",
-      title: "Application SaaS",
-      description: "Plateforme SaaS multi-tenant avec authentification, facturation automatique et dashboard analytics avancé pour la gestion d'équipes.",
-      image: "/images/project-saas.jpg",
-      category: "SaaS",
-      technologies: ["React", "Node.js", "PostgreSQL", "AWS", "Docker"],
-      features: ["Multi-tenant", "Billing Auto", "API REST", "WebSocket"],
-      links: {
-        demo: "https://saas-platform.com",
-        github: "https://github.com/xavier/saas-platform"
-      },
-      status: "En cours",
-      year: "2024"
-    },
-    {
-      id: 3,
-      slug: "portfolio-agence",
-      title: "Portfolio Agence",
-      description: "Site vitrine moderne pour agence web avec animations fluides, CMS headless et optimisation SEO avancée pour la performance.",
-      image: "/images/project-agency.jpg",
-      category: "Frontend",
-      technologies: ["Next.js", "Framer Motion", "Sanity", "Vercel"],
-      features: ["Animations CSS", "CMS Headless", "Performance 100", "Mobile First"],
-      links: {
-        demo: "https://agence-portfolio.com",
-        github: "https://github.com/xavier/agency-portfolio"
-      },
-      status: "Terminé",
-      year: "2023"
-    },
-    {
-      id: 4,
-      slug: "api-graphql",
-      title: "API GraphQL",
-      description: "API GraphQL robuste avec authentification JWT, cache Redis et déploiement automatisé sur AWS avec monitoring complet.",
-      image: "/images/project-api.jpg",
-      category: "Backend",
-      technologies: ["GraphQL", "Node.js", "MongoDB", "Redis", "AWS"],
-      features: ["JWT Auth", "Cache Redis", "CI/CD", "Monitoring"],
-      links: {
-        demo: "https://api-docs.com",
-        github: "https://github.com/xavier/graphql-api"
-      },
-      status: "Terminé",
-      year: "2023"
-    }
-  ],
+  projects: PROJECTS,
   categories: ["Tous", "Full Stack", "Frontend", "Backend", "SaaS"],
   cta: {
     title: "Intéressé par mon travail ?",
@@ -92,3 +114,4 @@ export const PROJECTS_CONTENT: ProjectsContent = {
     }
   }
 } as const;
+

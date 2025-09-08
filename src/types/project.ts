@@ -3,11 +3,49 @@ export interface Project {
   id: number;
   slug: string;
   title: string;
-  description: string;
+  description: {
+    short: string; // Description courte pour vignettes (80-120 caractères)
+    long: string; // Description détaillée pour page projet (200-300 caractères)
+  };
   image: string;
   category: string;
-  technologies: string[];
+  objectif: string;
+  defi: string;
+  technologies: {
+    frontend?: {
+      language?: string;
+      frameworks?: string[];
+      styling?: string[];
+      uiLibraries?: string[];
+      stateManagement?: string[];
+      libraries?: string[];
+    };
+    backend?: {
+      language?: string;
+      runtime?: string[];
+      frameworks?: string[];
+      apiTypes?: string[];
+      security?: string[];
+      authentication?: string[];
+      libraries?: string[];
+    };
+    database?: {
+      databases?: string[];
+      orm?: string[];
+    };
+    tools?: string[];
+    deployment?: {
+      platforms?: string[];
+      containerization?: string[];
+      ciCd?: string[];
+    };
+  };
+  pages: {
+    nom: string;
+    description: string;
+  }[];
   features: string[];
+  technicalHighlights?: string[];
   links: {
     demo: string;
     github: string;

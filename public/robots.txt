@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://xavieraffringue.dev/sitemap.xml
+Sitemap: https://portfolio-perso-2025.vercel.app/sitemap.xml
 
 # Bloquer les fichiers sensibles
 Disallow: /api/

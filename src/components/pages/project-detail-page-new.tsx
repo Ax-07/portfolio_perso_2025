@@ -63,7 +63,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                 {project.title}
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-4xl">
-                {project.description}
+                {project.description.short}
               </p>
             </div>
 
@@ -136,7 +136,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                       <h2 className="text-xl font-semibold mb-4">À propos du projet</h2>
                       <div className="prose prose-gray dark:prose-invert max-w-none">
                         <p className="text-muted-foreground leading-relaxed">
-                          {project.description}
+                          {project.description.long}
                         </p>
                       </div>
                     </div>
@@ -230,7 +230,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                       <h3 className="text-lg font-semibold mb-4">Répartition des technologies</h3>
                       <div className="space-y-3">
                         {Object.entries(project.technologies).map(([category, techs]) => (
-                          techs && techs.length > 0 && (
+                          techs && Array.isArray(techs) && techs.length > 0 && (
                             <div key={category} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                               <span className="text-sm font-medium capitalize">{category}</span>
                               <span className="text-sm text-muted-foreground">{techs.length} technologie{techs.length > 1 ? 's' : ''}</span>
@@ -335,7 +335,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                       <div className="prose prose-gray dark:prose-invert max-w-none">
                         <p className="text-muted-foreground leading-relaxed">
                           Ce projet {project.category.toLowerCase()} a été développé dans le cadre de 
-                          l'apprentissage et de la maîtrise des technologies web modernes, 
+                          l&apos;apprentissage et de la maîtrise des technologies web modernes, 
                           avec un focus sur les bonnes pratiques de développement.
                         </p>
                       </div>
@@ -359,7 +359,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         <div className="flex items-start gap-3">
                           <Target className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-sm text-muted-foreground">
-                            Respecter les standards web et d'accessibilité
+                            Respecter les standards web et d&apos;accessibilité
                           </span>
                         </div>
                       </div>
@@ -377,7 +377,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         </div>
                         <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded border-l-2 border-green-500">
                           <span className="text-sm text-green-700 dark:text-green-300">
-                            Optimisation des performances et de l'expérience utilisateur
+                            Optimisation des performances et de l&apos;expérience utilisateur
                           </span>
                         </div>
                         <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded border-l-2 border-purple-500">
@@ -389,7 +389,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Perspectives d'évolution</h3>
+                      <h3 className="text-lg font-semibold mb-4">Perspectives d&apos;évolution</h3>
                       <div className="space-y-2">
                         <div className="flex items-start gap-3">
                           <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />

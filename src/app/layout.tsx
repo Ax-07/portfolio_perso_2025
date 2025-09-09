@@ -6,6 +6,7 @@ import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provi
 import { ColorThemeInitializer } from "@/components/ui/color-theme-initializer";
 import { generatePageMetadata, getStructuredData } from "@/config";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { Header } from "@/components/layouts/header";
 import { Footer } from "@/components/layouts/footer";
 
@@ -114,6 +115,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <GoogleAnalytics />
         <Analytics />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ColorThemeInitializer />

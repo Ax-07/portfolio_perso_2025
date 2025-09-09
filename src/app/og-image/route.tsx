@@ -99,18 +99,6 @@ export async function GET() {
             </clipPath>
           </defs>
         </svg>
-        {/* Gradient overlay similaire au hero */}
-        {/* <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 10,
-            backgroundImage: "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 70%)",
-          }}
-        /> */}
 
         {/* Éléments flottants comme dans le hero */}
         <div
@@ -175,7 +163,7 @@ export async function GET() {
               fontWeight: "600",
             }}
           >
-            Développeur Full Stack
+            {"Développeur Full Stack"}
           </p>
           <p
             style={{
@@ -187,7 +175,7 @@ export async function GET() {
               lineHeight: 1.3,
             }}
           >
-            Créateur d'expériences numériques modernes et performantes
+            {"Créateur d'expériences numériques modernes et performantes"}
           </p>
           <div
             style={{
@@ -225,9 +213,9 @@ export async function GET() {
             }}
           >
             <span>📍</span>
-            <span>Ardèche, France</span>
+            <span>{"Ardèche, France"}</span>
             <span>•</span>
-            <span>Remote friendly</span>
+            <span>{"Remote friendly"}</span>
           </div>
         </div>
       </div>

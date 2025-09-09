@@ -128,6 +128,94 @@ const SCHEMA_ORG = {
       'Applications React',
     ],
   },
+
+  // Nouveau: Données structurées pour les projets
+  creativeWork: (project: {
+    title: string;
+    description: { short: string; long: string };
+    technologies: {
+      frontend?: {
+        language?: string;
+        frameworks?: string[];
+      };
+      [key: string]: unknown;
+    };
+    category: string;
+    slug: string;
+  }) => ({
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    description: project.description.short,
+    creator: {
+      '@type': 'Person',
+      name: PERSONAL_INFO.fullName,
+      jobTitle: PERSONAL_INFO.jobTitle,
+      url: SITE_METADATA.url,
+    },
+    dateCreated: new Date().getFullYear(),
+    genre: project.category,
+    url: `${SITE_METADATA.url}/portfolio/${project.slug}`,
+    programmingLanguage: project.technologies.frontend?.language || 'JavaScript',
+    runtimePlatform: project.technologies.frontend?.frameworks || [],
+    about: {
+      '@type': 'Thing',
+      name: 'Développement Web',
+      description: 'Projet de développement web full stack',
+    },
+    keywords: [
+      project.category.toLowerCase(),
+      'développement web',
+      'portfolio',
+      ...(project.technologies.frontend?.frameworks || []).map((tech: string) => tech.toLowerCase()),
+    ],
+  }),
+
+  // Nouveau: Données structurées pour les compétences
+  skillset: {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Compétences Techniques',
+    description: 'Technologies et compétences maîtrisées',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        item: {
+          '@type': 'DefinedTerm',
+          name: 'React',
+          description: 'Bibliothèque JavaScript pour interfaces utilisateur',
+        },
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        item: {
+          '@type': 'DefinedTerm',
+          name: 'Next.js',
+          description: 'Framework React full-stack',
+        },
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        item: {
+          '@type': 'DefinedTerm',
+          name: 'TypeScript',
+          description: 'JavaScript typé pour applications robustes',
+        },
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
+        item: {
+          '@type': 'DefinedTerm',
+          name: 'Node.js',
+          description: 'Runtime JavaScript côté serveur',
+        },
+      },
+    ],
+  },
 };
 
 export const SEO_CONFIG = {

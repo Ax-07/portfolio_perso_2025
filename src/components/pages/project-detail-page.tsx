@@ -100,7 +100,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary-600" />
-                    <h2 className="text-xl font-bold">Vue d'ensemble</h2>
+                    <h2 className="text-xl font-bold">Vue d&apos;ensemble</h2>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">
                     Objectifs, défis relevés et statistiques du projet

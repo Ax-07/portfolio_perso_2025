@@ -4,14 +4,7 @@ import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Globe, 
-  Eye,
-  ArrowLeft,
-  Calendar,
-  Clock,
-  CheckCircle
-} from "lucide-react";
+import { Eye, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { PROJECTS_CONTENT } from "@/constants";
 import { ProjectStatusBadge } from "@/components/ui/project-status-badge";

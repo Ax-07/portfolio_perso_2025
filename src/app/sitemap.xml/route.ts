@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { SITE_METADATA } from '@/config';
+import { PROJECTS_CONTENT } from '@/constants/projects.content';
 
 // Liste des pages statiques du site
 const staticPages = [
@@ -13,16 +14,22 @@ export async function GET() {
   const baseUrl = SITE_METADATA.url;
   const currentDate = new Date().toISOString();
 
+  // Générer les URLs des projets dynamiques
+  const projectPages = PROJECTS_CONTENT.projects.map(project => `/portfolio/${project.slug}`);
+
+  // Combiner toutes les pages
+  const allPages = [...staticPages, ...projectPages];
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${staticPages
+  ${allPages
     .map(
       (page) => `
   <url>
     <loc>${baseUrl}${page}</loc>
     <lastmod>${currentDate}</lastmod>
-    <changefreq>${page === '' ? 'weekly' : 'monthly'}</changefreq>
-    <priority>${page === '' ? '1.0' : '0.8'}</priority>
+    <changefreq>${page === '' ? 'weekly' : page.startsWith('/portfolio/') ? 'monthly' : 'monthly'}</changefreq>
+    <priority>${page === '' ? '1.0' : page.startsWith('/portfolio/') ? '0.8' : '0.7'}</priority>
   </url>`
     )
     .join('')}

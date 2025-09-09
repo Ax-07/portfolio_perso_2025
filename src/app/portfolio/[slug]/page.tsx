@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectDetailPage } from "@/components/pages";
+import { ProjectStructuredData } from "@/components/seo/project-structured-data";
 import { PROJECTS_CONTENT } from "@/constants";
 
 interface ProjectPageProps {
@@ -45,5 +46,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  return <ProjectDetailPage project={project} />;
+  return (
+    <>
+      <ProjectStructuredData project={project} />
+      <ProjectDetailPage project={project} />
+    </>
+  );
 }

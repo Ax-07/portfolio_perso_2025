@@ -9,7 +9,7 @@ export const HERO_CONTENT = {
   badge: `🚀 ${PERSONAL_INFO.status.availabilityText}`,
   name: PERSONAL_INFO.fullName,
   title: PERSONAL_INFO.jobTitle,
-  description: `passionné par la création d'applications web modernes et performantes. Je transforme vos idées en solutions digitales innovantes.`,
+  description: `Créateur d'applications web modernes et performantes.\nJe transforme vos idées en solutions digitales.`,
   technologies: TECH_STACK.main,
   cta: {
     primary: {

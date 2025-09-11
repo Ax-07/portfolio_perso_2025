@@ -36,13 +36,8 @@ export function HeroSection() {
   );
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center py-20 md:py-32 overflow-hidden">
-      {/* Background avec grille corporate */}
-      <div className="absolute inset-0 corporate-grid opacity-50" />
-
-      {/* Gradient d'arrière-plan */}
-      <div className="absolute inset-0 corporate-gradient" />
       {/* Overlay radial et grille */}
-      <span className="absolute inset-0 z-[2] bg-radial from-0% from-transparent to-70% to-background"></span>
+      <span className="absolute inset-0 z-[2] bg-radial from-0% from-transparent to-50% to-background"></span>
       <GridlineBackground className="z-[1] text-primary opacity-40" />
       
       {/* Éléments flottants */}

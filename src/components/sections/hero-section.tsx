@@ -56,9 +56,15 @@ export function HeroSection() {
                 <TextAnimation text={HERO_CONTENT.name} />
               </h1>
 
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-2xl leading-relaxed text-center">
-                <span className="font-semibold text-primary-500">{HERO_CONTENT.title}</span> {HERO_CONTENT.description}
-              </p>
+              <div className=" text-muted-foreground max-w-2xl leading-relaxed text-center">
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-primary-500 mb-2">{HERO_CONTENT.title}</p>
+                
+                  {HERO_CONTENT.description.split("\n").map((line, index) => (
+                    <p key={index} className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                      {line}
+                    </p>
+                  ))}
+              </div>
             </div>
 
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">

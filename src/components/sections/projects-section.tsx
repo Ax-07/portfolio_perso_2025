@@ -135,12 +135,13 @@ export function ProjectsSection() {
                         Démo
                       </a>
                     </Button>
+                    {project.links.github && 
                     <Button asChild size="sm" variant="outline" className="flex-1 text-xs">
                       <a href={project.links.github} target="_blank" rel="noopener noreferrer">
                         <Github className="h-3 w-3 mr-1" />
                         Code
                       </a>
-                    </Button>
+                    </Button>}
                   </div>
                 </CardContent>
               </Card>

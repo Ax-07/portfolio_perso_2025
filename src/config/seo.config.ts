@@ -225,21 +225,33 @@ export const SEO_CONFIG = {
   defaultDescription: SITE_METADATA.description,
 
   // Mots-clés optimisés
-  keywords: [
-        "développeur web",
-        "développeur full stack", 
-        ...TECH_STACK.main.map(tech => tech.toLowerCase()),
-        "freelance",
-        "portfolio",
-    'ardèche développeur',
-    'freelance développeur web',
-    'création site web react',
-    'développeur javascript',
-    'portfolio développeur',
-    'développeur full stack',
-    'développeur next.js',
-    'développeur node.js',
-  ],
+keywords: [
+  // Localisation
+  "développeur web ardèche",
+  "développeur full stack ardèche",
+  "création site internet ardèche",
+  "freelance développeur ardèche",
+
+  // Freelance / services
+  "freelance développeur web",
+  "création site web moderne",
+  "développement application web",
+  "conception site vitrine",
+  "développement site e-commerce",
+
+  // Stack technique (TECH_STACK dynamique + spécifiques)
+  ...TECH_STACK.main.map(tech => tech.toLowerCase()),
+  "développeur javascript",
+  "développeur react",
+  "développeur next.js",
+  "développeur node.js",
+  "développeur full stack",
+
+  // Portfolio / identité
+  "portfolio développeur",
+  "portfolio freelance",
+  "développeur indépendant",
+],
 
   // Open Graph optimisé
   openGraph: OPEN_GRAPH,
@@ -303,7 +315,7 @@ export const SEO_CONFIG = {
   // Configuration Analytics
   analytics: {
     googleAnalytics: {
-      measurementId: process.env.NEXT_PUBLIC_GA_ID || 'G-XXXXXXXXXX',
+      measurementId: process.env.NEXT_PUBLIC_GA_ID || 'G-8Q33FVTZKE',
       enabled: process.env.NODE_ENV === 'production',
     },
 

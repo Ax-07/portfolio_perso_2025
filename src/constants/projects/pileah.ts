@@ -99,7 +99,7 @@ export const PILEAH: Project = {
     ],
     links: {
       demo: "https://pileah.com",
-      github: "https://github.com/FrePileah/Pileah"
+      // github: "https://github.com/FrePileah/Pileah"
     },
     status: "Terminé",
     year: "2025"

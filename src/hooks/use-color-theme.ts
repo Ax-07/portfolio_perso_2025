@@ -9,10 +9,10 @@ export interface ColorHue {
 }
 
 export const COLOR_HUES: ColorHue[] = [
+  { name: 'blue', hue: 240, label: 'Bleu' },
   { name: 'emerald', hue: 162.68, label: 'Émeraude' },
   { name: 'orange', hue: 70, label: 'Orange' },
   { name: 'purple', hue: 270, label: 'Violet' },
-  { name: 'blue', hue: 240, label: 'Bleu' },
   { name: 'red', hue: 25, label: 'Rouge' },
   { name: 'green', hue: 120, label: 'Vert' },
 ];

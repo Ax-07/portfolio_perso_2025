@@ -17,6 +17,25 @@ interface ProjectStructuredDataProps {
   };
 }
 
+/**
+ * Génère les données structurées Schema.org pour un projet (type CreativeWork)
+ * 
+ * Produit un script JSON-LD avec :
+ * • Informations du créateur (Xavier Affringue, Développeur Full Stack)
+ * • Métadonnées du projet (titre, description, catégorie, URL)
+ * • Technologies utilisées (langages, frameworks)
+ * • Mots-clés SEO automatiques
+ * • Offre de service associée
+ * 
+ * @example
+ * // Pour le projet "Pileah" :
+ * // Génère un script avec @type: "CreativeWork"
+ * // URL: "https://portfolio-perso-2025.vercel.app/portfolio/pileah"
+ * // Mots-clés: ["application web", "développement web", "portfolio", "next.js"]
+ * 
+ * @param project - Données du projet avec titre, description, technologies et slug
+ * @returns Composant Script Next.js avec données structurées JSON-LD intégrées
+ */
 export function ProjectStructuredData({ project }: ProjectStructuredDataProps) {
   const structuredData = {
     '@context': 'https://schema.org',

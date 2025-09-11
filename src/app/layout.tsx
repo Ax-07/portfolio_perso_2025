@@ -34,7 +34,7 @@ export const metadata: Metadata = {
       { url: "https://www.ax-07.fr/android-chrome-192x192.png?v=2", rel: "icon", sizes: "192x192" },
       { url: "https://www.ax-07.fr/android-chrome-512x512.png?v=2", rel: "icon", sizes: "512x512" },
     ],
-    apple: "/apple-touch-icon.png",
+    apple: "https://www.ax-07.fr/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
   verification: {

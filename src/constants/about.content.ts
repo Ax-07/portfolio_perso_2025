@@ -85,7 +85,7 @@ export const ABOUT_CONTENT = {
     description:
       "Vous avez un projet en tête ? Discutons de la façon dont je peux vous aider à le concrétiser avec une solution technique adaptée à vos besoins.",
     primary: {
-      text: "Démarrer une conversation",
+      text: "Contactez-moi",
       href: "#contact",
     },
     secondary: {

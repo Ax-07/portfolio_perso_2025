@@ -10,7 +10,7 @@ import { Github, Linkedin } from "lucide-react";
 // URL PRINCIPALE - SOURCE DE VÉRITÉ
 // ==================================
 
-export const SITE_URL = "https://portfolio-perso-2025.vercel.app" as const;
+export const SITE_URL = "https://www.ax-07.fr" as const;
 
 // ==================================
 // INFORMATIONS PERSONNELLES PRINCIPALES

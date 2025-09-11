@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@vercel/analytics'],
   },
   
+  // Suppression des console.log en production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn', 'info'], // Garde error, warn, info
+    } : false,
+  },
+  
   // Headers de sécurité et performance
   headers: async () => [
     {

@@ -1,4 +1,3 @@
-import { Header } from "@/components/layouts/header";
 import { SEO_CONFIG } from "@/config";
 import type { Metadata } from "next";
 

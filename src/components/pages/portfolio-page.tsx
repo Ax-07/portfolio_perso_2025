@@ -31,7 +31,7 @@ export function PortfolioPage() {
               <Button asChild variant="outline" size="sm">
                 <Link href="/">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Retour à l'accueil
+                  {'Retour à l\'accueil'}
                 </Link>
               </Button>
             </div>
@@ -42,11 +42,11 @@ export function PortfolioPage() {
                 {PROJECTS_CONTENT.badge}
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                Tous mes
+                {'Tous mes '}
                 <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"> projets</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Explorez l&apos;ensemble de mes réalisations. Cliquez sur un projet pour découvrir tous les détails techniques et fonctionnalités.
+                {'Explorez l\'ensemble de mes réalisations. Cliquez sur un projet pour découvrir tous les détails techniques et fonctionnalités.'}
               </p>
             </div>
 
@@ -94,7 +94,7 @@ export function PortfolioPage() {
                       overlayContent={
                         <div className="bg-white text-black px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2">
                           <Eye className="h-4 w-4" />
-                          Voir les détails
+                          {'Voir les détails'}
                         </div>
                       }
                     />
@@ -151,13 +151,13 @@ export function PortfolioPage() {
             <Card className="glass-card border-primary-200/50 dark:border-primary-800/50 primary-glow max-w-2xl mx-auto">
               <CardContent className="p-8">
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-bold">Un projet en tête ?</h3>
+                  <h3 className="text-2xl font-bold">{'Un projet en tête ?'}</h3>
                   <p className="text-muted-foreground">
-                    Ces réalisations vous inspirent ? Discutons de votre prochain projet !
+                    {'Ces réalisations vous inspirent ? Discutons de votre prochain projet !'}
                   </p>
                   <Button asChild className="professional-button">
                     <Link href="/#contact">
-                      Démarrer un projet
+                      {'Démarrer un projet'}
                     </Link>
                   </Button>
                 </div>

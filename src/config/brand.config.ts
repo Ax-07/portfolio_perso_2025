@@ -7,6 +7,12 @@
 import { Github, Linkedin } from "lucide-react";
 
 // ==================================
+// URL PRINCIPALE - SOURCE DE VÉRITÉ
+// ==================================
+
+export const SITE_URL = "https://portfolio-perso-2025.vercel.app" as const;
+
+// ==================================
 // INFORMATIONS PERSONNELLES PRINCIPALES
 // ==================================
 
@@ -23,10 +29,10 @@ export const PERSONAL_INFO = {
   
   // Descriptions variées
   descriptions: {
-    short: "Développeur Full Stack passionné par la création d'applications web modernes",
-    medium: "Développeur Full Stack passionné, spécialisé en React/Next.js et Node.js. Je crée des solutions web modernes et performantes.",
-    long: "Développeur Full Stack spécialisé en React, Next.js et Node.js. Je crée des applications web modernes, performantes et accessibles pour transformer vos idées en réalité.",
-    seo: "Développeur Full Stack spécialisé en React et Next.js. Création d'applications web modernes et performantes."
+    short: "Développeur Full Stack créateur d'applications web modernes",
+    medium: "Développeur Full Stack créateur d'applications web, spécialisé en React/Next.js et Node.js. Je crée des solutions web modernes et performantes.",
+    long: "Développeur Full Stack créateur d'applications web, spécialisé en React/Next.js et Node.js. Je crée des applications web modernes, performantes et accessibles pour transformer vos idées en réalité.",
+    seo: "Développeur Full Stack créateur d'applications web modernes, spécialisé en React/Next.js et Node.js."
   },
   
   // Statistiques professionnelles
@@ -81,8 +87,8 @@ export const CONTACT_INFO = {
 export const ONLINE_PRESENCE = {
   // Site principal
   website: {
-    url: "https://portfolio-perso-2025.vercel.app",
-    domain: "portfolio-perso-2025.vercel.app"
+    url: SITE_URL,
+    domain: SITE_URL.replace('https://', '')
   },
   
   // Réseaux sociaux et profils
@@ -120,10 +126,10 @@ export const TECH_STACK = {
   main: ["React", "Next.js", "Node.js", "TypeScript", "Tailwind", "Vercel"],
   
   // Stack complète par catégorie
-  frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-  backend: ["Node.js", "Express.js", "API REST", "GraphQL", "JWT"],
+  frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+  backend: ["Node.js", "Express.js", "API REST", "JWT"],
   database: ["PostgreSQL", "MongoDB", "Prisma ORM", "Redis"],
-  devops: ["Docker", "CI/CD", "Vercel", "AWS"],
+  devops: ["Docker", "CI/CD", "Vercel"],
   tools: ["Git", "VS Code", "Figma", "Postman"]
 } as const;
 

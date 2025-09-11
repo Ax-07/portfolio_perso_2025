@@ -227,10 +227,10 @@ export const SEO_CONFIG = {
   // Mots-clés optimisés
 keywords: [
   // Localisation
-  "développeur web ardèche",
-  "développeur full stack ardèche",
-  "création site internet ardèche",
-  "freelance développeur ardèche",
+  "développeur web ardèche 07",
+  "développeur full stack ardèche 07",
+  "création site internet ardèche 07",
+  "freelance développeur ardèche 07",
 
   // Freelance / services
   "freelance développeur web",

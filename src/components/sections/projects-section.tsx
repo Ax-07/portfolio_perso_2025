@@ -77,7 +77,7 @@ export function ProjectsSection() {
               >
                 <Link href={`/portfolio/${project.slug}`}>
                   {/* Image du projet */}
-                  <div className="relative overflow-hidden rounded-t-lg">
+                  <div className="relative overflow-hidden rounded-t-lg border-b-1 border-primary-200/50 dark:border-primary-800/50">
                     <div className="aspect-video bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-primary-900 flex items-center justify-center">
                       {imageErrors[project.id] ? (
                         <div className="text-primary-600 dark:text-primary-400">

@@ -76,7 +76,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
             </div>
 
             {/* Image du projet */}
-            <div className="relative">
+            <div className="relative border-1 border-primary-200/50 rounded-xl shadow-primary-200/50 shadow-md">
               <ProjectImage
                 src={project.image}
                 alt={project.title}

@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -14,11 +13,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "../ui/theme-toggle";
-import { ColorThemeControl } from "../ui/color-theme-control";
-import { MAIN_NAVIGATION, EXTERNAL_LINKS, BRAND_INFO, FOOTER_NAVIGATION } from "@/config";
+import { BRAND_INFO, FOOTER_NAVIGATION } from "@/config";
 import { useActiveSection } from "@/hooks/use-active-section";
+import { NavigationItem } from "@/config/navigation.config";
 
-export const MobileNavbar: React.FC = React.memo(() => {
+export const MobileNavigation = React.memo(({ navigation }: { navigation: NavigationItem[] }) => {
   const { isActiveLink, handleNavClick } = useActiveSection();
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -30,16 +29,8 @@ export const MobileNavbar: React.FC = React.memo(() => {
     }, 100);
   };
   return (
-    <div className="lg:hidden w-full">
+    <div className="lg:hidden">
       <div className="flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2" aria-label="Home">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">{BRAND_INFO.initials}</span>
-          </div>
-          <span className="font-bold text-primary">{BRAND_INFO.name}</span>
-        </Link>
-
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen} aria-describedby="mobile-menu">
           <SheetTrigger asChild>
@@ -63,7 +54,7 @@ export const MobileNavbar: React.FC = React.memo(() => {
               </SheetDescription>
             </SheetHeader>
             <nav className="mt-6 flex flex-col gap-4">
-              {MAIN_NAVIGATION.map((item, idx) => {
+              {navigation.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = isActiveLink(item.href);
                 return (
@@ -73,7 +64,7 @@ export const MobileNavbar: React.FC = React.memo(() => {
                       "flex items-start select-none gap-4 rounded-md p-3 leading-none outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
                       isActive && "bg-primary/20 text-primary font-medium"
                     )}
-                    href={item.href}
+                    href={`/${item.href}`}
                     onClick={(e) => handleNavigation(e, item.href)}
                   >
                     <span className="shrink-0">
@@ -93,7 +84,6 @@ export const MobileNavbar: React.FC = React.memo(() => {
                 <span className="text-sm font-semibold mb-4">Préférences</span>
                 <div className="flex items-center space-x-2">
                   <ThemeToggle />
-                  <ColorThemeControl />
                 </div>
               </div>
             </div>
@@ -123,4 +113,4 @@ export const MobileNavbar: React.FC = React.memo(() => {
   );
 });
 
-MobileNavbar.displayName = "MobileNavbar";
+MobileNavigation.displayName = "MobileNavbar";

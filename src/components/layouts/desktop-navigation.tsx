@@ -43,3 +43,5 @@ export const DesktopNavigation = React.memo(({ navigation }: { navigation: Navig
       </div>
   );
 });
+
+DesktopNavigation.displayName = "DesktopNavigation";

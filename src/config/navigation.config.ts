@@ -9,7 +9,14 @@ import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase 
 // NAVIGATION PRINCIPALE (Header)
 // ==================================
 
-export const MAIN_NAVIGATION = [
+export interface NavigationItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  description: string;
+}
+
+export const MAIN_NAVIGATION: NavigationItem[] = [
   {
     name: "Accueil",
     href: "#",

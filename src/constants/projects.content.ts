@@ -115,9 +115,9 @@ const PROJECTS: Project[] = [
 
 export const PROJECTS_CONTENT: ProjectsContent = {
   badge: "Portfolio",
-  title: "Mes dernières",
+  title: "Sélection de",
   titleHighlight: "réalisations",
-  description: "Découvrez une sélection de projets sur lesquels j'ai travaillé, mettant en avant mes compétences en développement web et ma capacité à transformer des idées en solutions concrètes.",
+  description: "Voici quelques projets sur lesquels j'ai travaillé récemment.",
   projects: PROJECTS,
   categories: ["Tous", "Full Stack", "Frontend", "Backend", "SaaS"],
   cta: {
@@ -125,7 +125,7 @@ export const PROJECTS_CONTENT: ProjectsContent = {
     description_1: "Ces projets ne représentent qu'un aperçu de mes compétences.",
     description_2: "Discutons de votre prochain projet !",
     primary: {
-      text: "Démarrer un projet",
+      text: "Contactez-moi",
       href: "#contact"
     },
     secondary: {

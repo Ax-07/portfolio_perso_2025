@@ -29,10 +29,10 @@ export const PERSONAL_INFO = {
   
   // Descriptions variées
   descriptions: {
-    short: "Développeur Full Stack créateur d'applications web modernes",
-    medium: "Développeur Full Stack créateur d'applications web, spécialisé en React/Next.js et Node.js. Je crée des solutions web modernes et performantes.",
-    long: "Développeur Full Stack créateur d'applications web, spécialisé en React/Next.js et Node.js. Je crée des applications web modernes, performantes et accessibles pour transformer vos idées en réalité.",
-    seo: "Développeur Full Stack créateur d'applications web modernes, spécialisé en React/Next.js et Node.js."
+    short: "Développeur Full Stack créateur de site et applications web modernes",
+    medium: "Développeur Full Stack créateur de site et applications web, spécialisé en React/Next.js et Node.js. Je crée des solutions web modernes et performantes.",
+    long: "Développeur Full Stack créateur de site et applications web, spécialisé en React/Next.js et Node.js. Je crée des applications web modernes, performantes et accessibles pour transformer vos idées en réalité.",
+    seo: "Développeur Full Stack créateur de site et applications web modernes, spécialisé en React/Next.js et Node.js."
   },
   
   // Statistiques professionnelles

@@ -7,6 +7,7 @@ import { generatePageMetadata, getStructuredData } from "@/config";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { Footer } from "@/components/layouts/footer";
+import { SITE_URL } from "@/config/brand.config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,10 +24,16 @@ const homeMetadata = generatePageMetadata("home");
 
 export const metadata: Metadata = {
   ...homeMetadata,
-  metadataBase: new URL("https://portfolio-perso-2025.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico?v=2", rel: "icon", sizes: "any" },
+      { url: "/favicon-48x48.png?v=2", rel: "icon", sizes: "48x48" },
+      { url: "/favicon-32x32.png?v=2", rel: "icon", sizes: "32x32" },
+      { url: "/favicon-16x16.png?v=2", rel: "icon", sizes: "16x16" },
+      { url: "/android-chrome-192x192.png?v=2", rel: "icon", sizes: "192x192" },
+      { url: "/android-chrome-512x512.png?v=2", rel: "icon", sizes: "512x512" },
+    ],
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",

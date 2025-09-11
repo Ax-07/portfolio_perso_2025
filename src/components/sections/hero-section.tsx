@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Download, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { TextAnimation } from "../ui/TextAnimation";
 import { GridlineBackground } from "../ui/GridlineBackground";
@@ -51,13 +51,6 @@ export function HeroSection() {
         {/* Contenu principal */}
         <div className="flex flex-col items-center space-y-6 sm:space-y-8 text-center">
           <div className="space-y-4 sm:space-y-6">
-            {/* <Badge
-              variant="outline"
-              className="w-fit border-primary-500/50 text-primary-600 bg-primary-50 dark:bg-primary-950/50 text-xs sm:text-sm px-2 sm:px-3 py-1"
-            >
-              {HERO_CONTENT.badge}
-            </Badge> */}
-
             <div className="space-y-6">
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center">
                 <TextAnimation text={HERO_CONTENT.name} />

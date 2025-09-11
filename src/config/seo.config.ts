@@ -3,7 +3,7 @@
 // ==================================
 // Configuration complète pour optimiser le référencement du portfolio
 
-import { CONTACT_INFO, ONLINE_PRESENCE, PERSONAL_INFO } from './brand.config';
+import { CONTACT_INFO, ONLINE_PRESENCE, PERSONAL_INFO, TECH_STACK } from './brand.config';
 import { SITE_METADATA } from './site-metadata';
 
 const OPEN_GRAPH = {
@@ -226,12 +226,19 @@ export const SEO_CONFIG = {
 
   // Mots-clés optimisés
   keywords: [
-    ...SITE_METADATA.keywords,
+        "développeur web",
+        "développeur full stack", 
+        ...TECH_STACK.main.map(tech => tech.toLowerCase()),
+        "freelance",
+        "portfolio",
     'ardèche développeur',
     'freelance développeur web',
     'création site web react',
     'développeur javascript',
     'portfolio développeur',
+    'développeur full stack',
+    'développeur next.js',
+    'développeur node.js',
   ],
 
   // Open Graph optimisé
@@ -250,7 +257,7 @@ export const SEO_CONFIG = {
   pages: {
     home: {
       title: 'Accueil',
-      description: `Portfolio de ${SITE_METADATA.author}, développeur Full Stack spécialisé en React et Next.js en Ardèche. Découvrez mes projets et compétences en développement web moderne.`,
+      description: SITE_METADATA.description,
       keywords: ['développeur full stack ardèche', 'portfolio développeur', 'react next.js'],
       robots: undefined,
     },

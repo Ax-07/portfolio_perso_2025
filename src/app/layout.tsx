@@ -27,12 +27,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   icons: {
     icon: [
-      { url: "/favicon.ico?v=2", rel: "icon", sizes: "any" },
-      { url: "/favicon-48x48.png?v=2", rel: "icon", sizes: "48x48" },
-      { url: "/favicon-32x32.png?v=2", rel: "icon", sizes: "32x32" },
-      { url: "/favicon-16x16.png?v=2", rel: "icon", sizes: "16x16" },
-      { url: "/android-chrome-192x192.png?v=2", rel: "icon", sizes: "192x192" },
-      { url: "/android-chrome-512x512.png?v=2", rel: "icon", sizes: "512x512" },
+      { url: "https://www.ax-07.fr/favicon.ico?v=2", rel: "icon", sizes: "any" },
+      { url: "https://www.ax-07.fr/favicon-48x48.png?v=2", rel: "icon", sizes: "48x48" },
+      { url: "https://www.ax-07.fr/favicon-32x32.png?v=2", rel: "icon", sizes: "32x32" },
+      { url: "https://www.ax-07.fr/favicon-16x16.png?v=2", rel: "icon", sizes: "16x16" },
+      { url: "https://www.ax-07.fr/android-chrome-192x192.png?v=2", rel: "icon", sizes: "192x192" },
+      { url: "https://www.ax-07.fr/android-chrome-512x512.png?v=2", rel: "icon", sizes: "512x512" },
     ],
     apple: "/apple-touch-icon.png",
   },

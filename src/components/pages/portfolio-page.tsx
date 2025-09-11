@@ -29,9 +29,9 @@ export function PortfolioPage() {
             {/* Navigation de retour */}
             <div className="flex items-center gap-4">
               <Button asChild variant="outline" size="sm">
-                <Link href="/#projects">
+                <Link href="/">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Retour
+                  Retour à l'accueil
                 </Link>
               </Button>
             </div>

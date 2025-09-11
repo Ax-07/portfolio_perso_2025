@@ -17,12 +17,12 @@ import { Palette, Check, AlertCircle, Info, AlertTriangle } from "lucide-react";
  * bg-success text-success border-success bg-warning text-warning border-warning bg-error text-error border-error bg-info text-info border-info
  */
 export function ColorSystemDemo() {
-  const [currentTheme, setCurrentTheme] = useState("emerald");
+  const [currentTheme, setCurrentTheme] = useState("blue");
   
   // Exemples de couleurs que l'on peut changer
   const themes = {
-    emerald: { name: "Émeraude (Actuel)", primary: "oklch(0.596 0.156 162.68)" },
-    blue: { name: "Bleu", primary: "oklch(0.596 0.156 240)" },
+    blue: { name: "Bleu (Actuel)", primary: "oklch(0.596 0.156 240)" },
+    emerald: { name: "Émeraude", primary: "oklch(0.596 0.156 162.68)" },
     purple: { name: "Violet", primary: "oklch(0.596 0.156 280)" },
     orange: { name: "Orange", primary: "oklch(0.596 0.156 60)" },
     pink: { name: "Rose", primary: "oklch(0.596 0.156 320)" },
@@ -33,8 +33,8 @@ export function ColorSystemDemo() {
     const root = document.documentElement;
     
     // Recalculer l'échelle complète avec la nouvelle teinte
-    const baseHue = themeKey === 'emerald' ? '162.68' : 
-                   themeKey === 'blue' ? '240' :
+    const baseHue = themeKey === 'blue' ? '240' :
+                   themeKey === 'emerald' ? '162.68' : 
                    themeKey === 'purple' ? '280' :
                    themeKey === 'orange' ? '60' : '320';
     

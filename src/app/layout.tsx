@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { ColorThemeInitializer } from "@/components/ui/color-theme-initializer";
 import { generatePageMetadata, getStructuredData } from "@/config";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
-import { Header } from "@/components/layouts/header";
 import { Footer } from "@/components/layouts/footer";
 
 const geistSans = Geist({

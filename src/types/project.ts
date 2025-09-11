@@ -48,7 +48,7 @@ export interface Project {
   technicalHighlights?: string[];
   links: {
     demo: string;
-    github: string;
+    github?: string;
   };
   status: string;
   year: string;

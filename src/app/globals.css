@@ -196,7 +196,7 @@
 }
 
 .floating-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
   box-shadow: 0 20px 40px oklch(0 0 0 / 0.15), 0 0 30px oklch(0.596 0.156 var(--primary-hue) / 0.2);
 }
 

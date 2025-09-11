@@ -8,35 +8,18 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { MAIN_NAVIGATION, BRAND_INFO } from "@/config";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "../ui/theme-toggle";
-import { ColorThemeControl } from "../ui/color-theme-control";
 import { useActiveSection } from "@/hooks/use-active-section";
+import { NavigationItem } from "@/config/navigation.config";
 
-export const DesktopNavigation = () => {
+export const DesktopNavigation = React.memo(({ navigation }: { navigation: NavigationItem[] }) => {
   const { isActiveLink, handleNavClick } = useActiveSection();
   return (
-    <div className="flex items-center justify-between w-full">
-      <div className="flex">
-        <Link className="flex items-center space-x-3 group" href="/">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center emerald-glow">
-              <span className="text-white font-bold text-lg">{BRAND_INFO.initials}</span>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
-              {BRAND_INFO.name}
-            </span>
-            <span className="text-xs text-muted-foreground -mt-1">{BRAND_INFO.title}</span>
-          </div>
-        </Link>
-
+      <div className="flex flex-1">
         {/* Navigation Desktop */}
         <NavigationMenu className="ml-10">
           <NavigationMenuList>
-            {MAIN_NAVIGATION.map((item) => {
+            {navigation.map((item) => {
               const IconComponent = item.icon;
               const isActive = isActiveLink(item.href);
               return (
@@ -58,10 +41,5 @@ export const DesktopNavigation = () => {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="flex items-center space-x-2">
-        <ThemeToggle />
-        <ColorThemeControl />
-      </div>
-    </div>
   );
-};
+});

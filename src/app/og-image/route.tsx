@@ -108,7 +108,7 @@ export async function GET() {
             left: "50px",
             width: "200px",
             height: "200px",
-            background: "radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(0, 169, 252, 0.1) 0%, transparent 80%)",
             borderRadius: "50%",
           }}
         />
@@ -119,7 +119,7 @@ export async function GET() {
             right: "50px",
             width: "300px",
             height: "300px",
-            background: "radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(0, 169, 252, 0.05) 0%, transparent 80%)",
             borderRadius: "50%",
           }}
         />
@@ -139,13 +139,13 @@ export async function GET() {
           <h1
             style={{
               fontSize: "80px",
-              fontWeight: "black",
+              fontWeight: "bold",
               color: "white",
               textAlign: "center",
               marginBottom: "20px",
               lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-              background: "linear-gradient(135deg, #ffffff 10%, #10b981 50%, #00a9fc 80%)",
+              letterSpacing: "-0.0em",
+              background: "linear-gradient(135deg, #ffffff 10%, #00a9fc 50%, #00a9fc 80%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -157,9 +157,9 @@ export async function GET() {
           <p
             style={{
               fontSize: "42px",
-              color: "#10b981",
+              color: "#00a9fc",
               textAlign: "center",
-              marginBottom: "40px",
+              marginBottom: "0px",
               fontWeight: "600",
             }}
           >
@@ -175,7 +175,7 @@ export async function GET() {
               lineHeight: 1.3,
             }}
           >
-            {"Créateur d'expériences numériques modernes et performantes"}
+            {"Créateur de sites web modernes et performants"}
           </p>
           <div
             style={{
@@ -191,10 +191,10 @@ export async function GET() {
                 key={tech}
                 style={{
                   padding: "12px 24px",
-                  backgroundColor: "rgba(16, 185, 129, 0.1)",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
+                  backgroundColor: "rgba(0, 169, 252, 0.1)",
+                  border: "1px solid rgba(0, 169, 252, 0.3)",
                   borderRadius: "30px",
-                  color: "#10b981",
+                  color: "rgb(0, 169, 252)",
                   fontSize: "22px",
                   fontWeight: "500",
                 }}

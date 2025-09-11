@@ -64,8 +64,28 @@ const PROJECTS: Project[] = [
         description: "Page de contact pour contacter l'équipe"
       },
       {
-        nom: "Articles",
-        description: "Section d'articles sur les médecines douces et spécialités"
+        nom: "Article découvrir les médecines douces",
+        description: "Section d'articles pour découvrir les médecines douces"
+      },
+      {
+        nom: "Articles comment choisir",
+        description: "Section d'articles pour aider à choisir son praticien"
+      },
+      {
+        nom: "Articles principales spécialités",
+        description: "Section d'articles sur les principales spécialités en médecines douces"
+      },
+      {
+        nom: "Politique de confidentialité",
+        description: "Page détaillant la politique de confidentialité et la gestion des données personnelles"
+      },
+      {
+        nom: "Conditions d'utilisation",
+        description: "Page décrivant les conditions d'utilisation du site"
+      },
+      {
+        nom: "Mentions légales",
+        description: "Page décrivant les mentions légales du site"
       }
     ],
     features: [

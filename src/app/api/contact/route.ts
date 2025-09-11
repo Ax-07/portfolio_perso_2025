@@ -5,7 +5,7 @@ import { z } from 'zod';
 // Schema de validation
 const contactSchema = z.object({
   name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  email: z.string().email('Email invalide'),
+  email: z.email('Email invalide'),
   company: z.string().optional(),
   budget: z.string().optional(),
   message: z.string().min(10, 'Le message doit contenir au moins 10 caractères'),
@@ -36,11 +36,24 @@ const createTransporter = () => {
   });
 };
 
+// Mapping des valeurs budget vers les labels
+const budgetLabels: Record<string, string> = {
+  "<5k": "< 5 000€",
+  "5k-10k": "5 000€ - 10 000€", 
+  "10k-25k": "10 000€ - 25 000€",
+  "25k-50k": "25 000€ - 50 000€",
+  "50k+": "50 000€+",
+  "discuss": "À discuter"
+};
+
 export async function POST(request: NextRequest) {
   try {
     // Validation des données
     const body = await request.json();
     const validatedData = contactSchema.parse(body);
+
+    // Conversion de la valeur budget en label lisible
+    const budgetLabel = validatedData.budget ? budgetLabels[validatedData.budget] || validatedData.budget : null;
 
     // Vérification des variables d'environnement
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !process.env.EMAIL_TO) {
@@ -101,10 +114,10 @@ export async function POST(request: NextRequest) {
                 </div>
               ` : ''}
               
-              ${validatedData.budget ? `
+              ${budgetLabel ? `
                 <div class="field">
                   <div class="field-label">💰 Budget</div>
-                  <div class="field-value"><span class="badge">${validatedData.budget}</span></div>
+                  <div class="field-value"><span class="badge">${budgetLabel}</span></div>
                 </div>
               ` : ''}
               
@@ -132,7 +145,7 @@ NOUVEAU MESSAGE DE CONTACT - Portfolio Xavier Affringue
 Nom: ${validatedData.name}
 Email: ${validatedData.email}
 ${validatedData.company ? `Entreprise: ${validatedData.company}` : ''}
-${validatedData.budget ? `Budget: ${validatedData.budget}` : ''}
+${budgetLabel ? `Budget: ${budgetLabel}` : ''}
 
 Message:
 ${validatedData.message}
@@ -165,12 +178,12 @@ Répondez directement à ce message pour contacter ${validatedData.name}.
         subject: '✅ Message reçu - Je vous réponds bientôt !',
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #10b981;">Merci pour votre message !</h2>
+            <h2 style="color: #00A9FC;">Merci pour votre message !</h2>
             <p>Bonjour ${validatedData.name},</p>
             <p>J'ai bien reçu votre message et je vous remercie pour votre intérêt.</p>
             <p>Je vais l'examiner attentivement et vous répondrai dans les plus brefs délais, généralement sous 24h.</p>
             <p>À bientôt !</p>
-            <p style="color: #10b981; font-weight: 600;">Xavier Affringue<br>Développeur Full Stack</p>
+            <p style="color: #00A9FC; font-weight: 600;">Xavier Affringue<br>Développeur Full Stack</p>
           </div>
         `,
       };

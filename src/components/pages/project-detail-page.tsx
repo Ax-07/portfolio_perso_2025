@@ -109,22 +109,22 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                 <CardContent className="space-y-6">
                   {/* Objectifs et Défis */}
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
+                    <div className="flex flex-col space-y-3">
                       <h3 className="font-semibold flex items-center gap-2 text-primary-600">
                         <Target className="h-4 w-4" />
                         Objectifs
                       </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed bg-primary-50 dark:bg-primary-950/30 p-4 rounded-lg border border-primary-200 dark:border-primary-800">
+                      <p className="text-sm text-muted-foreground leading-relaxed bg-primary-50 dark:bg-primary-950/30 p-4 rounded-lg border border-primary-200 dark:border-primary-800 h-full">
                         {project.objectif}
                       </p>
                     </div>
                     
-                    <div className="space-y-3">
+                    <div className="flex flex-col space-y-3">
                       <h3 className="font-semibold flex items-center gap-2 text-amber-600">
                         <Zap className="h-4 w-4" />
                         Défis relevés
                       </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <p className="text-sm text-muted-foreground leading-relaxed bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800 h-full">
                         {project.defi}
                       </p>
                     </div>

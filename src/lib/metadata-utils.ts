@@ -44,7 +44,7 @@ export function generateProjectMetadata(project: Project): Metadata {
   const title = `${project.title} - Projet ${project.category} | ${SITE_METADATA.author}`;
   
   // Meta description enrichie et attractive
-  const description = `${project.description.short} Développé avec ${mainTechnologies.join(', ')}. Découvrez ce projet ${project.category.toLowerCase()} en détail avec démo et code source.`;
+  const description = `${project.description.short} Développé avec ${mainTechnologies.join(', ')}. Découvrez ce projet ${project.category.toLowerCase()} en détail.`;
 
   // URL canonique du projet
   const projectUrl = `${SITE_METADATA.url}/portfolio/${project.slug}`;

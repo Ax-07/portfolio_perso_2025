@@ -75,12 +75,13 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                   Voir la démo live
                 </Link>
               </Button>
+              {project.links.github && 
               <Button asChild variant="outline">
                 <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
                   <Github className="h-4 w-4 mr-2" />
                   Code source
                 </Link>
-              </Button>
+              </Button>}
             </div>
           </div>
         </div>
@@ -314,12 +315,13 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             Voir la démo live
                           </Link>
                         </Button>
+                        {project.links.github && 
                         <Button asChild variant="outline" className="w-full justify-start">
                           <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
                             <Github className="h-4 w-4 mr-2" />
                             Code source
                           </Link>
-                        </Button>
+                        </Button>}
                       </div>
                     </div>
                   </div>

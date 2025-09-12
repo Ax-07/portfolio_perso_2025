@@ -4,14 +4,14 @@
 // ⚠️ Utilise brand.ts comme source de vérité pour les informations personnelles
 
 import { SOCIAL_LINKS } from '@/config';
-import type { Project, ProjectsContent } from '@/types/project';
-import { PILEAH } from './projects';
+import type { Project, ProjectsSectionContent } from '@/types/project';
+import { PILEAH, BOOKING_PRO } from './projects';
 
 const PROJECTS: Project[] = [
-  PILEAH
+  PILEAH,
 ]
 
-export const PROJECTS_CONTENT: ProjectsContent = {
+export const PROJECTS_SECTION_CONTENT: ProjectsSectionContent = {
   badge: "Portfolio",
   title: "Sélection de",
   titleHighlight: "réalisations",

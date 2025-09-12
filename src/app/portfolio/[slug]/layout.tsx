@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { PROJECTS_CONTENT } from "@/constants";
+import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { generateProjectMetadata, generateNotFoundMetadata } from "@/lib/metadata-utils";
 
 interface ProjectLayoutProps {
@@ -11,7 +11,7 @@ interface ProjectLayoutProps {
 
 export async function generateMetadata({ params }: ProjectLayoutProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = PROJECTS_CONTENT.projects.find((p) => p.slug === slug);
+  const project = PROJECTS_SECTION_CONTENT.projects.find((p) => p.slug === slug);
   
   if (!project) {
     return generateNotFoundMetadata();
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: ProjectLayoutProps): Promise<
 
 export default async function ProjectLayout({ children, params }: ProjectLayoutProps) {
   const { slug } = await params;
-  const project = PROJECTS_CONTENT.projects.find((p) => p.slug === slug);
+  const project = PROJECTS_SECTION_CONTENT.projects.find((p) => p.slug === slug);
 
   if (!project) {
     notFound();

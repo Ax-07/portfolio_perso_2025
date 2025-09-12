@@ -72,11 +72,13 @@ export function generateProjectMetadata(project: Project): Metadata {
     ...(project.favicon && {
       icons: {
         icon: [
-          { url: project.favicon, sizes: "32x32", type: "image/png" },
-          { url: project.favicon, sizes: "16x16", type: "image/png" }
-        ],
-        shortcut: project.favicon,
-        apple: project.favicon,
+          project.favicon.png32 && { url: project.favicon.png32, sizes: "32x32", type: "image/png" },
+          project.favicon.png16 && { url: project.favicon.png16, sizes: "16x16", type: "image/png" },
+          project.favicon.png192 && { url: project.favicon.png192, sizes: "192x192", type: "image/png" },
+          project.favicon.png512 && { url: project.favicon.png512, sizes: "512x512", type: "image/png" },
+        ].filter(Boolean) as { url: string; sizes: string; type: string }[],
+        shortcut: project.favicon.ico ?? undefined,
+        apple: project.favicon.appleTouch ?? undefined,
       }
     }),
     

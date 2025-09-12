@@ -8,6 +8,7 @@ export interface Project {
     long: string; // Description détaillée pour page projet (200-300 caractères)
   };
   image: string;
+  favicon?: string; // Favicon spécifique au projet (optionnel)
   category: string;
   objectif: string;
   defi: string;
@@ -54,7 +55,7 @@ export interface Project {
   year: string;
 }
 
-export interface ProjectsContent {
+export interface ProjectsSectionContent {
   badge: string;
   title: string;
   titleHighlight: string;

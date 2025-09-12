@@ -24,7 +24,7 @@ export const LEGAL_CONTENT = {
         content: {
           nom: "Xavier Affringue",
           statut: "Développeur Full Stack indépendant",
-          email: "xavier.affringue@email.com",
+          email: "xavier.affringue@gmail.com",
           localisation: "France",
         }
       },

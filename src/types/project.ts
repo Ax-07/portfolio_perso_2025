@@ -8,7 +8,14 @@ export interface Project {
     long: string; // Description détaillée pour page projet (200-300 caractères)
   };
   image: string;
-  favicon?: string; // Favicon spécifique au projet (optionnel)
+  favicon?: {
+    ico?: string;
+    png32?: string;
+    png16?: string;
+    png192?: string;
+    png512?: string;
+    appleTouch?: string;
+  }
   category: string;
   objectif: string;
   defi: string;

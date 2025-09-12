@@ -88,7 +88,7 @@ export const POLICY_CONTENT = {
         icon: Mail,
         content: [
           "Pour toute question concernant cette politique de confidentialité ou le traitement de vos données, vous pouvez me contacter :",
-          "Xavier Affringue - Développeur Web | Email : xavier.affringue@gmail.com | Téléphone : 06 20 40 10 95 | Site web : https://xavier-affringue.com",
+          "Xavier Affringue - Développeur Full Stack | Email : xavier.affringue@gmail.com | Site web : https://www.ax-07.fr",
           "Je m'engage à répondre à vos demandes dans les meilleurs délais et au plus tard dans un délai d'un mois."
         ]
       }

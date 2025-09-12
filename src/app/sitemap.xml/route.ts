@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { SITE_METADATA } from '@/config';
-import { PROJECTS_CONTENT } from '@/constants/projects.content';
+import { PROJECTS_SECTION_CONTENT } from '@/constants/projects.content';
 
 // Liste des pages statiques du site
 const staticPages = [
@@ -15,7 +15,7 @@ export async function GET() {
   const currentDate = new Date().toISOString();
 
   // Générer les URLs des projets dynamiques
-  const projectPages = PROJECTS_CONTENT.projects.map(project => `/portfolio/${project.slug}`);
+  const projectPages = PROJECTS_SECTION_CONTENT.projects.map(project => `/portfolio/${project.slug}`);
 
   // Combiner toutes les pages
   const allPages = [...staticPages, ...projectPages];

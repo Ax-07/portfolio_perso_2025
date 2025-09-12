@@ -5,7 +5,7 @@
 
 import { SOCIAL_LINKS } from '@/config';
 import type { Project, ProjectsSectionContent } from '@/types/project';
-import { PILEAH, BOOKING_PRO } from './projects';
+import { PILEAH } from './projects';
 
 const PROJECTS: Project[] = [
   PILEAH,

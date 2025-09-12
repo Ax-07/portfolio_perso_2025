@@ -6,15 +6,15 @@
 
 import { Github, Linkedin } from "lucide-react";
 
-// ==================================
+// ===================================
 // URL PRINCIPALE - SOURCE DE VÉRITÉ
-// ==================================
+// ===================================
 
 export const SITE_URL = "https://www.ax-07.fr" as const;
 
-// ==================================
+// =======================================
 // INFORMATIONS PERSONNELLES PRINCIPALES
-// ==================================
+// =======================================
 
 export const PERSONAL_INFO = {
   // Identité
@@ -149,7 +149,7 @@ export const VISUAL_BRAND = {
   logo: {
     text: PERSONAL_INFO.fullName,
     initials: PERSONAL_INFO.initials,
-    faviconPath: "/favicon.ico",
+    faviconPath: "/favicon-48x48.png",
     logoPath: "/images/logo.svg"
   },
   

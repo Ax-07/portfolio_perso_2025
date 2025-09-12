@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { PROJECTS_CONTENT } from "@/constants";
+import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { ProjectStatusBadge } from "@/components/ui/project-status-badge";
 import { ProjectImage } from "@/components/ui/project-image";
 import { TechList } from "@/components/ui/tech-list";
 
-const { projects, categories } = PROJECTS_CONTENT;
+const { projects, categories } = PROJECTS_SECTION_CONTENT;
 
 export function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = React.useState("Tous");
@@ -39,7 +39,7 @@ export function PortfolioPage() {
             {/* Titre de la page */}
             <div className="text-center space-y-4">
               <Badge variant="outline" className="border-primary-500/50 text-primary-600 bg-primary-50 dark:bg-primary-950/50">
-                {PROJECTS_CONTENT.badge}
+                {PROJECTS_SECTION_CONTENT.badge}
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 {'Tous mes '}

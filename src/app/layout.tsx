@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   icons: {
     icon: [
-      { url: "https://www.ax-07.fr/favicon.ico?v=2", rel: "icon", sizes: "any" },
-      { url: "https://www.ax-07.fr/favicon-48x48.png?v=2", rel: "icon", sizes: "48x48" },
-      { url: "https://www.ax-07.fr/favicon-32x32.png?v=2", rel: "icon", sizes: "32x32" },
-      { url: "https://www.ax-07.fr/favicon-16x16.png?v=2", rel: "icon", sizes: "16x16" },
-      { url: "https://www.ax-07.fr/android-chrome-192x192.png?v=2", rel: "icon", sizes: "192x192" },
-      { url: "https://www.ax-07.fr/android-chrome-512x512.png?v=2", rel: "icon", sizes: "512x512" },
+      { url: "/favicon-48x48.png", rel: "icon", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-32x32.png", rel: "icon", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", rel: "icon", sizes: "16x16", type: "image/png" },
+      { url: "/android-chrome-192x192.png", rel: "icon", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", rel: "icon", sizes: "512x512", type: "image/png" },
     ],
-    apple: "https://www.ax-07.fr/apple-touch-icon.png",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
   },
   manifest: "/site.webmanifest",
   verification: {
@@ -55,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        
         {/* Données structurées Schema.org */}
         <script
           type="application/ld+json"

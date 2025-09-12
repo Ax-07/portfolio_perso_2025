@@ -1,6 +1,6 @@
 import { ProjectDetailPage } from "@/components/pages";
 import { ProjectStructuredData } from "@/components/seo/project-structured-data";
-import { PROJECTS_CONTENT } from "@/constants";
+import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { Header } from "@/components/layouts/header";
 
 interface ProjectPageProps {
@@ -9,7 +9,7 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = PROJECTS_CONTENT.projects.find((p) => p.slug === slug);
+  const project = PROJECTS_SECTION_CONTENT.projects.find((p) => p.slug === slug);
 
   // Le projet est forcément valide car le layout l'a déjà vérifié
   if (!project) {

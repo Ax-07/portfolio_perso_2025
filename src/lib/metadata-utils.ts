@@ -13,13 +13,19 @@ import { Project } from '@/types/project';
  * • Twitter Cards : summary_large_image avec métadonnées
  * • URL canonique : https://site.com/portfolio/[slug]
  * • Robots optimisés : index=true, max-image-preview=large
+ * • Favicon spécifique (optionnel) : si project.favicon est défini
  * 
  * @param project - Données du projet (title, description, technologies, etc.)
  * @returns Métadonnées Next.js complètes prêtes pour generateMetadata()
  * 
  * @example
  * ```typescript
- * const metadata = generateProjectMetadata(project);
+ * const projectWithFavicon = { 
+ *   ...project, 
+ *   favicon: "/favicons/pileah.svg" 
+ * };
+ * const metadata = generateProjectMetadata(projectWithFavicon);
+ * // → Favicon spécifique dans l'onglet du navigateur
  * // → Title: "Pileah - Projet Full Stack | Xavier Affringue"
  * // → Description: "Annuaire de praticiens avec recherche géolocalisée. Développé avec TypeScript, React, Express, PostgreSQL. Découvrez ce projet full stack en détail avec démo et code source."
  * // → Keywords: ["pileah", "full stack", "typescript", "react", "express", "postgresql", ...]
@@ -61,6 +67,18 @@ export function generateProjectMetadata(project: Project): Metadata {
     ],
     authors: [{ name: SITE_METADATA.author }],
     creator: SITE_METADATA.author,
+    
+    // Favicon spécifique au projet (optionnel)
+    ...(project.favicon && {
+      icons: {
+        icon: [
+          { url: project.favicon, sizes: "32x32", type: "image/png" },
+          { url: project.favicon, sizes: "16x16", type: "image/png" }
+        ],
+        shortcut: project.favicon,
+        apple: project.favicon,
+      }
+    }),
     
     // Open Graph optimisé
     openGraph: {

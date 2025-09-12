@@ -13,6 +13,7 @@ export const PILEAH: Project = {
       `
     },
     image: "/images/pileah/landing_pileah.png",
+    favicon: "/favicons/pileah/favicon.ico",
     category: "Full Stack",
     objectif: "Développer une application web complète et multilingue pour rechercher des praticiens en médecines alternatives.",
     defi: "Créer une architecture client/serveur robuste avec une interface utilisateur intuitive et multilingue. Implémenter des fonctionnalités avancées telles que la géolocalisation, l'affichage des résultats sur une carte interactive, tout en gérant l'internationalisation (FR/EN/NL).",

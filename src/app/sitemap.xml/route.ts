@@ -6,8 +6,6 @@ import { PROJECTS_SECTION_CONTENT } from '@/constants/projects.content';
 const staticPages = [
   '',
   '/portfolio',
-  '/mentions-legales',
-  '/politique-confidentialite',
 ];
 
 export async function GET() {

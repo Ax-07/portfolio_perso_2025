@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, Globe, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
-import { PROJECTS_CONTENT } from "@/constants";
+import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { TechList } from "@/components/ui/tech-list";
-const { projects } = PROJECTS_CONTENT;
+
+const { projects } = PROJECTS_SECTION_CONTENT;
 
 export function ProjectsSection() {
   const [imageErrors, setImageErrors] = React.useState<Record<number, boolean>>({});
@@ -54,17 +54,17 @@ export function ProjectsSection() {
               variant="outline"
               className="border-primary-500/50 text-primary-600 bg-primary-50 dark:bg-primary-950/50 text-xs sm:text-sm px-2 sm:px-3 py-1"
             >
-              {PROJECTS_CONTENT.badge}
+              {PROJECTS_SECTION_CONTENT.badge}
             </Badge>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
-              {PROJECTS_CONTENT.title}
+              {PROJECTS_SECTION_CONTENT.title}
               <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
                 {" "}
-                {PROJECTS_CONTENT.titleHighlight}
+                {PROJECTS_SECTION_CONTENT.titleHighlight}
               </span>
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-              {PROJECTS_CONTENT.description}
+              {PROJECTS_SECTION_CONTENT.description}
             </p>
           </div>
 
@@ -153,11 +153,11 @@ export function ProjectsSection() {
             <Card className="glass-card border-primary-200/50 dark:border-primary-800/50 primary-glow max-w-2xl mx-auto">
               <CardContent className="p-6 sm:p-8">
                 <div className="space-y-4">
-                  <h3 className="text-xl sm:text-2xl font-bold">{PROJECTS_CONTENT.cta.title}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold">{PROJECTS_SECTION_CONTENT.cta.title}</h3>
                   <p className="text-muted-foreground text-sm sm:text-base">
-                    {PROJECTS_CONTENT.cta.description_1}
+                    {PROJECTS_SECTION_CONTENT.cta.description_1}
                     <br />
-                    {PROJECTS_CONTENT.cta.description_2}
+                    {PROJECTS_SECTION_CONTENT.cta.description_2}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                     <Button asChild className="professional-button w-full sm:w-auto">
@@ -167,14 +167,14 @@ export function ProjectsSection() {
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="w-full sm:w-auto hover:neon-shadow">
-                      <Link href={PROJECTS_CONTENT.cta.primary.href}>
-                        <span className="text-sm sm:text-base">{PROJECTS_CONTENT.cta.primary.text}</span>
+                      <Link href={PROJECTS_SECTION_CONTENT.cta.primary.href}>
+                        <span className="text-sm sm:text-base">{PROJECTS_SECTION_CONTENT.cta.primary.text}</span>
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="w-full sm:w-auto hover:neon-shadow">
-                      <a href={PROJECTS_CONTENT.cta.secondary.href} target="_blank" rel="noopener noreferrer">
+                      <a href={PROJECTS_SECTION_CONTENT.cta.secondary.href} target="_blank" rel="noopener noreferrer">
                         <Github className="h-4 w-4 mr-2" />
-                        <span className="text-sm sm:text-base">{PROJECTS_CONTENT.cta.secondary.text}</span>
+                        <span className="text-sm sm:text-base">{PROJECTS_SECTION_CONTENT.cta.secondary.text}</span>
                       </a>
                     </Button>
                   </div>

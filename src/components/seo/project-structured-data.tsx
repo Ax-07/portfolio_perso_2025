@@ -1,3 +1,4 @@
+import { PERSONAL_INFO, SITE_URL } from '@/config/brand.config';
 import Script from 'next/script';
 
 interface ProjectStructuredDataProps {
@@ -30,7 +31,7 @@ interface ProjectStructuredDataProps {
  * @example
  * // Pour le projet "Pileah" :
  * // Génère un script avec @type: "CreativeWork"
- * // URL: "https://portfolio-perso-2025.vercel.app/portfolio/pileah"
+ * // URL: "https://www.ax-07.fr/portfolio/pileah"
  * // Mots-clés: ["application web", "développement web", "portfolio", "next.js"]
  * 
  * @param project - Données du projet avec titre, description, technologies et slug
@@ -44,16 +45,16 @@ export function ProjectStructuredData({ project }: ProjectStructuredDataProps) {
     description: project.description.short,
     creator: {
       '@type': 'Person',
-      name: 'Xavier Affringue',
-      jobTitle: 'Développeur Full Stack',
-      url: 'https://portfolio-perso-2025.vercel.app',
+      name: PERSONAL_INFO.fullName,
+      jobTitle: PERSONAL_INFO.jobTitle,
+      url: `${SITE_URL}`,
     },
     dateCreated: new Date().getFullYear(),
     genre: project.category,
-    url: `https://portfolio-perso-2025.vercel.app/portfolio/${project.slug}`,
+    url: `${SITE_URL}/portfolio/${project.slug}`,
     programmingLanguage: project.technologies.frontend?.language || 'JavaScript',
     runtimePlatform: project.technologies.frontend?.frameworks || [],
-    image: project.image ? `https://portfolio-perso-2025.vercel.app${project.image}` : undefined,
+    image: project.image ? `${SITE_URL}${project.image}` : undefined,
     about: {
       '@type': 'Thing',
       name: 'Développement Web',

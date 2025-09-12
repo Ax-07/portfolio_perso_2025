@@ -34,7 +34,7 @@ export const metadata: Metadata = {
       { url: "/android-chrome-512x512.png", rel: "icon", sizes: "512x512", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon-48x48.png",
   },
   manifest: "/site.webmanifest",
   verification: {

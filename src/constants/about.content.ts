@@ -20,7 +20,7 @@ export const ABOUT_CONTENT = {
       `Au fil des ans, j'ai développé une expertise approfondie en ${TECH_STACK.main.slice(0, 3).join(', ')}, tout en gardant une veille technologique constante pour intégrer les meilleures pratiques dans mes projets.`,
       "Aujourd'hui, je me concentre sur la création d'applications web performantes qui offrent une expérience utilisateur exceptionnelle tout en respectant les standards de sécurité et d'accessibilité.",
     ],
-    values: ["Performance", "UX/UI", "Bonne pratique", "SEO"],
+    values: ["TypeScript", "Next.js", "React", "Node.js","PostgreSQL", "Tailwind CSS"],
   },
 
   skills: {

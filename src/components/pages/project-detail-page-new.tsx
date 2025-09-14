@@ -221,7 +221,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                       <h3 className="text-lg font-semibold mb-4">Architecture du projet</h3>
                       <div className="prose prose-gray dark:prose-invert max-w-none">
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          Ce projet utilise une architecture moderne et modulaire basée sur les technologies {getAllTechnologies(project.technologies).slice(0, 3).join(", ")} 
+                          Ce projet utilise une architecture moderne et modulaire basée sur les technologies {getAllTechnologies(project.technologies.all).slice(0, 3).join(", ")} 
                           pour garantir performance, maintenabilité et évolutivité.
                         </p>
                       </div>
@@ -349,7 +349,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         <div className="flex items-start gap-3">
                           <Target className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-sm text-muted-foreground">
-                            Maîtriser les technologies {getAllTechnologies(project.technologies).slice(0, 2).join(" et ")}
+                            Maîtriser les technologies {getAllTechnologies(project.technologies.all).slice(0, 2).join(" et ")}
                           </span>
                         </div>
                         <div className="flex items-start gap-3">
@@ -374,7 +374,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                       <div className="space-y-3">
                         <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded border-l-2 border-blue-500">
                           <span className="text-sm text-blue-700 dark:text-blue-300">
-                            Architecture moderne avec {getAllTechnologies(project.technologies)[0] || 'technologies avancées'}
+                            Architecture moderne avec {getAllTechnologies(project.technologies.all)[0] || 'technologies avancées'}
                           </span>
                         </div>
                         <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded border-l-2 border-green-500">

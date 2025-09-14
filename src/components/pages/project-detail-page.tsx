@@ -598,3 +598,4 @@ const CtaContact = React.memo(({ className }: { className?: string }) => {
     </Card>
   );
 });
+CtaContact.displayName = "CtaContact";

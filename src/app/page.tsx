@@ -9,7 +9,7 @@ import { ResponsiveNavigation } from "@/components/layouts/responsive-navigation
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <SmoothScrollProvider />
       <Header>
         <ResponsiveNavigation />
@@ -23,6 +23,6 @@ export default function Home() {
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
         <ContactSection />
       </main>
-    </div>
+      </>
   );
 }

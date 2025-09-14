@@ -5,7 +5,7 @@ import { Project } from '@/types/project';
  * @param technologies - Technologies organisées par catégorie (frontend, backend, etc.)
  * @returns Tableau de toutes les technologies
  */
-export const getAllTechnologies = (technologies: Project['technologies']): string[] => {
+export const getAllTechnologies = (technologies: Project['technologies']['all']): string[] => {
   const allTechs: string[] = [];
   
   // Frontend technologies
@@ -48,13 +48,18 @@ export const getAllTechnologies = (technologies: Project['technologies']): strin
   return allTechs;
 };
 
+export const getPrincipalesTechnologies = (technologies: Project['technologies']["principales"]): string[] => {
+  return technologies || [];
+};
+
 /**
  * Calcule le nombre total de technologies d'un projet
  * @param technologies - Technologies du projet
  * @returns Nombre total de technologies
  */
 export const getTotalTechnologiesCount = (technologies: Project['technologies']): number => {
-  return getAllTechnologies(technologies).length;
+  console.log('Calculating total technologies count for:', getAllTechnologies(technologies.all).length);
+  return getAllTechnologies(technologies.all).length;
 };
 
 /**
@@ -78,7 +83,7 @@ export const PROJECT_STATUS_CONFIG = {
 /**
  * Obtient toutes les technologies frontend d'un projet
  */
-export const getFrontendTechnologies = (frontend?: Project['technologies']['frontend']): string[] => {
+export const getFrontendTechnologies = (frontend?: Project['technologies']['all']['frontend']): string[] => {
   if (!frontend) return [];
   
   const techs: string[] = [];
@@ -95,7 +100,7 @@ export const getFrontendTechnologies = (frontend?: Project['technologies']['fron
 /**
  * Obtient toutes les technologies backend d'un projet
  */
-export const getBackendTechnologies = (backend?: Project['technologies']['backend']): string[] => {
+export const getBackendTechnologies = (backend?: Project['technologies']['all']['backend']): string[] => {
   if (!backend) return [];
   
   const techs: string[] = [];
@@ -113,7 +118,7 @@ export const getBackendTechnologies = (backend?: Project['technologies']['backen
 /**
  * Obtient toutes les technologies de base de données d'un projet
  */
-export const getDatabaseTechnologies = (database?: Project['technologies']['database']): string[] => {
+export const getDatabaseTechnologies = (database?: Project['technologies']['all']['database']): string[] => {
   if (!database) return [];
   
   const techs: string[] = [];
@@ -126,7 +131,7 @@ export const getDatabaseTechnologies = (database?: Project['technologies']['data
 /**
  * Obtient toutes les technologies de déploiement d'un projet
  */
-export const getDeploymentTechnologies = (deployment?: Project['technologies']['deployment']): string[] => {
+export const getDeploymentTechnologies = (deployment?: Project['technologies']['all']['deployment']): string[] => {
   if (!deployment) return [];
   
   const techs: string[] = [];
@@ -140,19 +145,19 @@ export const getDeploymentTechnologies = (deployment?: Project['technologies']['
 /**
  * Vérifie si une section de technologies a du contenu
  */
-export const hasFrontendTechnologies = (frontend?: Project['technologies']['frontend']): boolean => {
+export const hasFrontendTechnologies = (frontend?: Project['technologies']['all']['frontend']): boolean => {
   return getFrontendTechnologies(frontend).length > 0;
 };
 
-export const hasBackendTechnologies = (backend?: Project['technologies']['backend']): boolean => {
+export const hasBackendTechnologies = (backend?: Project['technologies']['all']['backend']): boolean => {
   return getBackendTechnologies(backend).length > 0;
 };
 
-export const hasDatabaseTechnologies = (database?: Project['technologies']['database']): boolean => {
+export const hasDatabaseTechnologies = (database?: Project['technologies']['all']['database']): boolean => {
   return getDatabaseTechnologies(database).length > 0;
 };
 
-export const hasDeploymentTechnologies = (deployment?: Project['technologies']['deployment']): boolean => {
+export const hasDeploymentTechnologies = (deployment?: Project['technologies']['all']['deployment']): boolean => {
   return getDeploymentTechnologies(deployment).length > 0;
 };
 

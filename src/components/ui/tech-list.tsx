@@ -1,8 +1,6 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { TechBadge } from "@/components/ui/tech-badge";
-import { getAllTechnologies } from "@/lib/project-utils";
+import { getAllTechnologies, getPrincipalesTechnologies } from "@/lib/project-utils";
 import { Project } from "@/types/project";
 
 interface TechListProps {
@@ -18,10 +16,11 @@ export function TechList({
   size = "default",
   showCounter = true 
 }: TechListProps) {
-  const allTechs = getAllTechnologies(technologies);
-  const visibleTechs = allTechs.slice(0, maxVisible);
+  const allTechs = getAllTechnologies(technologies.all);
+  const principalesTechs = getPrincipalesTechnologies(technologies.principales);
+  const visibleTechs = principalesTechs.slice(0, maxVisible);
   const remainingCount = allTechs.length - maxVisible;
-  
+
   return (
     <div className="flex flex-wrap gap-1">
       {visibleTechs.map((tech, index) => (

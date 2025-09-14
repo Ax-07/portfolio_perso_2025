@@ -224,35 +224,6 @@ export const SEO_CONFIG = {
   titleTemplate: `%s | ${SITE_METADATA.author}`,
   defaultDescription: SITE_METADATA.description,
 
-  // Mots-clés optimisés
-keywords: [
-  // Localisation
-  "développeur web ardèche 07",
-  "développeur full stack ardèche 07",
-  "création site internet ardèche 07",
-  "freelance développeur ardèche 07",
-
-  // Freelance / services
-  "freelance développeur web",
-  "création site web moderne",
-  "développement application web",
-  "conception site vitrine",
-  "développement site e-commerce",
-
-  // Stack technique (TECH_STACK dynamique + spécifiques)
-  ...TECH_STACK.main.map(tech => tech.toLowerCase()),
-  "développeur javascript",
-  "développeur react",
-  "développeur next.js",
-  "développeur node.js",
-  "développeur full stack",
-
-  // Portfolio / identité
-  "portfolio développeur",
-  "portfolio freelance",
-  "développeur indépendant",
-],
-
   // Open Graph optimisé
   openGraph: OPEN_GRAPH,
 
@@ -270,31 +241,26 @@ keywords: [
     home: {
       title: 'Accueil',
       description: SITE_METADATA.description,
-      keywords: ['développeur full stack ardèche', 'portfolio développeur', 'react next.js'],
       robots: undefined,
     },
     portfolio: {
       title: 'Portfolio - Mes Projets',
       description: 'Découvrez mes dernières réalisations en développement web : applications React, plateformes e-commerce, dashboards et solutions sur mesure.',
-      keywords: ['projets développeur', 'réalisations web', 'applications react'],
       robots: undefined,
     },
     contact: {
       title: 'Contact - Développeur Full Stack',
       description: `Contactez ${SITE_METADATA.author} pour discuter de votre projet web. Développeur freelance disponible pour vos besoins en React, Next.js et Node.js.`,
-      keywords: ['contact développeur', 'freelance ardèche', 'devis développement web'],
       robots: undefined,
     },
     mentionsLegales: {
       title: 'Mentions Légales',
       description: `Mentions légales du portfolio de ${SITE_METADATA.author}, développeur Full Stack.`,
-      keywords: [],
       robots: 'noindex, nofollow',
     },
     politiqueConfidentialite: {
       title: 'Politique de Confidentialité',
       description: `Politique de confidentialité et gestion des données personnelles sur le site de ${SITE_METADATA.author}.`,
-      keywords: [],
       robots: 'noindex, nofollow',
     },
   },
@@ -317,18 +283,7 @@ keywords: [
     googleAnalytics: {
       measurementId: process.env.NEXT_PUBLIC_GA_ID || 'G-8Q33FVTZKE',
       enabled: process.env.NODE_ENV === 'production',
-    },
-
-    hotjar: {
-      hjid: parseInt(process.env.NEXT_PUBLIC_HOTJAR_ID || '1234567'),
-      hjsv: 6,
-      enabled: process.env.NODE_ENV === 'production' && !!process.env.NEXT_PUBLIC_HOTJAR_ID,
-    },
-
-    plausible: {
-      domain: SITE_METADATA.domain,
-      enabled: !!process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN,
-    },
+    }
   },
 
   // Configuration sociale
@@ -357,7 +312,6 @@ export function generatePageMetadata(pageKey: keyof typeof SEO_CONFIG.pages, cus
   return {
     title: (customData?.title as string) || baseTitle,
     description: (customData?.description as string) || page.description,
-    keywords: [...SEO_CONFIG.keywords, ...(page.keywords || [])],
     robots: page.robots || 'index, follow',
     openGraph: {
       ...SEO_CONFIG.openGraph,

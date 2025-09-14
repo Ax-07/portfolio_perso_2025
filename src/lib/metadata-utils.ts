@@ -34,10 +34,10 @@ import { Project } from '@/types/project';
 export function generateProjectMetadata(project: Project): Metadata {
   // Extraction des technologies principales
   const mainTechnologies = [
-    project.technologies.frontend?.language,
-    ...(project.technologies.frontend?.frameworks || []),
-    ...(project.technologies.backend?.frameworks || []),
-    ...(project.technologies.database?.databases || [])
+    project.technologies.all.frontend?.language,
+    ...(project.technologies.all.frontend?.frameworks || []),
+    ...(project.technologies.all.backend?.frameworks || []),
+    ...(project.technologies.all.database?.databases || [])
   ].filter((tech): tech is string => typeof tech === 'string').slice(0, 5);
 
   // Meta title optimisé avec mots-clés

@@ -20,7 +20,7 @@ export default function PolitiqueConfidentialitePage() {
             <Button asChild variant="ghost" size="sm">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour à l'accueil
+                {"Retour à l'accueil"}
               </Link>
             </Button>
             <Badge variant="outline" className="border-primary-500/50 text-primary-600 bg-primary-50 dark:bg-primary-950/50">

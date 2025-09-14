@@ -20,33 +20,36 @@ export interface Project {
   objectif: string;
   defi: string;
   technologies: {
-    frontend?: {
-      language?: string;
-      frameworks?: string[];
-      styling?: string[];
-      uiLibraries?: string[];
-      stateManagement?: string[];
-      libraries?: string[];
-    };
-    backend?: {
-      language?: string;
-      runtime?: string[];
-      frameworks?: string[];
-      apiTypes?: string[];
-      security?: string[];
-      authentication?: string[];
-      libraries?: string[];
-    };
-    database?: {
-      databases?: string[];
-      orm?: string[];
-    };
-    tools?: string[];
-    deployment?: {
-      platforms?: string[];
-      containerization?: string[];
-      ciCd?: string[];
-    };
+    principales?: string[]; // Technologies principales à afficher en priorité
+    all: {
+      frontend?: {
+        language?: string;
+        frameworks?: string[];
+        styling?: string[];
+        uiLibraries?: string[];
+        stateManagement?: string[];
+        libraries?: string[];
+      };
+      backend?: {
+        language?: string;
+        runtime?: string[];
+        frameworks?: string[];
+        apiTypes?: string[];
+        security?: string[];
+        authentication?: string[];
+        libraries?: string[];
+      };
+      database?: {
+        databases?: string[];
+        orm?: string[];
+      };
+      tools?: string[];
+      deployment?: {
+        platforms?: string[];
+        containerization?: string[];
+        ciCd?: string[];
+      };
+    }
   };
   pages: {
     nom: string;

@@ -1,4 +1,4 @@
-import { CONTACT_INFO, ONLINE_PRESENCE, PERSONAL_INFO, TECH_STACK, SITE_URL } from "./brand.config";
+import { CONTACT_INFO, PERSONAL_INFO, TECH_STACK, SITE_URL } from "./brand.config";
 
 // Métadonnées centralisées du site
 export const SITE_METADATA = {

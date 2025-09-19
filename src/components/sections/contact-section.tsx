@@ -14,27 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Send, Clock, CheckCircle } from "lucide-react";
 import { CONTACT_CONTENT } from "@/constants";
 import Link from "next/link";
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: CONTACT_CONTENT.form.fields.name.errorMessage,
-  }),
-  email: z.email({
-    message: CONTACT_CONTENT.form.fields.email.errorMessage,
-  }),
-  company: z.string().optional(),
-  budget: z.string().optional(),
-  message: z.string().min(10, {
-    message: CONTACT_CONTENT.form.fields.message.errorMessage,
-  }),
-});
+import { contactSchema } from "@/lib/validations";
 
 export function ContactSection() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof contactSchema>>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -55,7 +42,7 @@ export function ContactSection() {
     );
   }, [watchedValues.name, watchedValues.email, watchedValues.message]);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof contactSchema>) => {
     setIsSubmitting(true);
 
     try {

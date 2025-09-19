@@ -1,7 +1,6 @@
 // ====================================================================
 // LIENS DE NAVIGATION CENTRALISÉS
 // ====================================================================
-// ⚠️ Les informations personnelles proviennent maintenant de brand.ts
 
 import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase } from "lucide-react";
 

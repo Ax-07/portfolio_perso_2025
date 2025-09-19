@@ -3,7 +3,7 @@
 // ==================================
 // Configuration complète pour optimiser le référencement du portfolio
 
-import { CONTACT_INFO, ONLINE_PRESENCE, PERSONAL_INFO, TECH_STACK } from './brand.config';
+import { CONTACT_INFO, ONLINE_PRESENCE, PERSONAL_INFO } from './brand.config';
 import { SITE_METADATA } from './site-metadata';
 
 const OPEN_GRAPH = {

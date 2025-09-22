@@ -112,6 +112,6 @@ export const PILEAH: Project = {
     demo: "https://pileah.com",
     // github: "https://github.com/FrePileah/Pileah"
   },
-  status: "Terminé",
+  status: "En cours",
   year: "2025"
 };

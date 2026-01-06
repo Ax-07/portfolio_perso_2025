@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NÉO-BRUTAL / MANIFESTE</title>
+
+  <!-- Tailwind CDN (pour prototype rapide). Pour prod: compile Tailwind. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Petite config Tailwind (couleurs/typos custom) — via CDN
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['ui-sans-serif', 'system-ui', 'Inter', 'Arial', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'monospace'],
+          },
+          boxShadow: {
+            brutal: '10px 10px 0 0 rgba(0,0,0,1)',
+            brutalSm: '6px 6px 0 0 rgba(0,0,0,1)',
+            brutalLg: '14px 14px 0 0 rgba(0,0,0,1)',
+          },
+          keyframes: {
+            jitter: {
+              '0%, 100%': { transform: 'translate(0,0) rotate(0deg)' },
+              '10%': { transform: 'translate(-2px, 1px) rotate(-0.5deg)' },
+              '20%': { transform: 'translate(2px, -1px) rotate(0.5deg)' },
+              '30%': { transform: 'translate(-1px, -2px) rotate(-0.35deg)' },
+              '40%': { transform: 'translate(1px, 2px) rotate(0.35deg)' },
+              '50%': { transform: 'translate(-2px, 0px) rotate(-0.25deg)' },
+              '60%': { transform: 'translate(2px, 0px) rotate(0.25deg)' },
+              '70%': { transform: 'translate(0px, -2px) rotate(-0.15deg)' },
+              '80%': { transform: 'translate(0px, 2px) rotate(0.15deg)' },
+              '90%': { transform: 'translate(-1px, 1px) rotate(-0.1deg)' },
+            },
+            pulseHard: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.03)' },
+            },
+            marquee: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-50%)' },
+            },
+            floaty: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            spinSlow: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            },
+            scan: {
+              '0%': { transform: 'translateY(-120%)' },
+              '100%': { transform: 'translateY(220%)' },
+            }
+          },
+          animation: {
+            jitter: 'jitter 900ms steps(2,end) infinite',
+            pulseHard: 'pulseHard 1.6s ease-in-out infinite',
+            marquee: 'marquee 14s linear infinite',
+            floaty: 'floaty 2.8s ease-in-out infinite',
+            spinSlow: 'spinSlow 9s linear infinite',
+            scan: 'scan 3.2s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Smooth scroll natif */
+    html { scroll-behavior: smooth; }
+
+    /* Scrollbar brutale */
+    * { scrollbar-width: thin; scrollbar-color: #000 #FDE047; }
+    *::-webkit-scrollbar { width: 12px; height: 12px; }
+    *::-webkit-scrollbar-track { background: #FDE047; }
+    *::-webkit-scrollbar-thumb { background: #000; border: 3px solid #FDE047; }
+
+    /* Texture papier (néo-brutal vibe) */
+    .paper {
+      background-image:
+        radial-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+        radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px);
+      background-size: 18px 18px, 28px 28px;
+      background-position: 0 0, 6px 10px;
+    }
+
+    /* Effet "ink" sur hover (très dur) */
+    .ink:hover { filter: contrast(1.2) saturate(1.3); }
+
+    /* Texte avec outline brut */
+    .stroke {
+      -webkit-text-stroke: 2px #000;
+      text-stroke: 2px #000;
+      paint-order: stroke fill;
+    }
+
+    /* Dégradé agressif */
+    .acid {
+      background: linear-gradient(135deg, #22c55e 0%, #f97316 28%, #a855f7 60%, #06b6d4 100%);
+    }
+
+    /* Mask de bruit (grain) */
+    .grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .12;
+      mix-blend-mode: multiply;
+      background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="180" height="180" filter="url(%23n)" opacity="0.55"/></svg>');
+      background-size: 200px 200px;
+    }
+
+    /* Reveal CSS de secours si JS désactivé */
+    .reveal { opacity: 1; transform: translateY(0); }
+    .js .reveal { opacity: 0; transform: translateY(22px) rotate(-0.2deg); }
+    .js .reveal.is-in { opacity: 1; transform: translateY(0) rotate(0deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .js .reveal { opacity: 1; transform: none; }
+      .animate-marquee, .animate-jitter, .animate-floaty, .animate-spinSlow, .animate-scan { animation: none !important; }
+    }
+  </style>
+</head>
+
+<body class="paper font-display text-black selection:bg-black selection:text-yellow-300 overflow-x-hidden">
+  <script>document.documentElement.classList.add('js')</script>
+
+  <!-- Top ribbon / nav -->
+  <header class="sticky top-0 z-50 border-b-4 border-black bg-yellow-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between py-3 gap-3">
+        <a href="#top" class="inline-flex items-center gap-2 border-4 border-black bg-white px-3 py-2 shadow-brutalSm hover:-translate-y-0.5 hover:translate-x-0.5 transition-transform">
+          <span class="inline-block h-3 w-3 bg-black"></span>
+          <span class="font-black tracking-tight">NÉO·BRUTAL</span>
+          <span class="font-mono text-xs bg-black text-yellow-300 px-2 py-0.5">v.∞</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-2">
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-lime-300" href="#manifesto">Manifesto</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-pink-300" href="#modules">Modules</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-cyan-300" href="#lab">Lab</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-orange-300" href="#contact">Contact</a>
+        </nav>
+
+        <button id="menuBtn" class="md:hidden border-4 border-black bg-white px-3 py-2 shadow-brutalSm font-black" aria-expanded="false" aria-controls="mobileMenu">
+          MENU
+        </button>
+      </div>
+
+      <!-- mobile menu -->
+      <div id="mobileMenu" class="md:hidden hidden pb-4">
+        <div class="grid grid-cols-2 gap-2">
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-lime-300" href="#manifesto">Manifesto</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-pink-300" href="#modules">Modules</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-cyan-300" href="#lab">Lab</a>
+          <a class="ink border-2 border-black bg-white px-3 py-2 font-bold shadow-brutalSm hover:bg-orange-300" href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- brutal marquee -->
+    <div class="border-t-4 border-black bg-black text-yellow-300 overflow-hidden">
+      <div class="relative whitespace-nowrap">
+        <div class="flex w-[200%] animate-marquee">
+          <div class="flex w-1/2 items-center gap-6 py-2">
+            <span class="font-mono">▲</span>
+            <span class="font-black tracking-widest">SCROLL = CINÉMA</span>
+            <span class="font-mono">■</span>
+            <span class="font-black tracking-widest">COULEURS = BRUIT</span>
+            <span class="font-mono">●</span>
+            <span class="font-black tracking-widest">BORDURES = LOI</span>
+            <span class="font-mono">◆</span>
+            <span class="font-black tracking-widest">ANIMATIONS = ÉLECTRICITÉ</span>
+          </div>
+          <div class="flex w-1/2 items-center gap-6 py-2" aria-hidden="true">
+            <span class="font-mono">▲</span>
+            <span class="font-black tracking-widest">SCROLL = CINÉMA</span>
+            <span class="font-mono">■</span>
+            <span class="font-black tracking-widest">COULEURS = BRUIT</span>
+            <span class="font-mono">●</span>
+            <span class="font-black tracking-widest">BORDURES = LOI</span>
+            <span class="font-mono">◆</span>
+            <span class="font-black tracking-widest">ANIMATIONS = ÉLECTRICITÉ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main id="top" class="relative grain">
+    <section class="relative overflow-hidden border-b-4 border-black">
+      <div class="absolute inset-0 acid opacity-90"></div>
+
+      <!-- scanline -->
+      <div class="pointer-events-none absolute inset-0">
+        <div class="absolute left-0 top-0 h-10 w-full bg-white/25 border-y-2 border-black/70 mix-blend-overlay animate-scan"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div class="reveal transition-all duration-700">
+            <div class="inline-flex items-center gap-2 border-4 border-black bg-white px-4 py-2 shadow-brutal">
+              <span class="font-mono text-xs">/SYSTEM/</span>
+              <span class="font-black">NÉO-BRUTALIST WEBPAGE</span>
+              <span class="h-2 w-2 rounded-full bg-lime-500 border-2 border-black"></span>
+            </div>
+
+            <h1 class="mt-6 text-5xl sm:text-7xl lg:text-7xl font-black leading-[0.92] tracking-tight">
+              <span class="block stroke text-white">DÉCLENCHE</span>
+              <span class="block">UNE PAGE QUI</span>
+              <span class="inline-block bg-black text-yellow-300 px-3 py-2 shadow-brutalSm rotate-[-2deg]">REFUSE LE SILENCE</span>
+            </h1>
+
+            <p class="mt-6 text-lg sm:text-xl font-semibold max-w-xl">
+              Du néo-brutalisme sans excuses: bordures massives, typographie insolente, couleurs acides,
+              animations de défilement fluides, et des modules qui se comportent comme des machines.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-3">
+              <a href="#manifesto" class="ink inline-flex items-center justify-center border-4 border-black bg-yellow-300 px-6 py-3 font-black shadow-brutal hover:-translate-y-1 hover:translate-x-1 transition-transform">
+                Lancer le manifeste →
+              </a>
+              <a href="#lab" class="ink inline-flex items-center justify-center border-4 border-black bg-white px-6 py-3 font-black shadow-brutal hover:bg-black hover:text-yellow-300 transition-colors">
+                Ouvrir le laboratoire
+              </a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-3 max-w-xl">
+              <div class="border-4 border-black bg-white p-3 shadow-brutalSm">
+                <p class="font-mono text-xs">LATENCE</p>
+                <p class="text-2xl font-black">0% PARDON</p>
+              </div>
+              <div class="border-4 border-black bg-lime-300 p-3 shadow-brutalSm">
+                <p class="font-mono text-xs">COULEURS</p>
+                <p class="text-2xl font-black">BRUTALES</p>
+              </div>
+              <div class="border-4 border-black bg-pink-300 p-3 shadow-brutalSm">
+                <p class="font-mono text-xs">SCROLL</p>
+                <p class="text-2xl font-black">FLUIDE</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: brutal sculpture -->
+          <div class="reveal transition-all duration-700 delay-150">
+            <div class="relative border-4 border-black bg-white shadow-brutalLg overflow-hidden">
+              <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-[length:22px_22px]"></div>
+
+              <div class="relative p-6 sm:p-8">
+                <div class="flex items-center justify-between">
+                  <p class="font-mono text-xs">/BRUTAL_ENGINE/</p>
+                  <span class="inline-flex items-center gap-2 border-2 border-black bg-yellow-300 px-3 py-1 font-black shadow-brutalSm">
+                    LIVE
+                    <span class="h-3 w-3 bg-red-500 border-2 border-black animate-pulseHard"></span>
+                  </span>
+                </div>
+
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                  <div class="border-4 border-black bg-cyan-300 p-4 shadow-brutalSm">
+                    <p class="font-black text-3xl">01</p>
+                    <p class="font-mono text-xs">BORDURE = ARMURE</p>
+                  </div>
+                  <div class="border-4 border-black bg-orange-300 p-4 shadow-brutalSm">
+                    <p class="font-black text-3xl">02</p>
+                    <p class="font-mono text-xs">OMBRE = IMPACT</p>
+                  </div>
+                  <div class="border-4 border-black bg-lime-300 p-4 shadow-brutalSm">
+                    <p class="font-black text-3xl">03</p>
+                    <p class="font-mono text-xs">TYPO = POING</p>
+                  </div>
+                  <div class="border-4 border-black bg-pink-300 p-4 shadow-brutalSm">
+                    <p class="font-black text-3xl">04</p>
+                    <p class="font-mono text-xs">SCROLL = RYTHME</p>
+                  </div>
+                </div>
+
+                <div class="mt-6 relative">
+                  <div class="border-4 border-black bg-black text-yellow-300 p-4 shadow-brutalSm">
+                    <p class="font-mono text-xs">PROMPT</p>
+                    <p class="mt-2 font-black text-xl">« Repousse les limites. »</p>
+                  </div>
+
+                  <div class="absolute -right-6 -bottom-6 rotate-12">
+                    <div class="h-24 w-24 border-4 border-black bg-yellow-300 shadow-brutal animate-spinSlow"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t-4 border-black bg-yellow-300 px-4 py-2 font-mono text-xs flex items-center justify-between">
+                <span>STATUS: SURVOLTÉ</span>
+                <span>FPS: ∞*</span>
+              </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3">
+              <a class="ink border-4 border-black bg-white px-4 py-2 shadow-brutalSm font-black hover:bg-lime-300" href="#modules">Voir les modules</a>
+              <button id="shakeBtn" class="ink border-4 border-black bg-black text-yellow-300 px-4 py-2 shadow-brutalSm font-black hover:bg-yellow-300 hover:text-black transition-colors">
+                Secouer la page
+              </button>
+              <button id="panicBtn" class="ink border-4 border-black bg-white px-4 py-2 shadow-brutalSm font-black hover:bg-pink-300">
+                Mode PANIC
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 sm:mt-14 grid lg:grid-cols-3 gap-4">
+          <div class="reveal transition-all duration-700 border-4 border-black bg-white shadow-brutalSm p-5">
+            <p class="font-mono text-xs">SCROLL ANIM</p>
+            <p class="mt-2 font-black text-2xl">Révélations</p>
+            <p class="mt-2 font-semibold">Les blocs apparaissent avec inertie et rotation subtile.</p>
+          </div>
+          <div class="reveal transition-all duration-700 delay-100 border-4 border-black bg-cyan-300 shadow-brutalSm p-5">
+            <p class="font-mono text-xs">SMOOTH</p>
+            <p class="mt-2 font-black text-2xl">Défilement</p>
+            <p class="mt-2 font-semibold">Natif + scroll-to intelligent, sans bibliothèque.</p>
+          </div>
+          <div class="reveal transition-all duration-700 delay-200 border-4 border-black bg-orange-300 shadow-brutalSm p-5">
+            <p class="font-mono text-xs">RESPONSIVE</p>
+            <p class="mt-2 font-black text-2xl">Mobile-first</p>
+            <p class="mt-2 font-semibold">Layouts qui claquent du XS au 4K.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFESTO -->
+    <section id="manifesto" class="border-b-4 border-black bg-white">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+        <div class="flex items-start justify-between gap-6 flex-wrap">
+          <div class="reveal transition-all duration-700 max-w-2xl">
+            <h2 class="text-4xl sm:text-5xl font-black">MANIFESTE</h2>
+            <p class="mt-3 text-lg font-semibold">
+              On ne caresse pas le web. On le <span class="bg-yellow-300 border-2 border-black px-1">frappe</span>.
+              On ne cherche pas la perfection. On cherche la <span class="bg-lime-300 border-2 border-black px-1">présence</span>.
+              On ne cache pas les bordures. On en fait des <span class="bg-pink-300 border-2 border-black px-1">monuments</span>.
+            </p>
+          </div>
+
+          <div class="reveal transition-all duration-700 delay-100 border-4 border-black bg-black text-yellow-300 shadow-brutalSm p-4 w-full sm:w-auto">
+            <p class="font-mono text-xs">RÈGLES DU JEU</p>
+            <ul class="mt-2 space-y-1 font-bold">
+              <li>• contraste MAX</li>
+              <li>• layout nerveux</li>
+              <li>• animations utiles</li>
+              <li>• accessibilité respectée</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <article class="reveal transition-all duration-700 border-4 border-black bg-yellow-300 shadow-brutalSm p-5">
+            <h3 class="font-black text-2xl">BOLD</h3>
+            <p class="mt-2 font-semibold">Des couleurs qui mordent, pas qui décorent.</p>
+          </article>
+          <article class="reveal transition-all duration-700 delay-75 border-4 border-black bg-lime-300 shadow-brutalSm p-5">
+            <h3 class="font-black text-2xl">LOUD</h3>
+            <p class="mt-2 font-semibold">Typo massive, rythme agressif, hiérarchie claire.</p>
+          </article>
+          <article class="reveal transition-all duration-700 delay-150 border-4 border-black bg-cyan-300 shadow-brutalSm p-5">
+            <h3 class="font-black text-2xl">FAST</h3>
+            <p class="mt-2 font-semibold">Animations fluides, respect de <span class="font-mono">prefers-reduced-motion</span>.</p>
+          </article>
+          <article class="reveal transition-all duration-700 delay-200 border-4 border-black bg-pink-300 shadow-brutalSm p-5">
+            <h3 class="font-black text-2xl">HARD</h3>
+            <p class="mt-2 font-semibold">Ombres qui claquent. Bordures = structure.</p>
+          </article>
+        </div>
+
+        <div class="mt-10 border-4 border-black bg-white shadow-brutal p-6 reveal transition-all duration-700">
+          <div class="flex flex-col lg:flex-row gap-6 items-start">
+            <div class="flex-1">
+              <p class="font-mono text-xs">/SERMON/</p>
+              <p class="mt-2 text-2xl sm:text-3xl font-black">
+                « Le minimalisme a eu son règne.
+                Maintenant, place au <span class="bg-black text-yellow-300 px-2">maximalisme contrôlé</span>. »
+              </p>
+              <p class="mt-4 font-semibold">
+                Chaque bloc raconte sa propre histoire. Le scroll révèle les chapitres.
+              </p>
+            </div>
+            <div class="w-full lg:w-[360px]">
+              <div class="border-4 border-black bg-black text-yellow-300 p-4 shadow-brutalSm">
+                <p class="font-mono text-xs">SLIDER D’INTENSITÉ</p>
+                <label class="mt-3 block font-bold" for="intensity">Brutalité</label>
+                <input id="intensity" type="range" min="0" max="100" value="64" class="w-full accent-yellow-300" />
+                <p id="intensityLabel" class="mt-2 font-mono text-xs">64 / 100</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section id="modules" class="border-b-4 border-black bg-yellow-300">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+        <div class="reveal transition-all duration-700 flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <h2 class="text-4xl sm:text-5xl font-black">MODULES</h2>
+            <p class="mt-2 font-semibold text-lg">Des composants comme des affiches sérigraphiées.</p>
+          </div>
+          <a href="#lab" class="ink border-4 border-black bg-white px-5 py-3 shadow-brutal font-black hover:-translate-y-1 hover:translate-x-1 transition-transform">
+            Activer le lab →
+          </a>
+        </div>
+
+        <div class="mt-10 grid lg:grid-cols-12 gap-4">
+          <!-- Big card -->
+          <div class="reveal transition-all duration-700 lg:col-span-7 border-4 border-black bg-white shadow-brutal p-6 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full border-4 border-black bg-pink-300 shadow-brutalSm animate-floaty"></div>
+            <div class="absolute -left-10 -bottom-10 h-44 w-44 border-4 border-black bg-cyan-300 shadow-brutalSm rotate-12"></div>
+
+            <p class="font-mono text-xs">/FEATURE/</p>
+            <h3 class="mt-2 text-3xl sm:text-4xl font-black leading-tight">Cartes qui claquent + micro-interactions</h3>
+            <p class="mt-3 font-semibold max-w-xl">
+              Hover = translation sèche. Click = impulse. Scroll = reveal.
+              Une page vivante, mais lisible.
+            </p>
+
+            <div class="mt-6 grid sm:grid-cols-2 gap-4">
+              <button class="ink group border-4 border-black bg-lime-300 shadow-brutalSm p-4 text-left hover:-translate-y-1 hover:translate-x-1 transition-transform">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-2xl">PING</span>
+                  <span class="font-mono text-xs border-2 border-black bg-white px-2 py-0.5">CLICK</span>
+                </div>
+                <p class="mt-2 font-semibold">Déclenche un toast brutal.</p>
+                <p class="mt-2 font-mono text-xs">→ essaie</p>
+              </button>
+              <button class="ink group border-4 border-black bg-orange-300 shadow-brutalSm p-4 text-left hover:-translate-y-1 hover:translate-x-1 transition-transform">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-2xl">GLITCH</span>
+                  <span class="font-mono text-xs border-2 border-black bg-white px-2 py-0.5">HOLD</span>
+                </div>
+                <p class="mt-2 font-semibold">Maintiens pour le tremblement.</p>
+                <p class="mt-2 font-mono text-xs">→ maintiens</p>
+              </button>
+            </div>
+
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <span class="inline-flex items-center gap-2 border-4 border-black bg-black text-yellow-300 px-3 py-2 shadow-brutalSm font-black">
+                <span class="h-3 w-3 bg-yellow-300 border-2 border-black"></span>
+                ACCESSIBLE
+              </span>
+              <span class="inline-flex items-center gap-2 border-4 border-black bg-white px-3 py-2 shadow-brutalSm font-black">
+                <span class="h-3 w-3 bg-lime-500 border-2 border-black"></span>
+                RESPONSIVE
+              </span>
+              <span class="inline-flex items-center gap-2 border-4 border-black bg-white px-3 py-2 shadow-brutalSm font-black">
+                <span class="h-3 w-3 bg-pink-500 border-2 border-black"></span>
+                TAILWIND
+              </span>
+            </div>
+          </div>
+
+          <!-- Stack cards -->
+          <div class="lg:col-span-5 grid gap-4">
+            <div class="reveal transition-all duration-700 delay-75 border-4 border-black bg-black text-yellow-300 shadow-brutal p-6">
+              <p class="font-mono text-xs">/PATTERN/</p>
+              <h3 class="mt-2 text-3xl font-black">Grille</h3>
+              <p class="mt-2 font-semibold">12 colonnes, chaos contrôlé, lisibilité intacte.</p>
+            </div>
+            <div class="reveal transition-all duration-700 delay-150 border-4 border-black bg-white shadow-brutal p-6">
+              <p class="font-mono text-xs">/PATTERN/</p>
+              <h3 class="mt-2 text-3xl font-black">Ruptures</h3>
+              <p class="mt-2 font-semibold">Angles, rotations, surimpressions… mais avec intention.</p>
+            </div>
+            <div class="reveal transition-all duration-700 delay-200 border-4 border-black bg-cyan-300 shadow-brutal p-6">
+              <p class="font-mono text-xs">/PATTERN/</p>
+              <h3 class="mt-2 text-3xl font-black">Brut</h3>
+              <p class="mt-2 font-semibold">On montre les coutures. On assume le squelette.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- chaos ticker -->
+        <div class="mt-10 reveal transition-all duration-700 border-4 border-black bg-white shadow-brutal overflow-hidden">
+          <div class="flex w-[200%] animate-marquee">
+            <div class="w-1/2 flex items-center gap-6 py-3 px-4">
+              <span class="font-black">⚡</span>
+              <span class="font-mono">NEO</span>
+              <span class="font-black">BRUTAL</span>
+              <span class="font-mono">SYSTEM</span>
+              <span class="font-black">⚡</span>
+              <span class="font-mono">SCROLL</span>
+              <span class="font-black">REVEAL</span>
+              <span class="font-mono">INTERACT</span>
+            </div>
+            <div class="w-1/2 flex items-center gap-6 py-3 px-4" aria-hidden="true">
+              <span class="font-black">⚡</span>
+              <span class="font-mono">NEO</span>
+              <span class="font-black">BRUTAL</span>
+              <span class="font-mono">SYSTEM</span>
+              <span class="font-black">⚡</span>
+              <span class="font-mono">SCROLL</span>
+              <span class="font-black">REVEAL</span>
+              <span class="font-mono">INTERACT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section id="lab" class="border-b-4 border-black bg-white">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+        <div class="reveal transition-all duration-700 flex items-center justify-between gap-6 flex-wrap">
+          <div>
+            <h2 class="text-4xl sm:text-5xl font-black">LAB</h2>
+            <p class="mt-2 font-semibold text-lg">Joue avec la page. Fais-la grincer.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="themeBtn" class="ink border-4 border-black bg-yellow-300 px-4 py-2 shadow-brutalSm font-black">Changer palette</button>
+            <button id="gravityBtn" class="ink border-4 border-black bg-white px-4 py-2 shadow-brutalSm font-black hover:bg-black hover:text-yellow-300 transition-colors">Gravité: ON</button>
+          </div>
+        </div>
+
+        <div class="mt-10 grid lg:grid-cols-3 gap-4 items-start">
+          <div class="reveal transition-all duration-700 border-4 border-black bg-pink-300 shadow-brutal p-6">
+            <p class="font-mono text-xs">/TOOL/</p>
+            <h3 class="mt-2 text-3xl font-black">Aimant</h3>
+            <p class="mt-2 font-semibold">Les cartes se déplacent légèrement vers ton curseur.</p>
+            <p class="mt-3 font-mono text-xs">(désactivable via Gravité)</p>
+          </div>
+
+          <div class="reveal transition-all duration-700 delay-100 border-4 border-black bg-cyan-300 shadow-brutal p-6">
+            <p class="font-mono text-xs">/TOOL/</p>
+            <h3 class="mt-2 text-3xl font-black">Toast</h3>
+            <p class="mt-2 font-semibold">Un message brutal surgit, puis disparaît.</p>
+            <div class="mt-4 flex gap-2">
+              <button id="toastBtn" class="ink border-4 border-black bg-white px-4 py-2 shadow-brutalSm font-black hover:-translate-y-1 hover:translate-x-1 transition-transform">TOAST</button>
+              <button id="confettiBtn" class="ink border-4 border-black bg-black text-yellow-300 px-4 py-2 shadow-brutalSm font-black hover:bg-yellow-300 hover:text-black transition-colors">BRUIT</button>
+            </div>
+          </div>
+
+          <div class="reveal transition-all duration-700 delay-200 border-4 border-black bg-lime-300 shadow-brutal p-6">
+            <p class="font-mono text-xs">/TOOL/</p>
+            <h3 class="mt-2 text-3xl font-black">Rituel</h3>
+            <p class="mt-2 font-semibold">Le scroll déclenche des séquences chorégraphiées.</p>
+            <div class="mt-4 border-4 border-black bg-white p-3 shadow-brutalSm">
+              <p class="font-mono text-xs">ÉTAPE</p>
+              <ol class="mt-2 font-bold space-y-1">
+                <li>1) descend</li>
+                <li>2) regarde</li>
+                <li>3) clique</li>
+                <li>4) recommence</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 grid md:grid-cols-2 gap-4">
+          <div class="reveal transition-all duration-700 border-4 border-black bg-black text-yellow-300 shadow-brutal p-6">
+            <p class="font-mono text-xs">/CONSOLE/</p>
+            <div class="mt-3 flex items-center justify-between gap-2">
+              <p class="font-black text-2xl">Sortie</p>
+              <button id="clearLog" class="ink border-4 border-black bg-yellow-300 text-black px-3 py-1.5 shadow-brutalSm font-black">Clear</button>
+            </div>
+            <div id="log" class="mt-4 h-44 overflow-auto border-4 border-yellow-300 bg-black p-3 font-mono text-xs leading-relaxed"></div>
+          </div>
+
+          <div class="reveal transition-all duration-700 delay-100 border-4 border-black bg-white shadow-brutal p-6">
+            <p class="font-mono text-xs">/FORM/</p>
+            <h3 class="mt-2 text-3xl font-black">Déclencheur</h3>
+            <p class="mt-2 font-semibold">Un mini formulaire. Zéro backend. 100% attitude.</p>
+            <form id="miniForm" class="mt-4 space-y-3">
+              <label class="block font-bold" for="alias">Ton alias</label>
+              <input id="alias" required placeholder="ex: CYAN\u2011WOLF" class="w-full border-4 border-black px-3 py-2 shadow-brutalSm font-bold placeholder:text-black/40" />
+
+              <label class="block font-bold" for="message">Message</label>
+              <textarea id="message" required rows="3" placeholder="ex: JE VEUX PLUS DE BORDURES." class="w-full border-4 border-black px-3 py-2 shadow-brutalSm font-bold placeholder:text-black/40"></textarea>
+
+              <button class="ink w-full border-4 border-black bg-pink-300 px-4 py-3 shadow-brutal font-black hover:-translate-y-1 hover:translate-x-1 transition-transform">
+                Envoyer dans le chaos
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT / FOOTER -->
+    <section id="contact" class="bg-yellow-300">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+        <div class="reveal transition-all duration-700 border-4 border-black bg-white shadow-brutal p-6 sm:p-8">
+          <div class="flex flex-col lg:flex-row gap-8 items-start">
+            <div class="flex-1">
+              <h2 class="text-4xl sm:text-5xl font-black">CONTACT</h2>
+              <p class="mt-3 font-semibold text-lg">
+                Si tu veux pousser encore plus loin: ajoute des sections, du contenu réel, ou branche une vraie data.
+                Cette page est une base ultra stylée — prête à être détournée.
+              </p>
+              <div class="mt-6 flex flex-wrap gap-3">
+                <a href="#top" class="ink border-4 border-black bg-black text-yellow-300 px-5 py-3 shadow-brutal font-black hover:bg-yellow-300 hover:text-black transition-colors">Retour en haut ↑</a>
+                <a href="#manifesto" class="ink border-4 border-black bg-lime-300 px-5 py-3 shadow-brutal font-black">Relire le manifeste</a>
+              </div>
+            </div>
+            <div class="w-full lg:w-[380px]">
+              <div class="border-4 border-black bg-black text-yellow-300 p-5 shadow-brutalSm">
+                <p class="font-mono text-xs">/META/</p>
+                <p class="mt-2 font-black text-2xl">NÉO·BRUTAL</p>
+                <p class="mt-2 font-semibold">Tailwind + animations scroll + responsive + interactions.</p>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                  <div class="border-4 border-yellow-300 bg-black p-3">
+                    <p class="font-mono text-[11px]">MOTION</p>
+                    <p class="font-black">INERTIE</p>
+                  </div>
+                  <div class="border-4 border-yellow-300 bg-black p-3">
+                    <p class="font-mono text-[11px]">STYLE</p>
+                    <p class="font-black">BRUT</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 border-t-4 border-black pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p class="font-mono text-xs">© <span id="year"></span> — construit pour casser la routine.</p>
+            <p class="font-mono text-xs">Astuce: active/désactive <span class="font-black">PANIC</span> pour voir.</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="border-t-4 border-black bg-black text-yellow-300">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <p class="font-mono text-xs">/END/</p>
+          <p class="font-mono text-xs">Built with obsession • No libraries • Max vibes</p>
+        </div>
+      </footer>
+    </section>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] hidden">
+      <div class="border-4 border-black bg-white shadow-brutal px-4 py-3 font-black">
+        <span class="bg-black text-yellow-300 px-2 py-1">TOAST</span>
+        <span id="toastText" class="ml-2">Bonjour le chaos.</span>
+      </div>
+    </div>
+
+    <!-- Confetti canvas (brutal noise) -->
+    <canvas id="fx" class="pointer-events-none fixed inset-0 z-[55] hidden"></canvas>
+  </main>
+
+  <script>
+    // =====================
+    // UTIL
+    // =====================
+    const $ = (q, el=document) => el.querySelector(q);
+    const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
+
+    const logEl = $('#log');
+    const log = (msg) => {
+      const now = new Date();
+      const t = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      const line = document.createElement('div');
+      line.textContent = `[${t}] ${msg}`;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    // =====================
+    // Mobile menu
+    // =====================
+    const menuBtn = $('#menuBtn');
+    const mobileMenu = $('#mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const open = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!open));
+    });
+
+    // Close menu on click
+    $$('#mobileMenu a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+    // =====================
+    // Smooth scroll upgrade (keeps native, adds offset feel)
+    // =====================
+    const header = document.querySelector('header');
+    const headerOffset = () => (header?.getBoundingClientRect().height ?? 0) + 6;
+
+    $$('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - headerOffset();
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+
+    // =====================
+    // Reveal on scroll (IntersectionObserver)
+    // =====================
+    const revealEls = $$('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('is-in');
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+    revealEls.forEach(el => io.observe(el));
+
+    // =====================
+    // Brutality intensity slider affects motion amount
+    // =====================
+    const intensity = $('#intensity');
+    const intensityLabel = $('#intensityLabel');
+    let intensityVal = Number(intensity?.value ?? 64);
+
+    const setIntensity = (v) => {
+      intensityVal = Math.max(0, Math.min(100, v));
+      if (intensityLabel) intensityLabel.textContent = `${intensityVal} / 100`;
+      document.documentElement.style.setProperty('--brutal', String(intensityVal / 100));
+      log(`Brutalité = ${intensityVal}`);
+    };
+    setIntensity(intensityVal);
+    intensity?.addEventListener('input', (e) => setIntensity(Number(e.target.value)));
+
+    // =====================
+    // Shake / Panic
+    // =====================
+    const shakeBtn = $('#shakeBtn');
+    const panicBtn = $('#panicBtn');
+    let panic = false;
+
+    shakeBtn?.addEventListener('click', () => {
+      document.body.classList.add('animate-jitter');
+      log('Secousse déclenchée.');
+      setTimeout(() => document.body.classList.remove('animate-jitter'), 950);
+    });
+
+    panicBtn?.addEventListener('click', () => {
+      panic = !panic;
+      document.body.classList.toggle('animate-jitter', panic);
+      document.body.classList.toggle('invert', panic);
+      document.body.classList.toggle('hue-rotate-90', panic);
+      document.body.classList.toggle('saturate-200', panic);
+      panicBtn.textContent = panic ? 'Mode CALME' : 'Mode PANIC';
+      log(panic ? 'PANIC: ON (inversion + jitter)' : 'PANIC: OFF');
+    });
+
+    // =====================
+    // Feature buttons (Ping/Glitch)
+    // =====================
+    const toast = $('#toast');
+    const toastText = $('#toastText');
+    let toastTimer;
+
+    function showToast(text) {
+      toastText.textContent = text;
+      toast.classList.remove('hidden');
+      toast.classList.add('animate-jitter');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('animate-jitter');
+      }, 1600);
+    }
+
+    // Assign first two big feature buttons
+    const featureBtns = $$('#modules button.ink');
+    featureBtns[0]?.addEventListener('click', () => {
+      showToast('PING: la page répond.');
+      log('PING: toast');
+    });
+
+    // hold for glitch
+    let holdTimer;
+    const glitchBtn = featureBtns[1];
+    glitchBtn?.addEventListener('pointerdown', () => {
+      holdTimer = setTimeout(() => {
+        document.body.classList.add('animate-jitter');
+        document.body.classList.add('skew-y-1');
+        log('GLITCH: hold activé');
+      }, 220);
+    });
+    const stopHold = () => {
+      clearTimeout(holdTimer);
+      document.body.classList.remove('animate-jitter');
+      document.body.classList.remove('skew-y-1');
+    };
+    glitchBtn?.addEventListener('pointerup', stopHold);
+    glitchBtn?.addEventListener('pointerleave', stopHold);
+
+    // =====================
+    // Lab: palette switch
+    // =====================
+    const themeBtn = $('#themeBtn');
+    const themes = [
+      { bg: 'bg-yellow-300', accent: 'bg-pink-300', note: 'Palette: soleil + bubblegum' },
+      { bg: 'bg-lime-300', accent: 'bg-cyan-300', note: 'Palette: slime + piscine' },
+      { bg: 'bg-orange-300', accent: 'bg-purple-300', note: 'Palette: braise + ultraviolet' },
+    ];
+    let themeIdx = 0;
+
+    themeBtn?.addEventListener('click', () => {
+      themeIdx = (themeIdx + 1) % themes.length;
+      const t = themes[themeIdx];
+
+      // Change sections backgrounds roughly
+      const modules = $('#modules');
+      const contact = $('#contact');
+      modules.classList.remove('bg-yellow-300', 'bg-lime-300', 'bg-orange-300');
+      contact.classList.remove('bg-yellow-300', 'bg-lime-300', 'bg-orange-300');
+      modules.classList.add(t.bg);
+      contact.classList.add(t.bg);
+
+      // Update a couple of cards for punch
+      $$('#modules .bg-pink-300').forEach(el => { el.classList.remove('bg-pink-300'); el.classList.add(t.accent); });
+
+      showToast(t.note);
+      log(t.note);
+    });
+
+    // =====================
+    // Lab: gravity / magnet hover
+    // =====================
+    const gravityBtn = $('#gravityBtn');
+    let gravityOn = true;
+
+    gravityBtn?.addEventListener('click', () => {
+      gravityOn = !gravityOn;
+      gravityBtn.textContent = gravityOn ? 'Gravité: ON' : 'Gravité: OFF';
+      showToast(gravityOn ? 'Gravité activée.' : 'Gravité coupée.');
+      log(gravityOn ? 'Gravité ON' : 'Gravité OFF');
+    });
+
+    const magnetTargets = $$('button.ink, a.ink, .shadow-brutal, .shadow-brutalSm, .shadow-brutalLg');
+    const magnetStrength = () => 10 + (intensityVal / 10); // 10..20
+
+    function magnetMove(e) {
+      if (!gravityOn) return;
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const s = magnetStrength() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--brutal')) || 0.64);
+      const tx = (x / rect.width) * s;
+      const ty = (y / rect.height) * s;
+      el.style.transform = `translate(${tx}px, ${ty}px)`;
+    }
+
+    function magnetLeave(e) {
+      const el = e.currentTarget;
+      el.style.transform = '';
+    }
+
+    magnetTargets.forEach(el => {
+      el.addEventListener('pointermove', magnetMove);
+      el.addEventListener('pointerleave', magnetLeave);
+    });
+
+    // =====================
+    // Toast & confetti noise
+    // =====================
+    const toastBtn = $('#toastBtn');
+    const confettiBtn = $('#confettiBtn');
+    const fx = $('#fx');
+    const ctx = fx.getContext('2d');
+    let fxOn = false;
+    let particles = [];
+
+    function resizeFx() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      fx.width = Math.floor(window.innerWidth * dpr);
+      fx.height = Math.floor(window.innerHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resizeFx);
+    resizeFx();
+
+    function spawn(n=120) {
+      particles = [];
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x: Math.random() * window.innerWidth,
+          y: -20 - Math.random() * 200,
+          vx: (Math.random() - 0.5) * 6,
+          vy: 2 + Math.random() * 6,
+          s: 3 + Math.random() * 10,
+          r: Math.random() * Math.PI,
+          vr: (Math.random() - 0.5) * 0.2,
+          life: 70 + Math.random() * 80,
+          kind: Math.random() < 0.5 ? 'rect' : 'tri'
+        });
+      }
+    }
+
+    function drawParticle(p) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#000';
+      ctx.fillStyle = (p.life % 3 === 0) ? '#FDE047' : (p.life % 3 === 1) ? '#22C55E' : '#FB7185';
+      if (p.kind === 'rect') {
+        ctx.beginPath();
+        ctx.rect(-p.s/2, -p.s/2, p.s, p.s);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(0, -p.s/2);
+        ctx.lineTo(p.s/2, p.s/2);
+        ctx.lineTo(-p.s/2, p.s/2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function tickFx() {
+      if (!fxOn) return;
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.r += p.vr;
+        p.vy += 0.06;
+        p.life -= 1;
+        drawParticle(p);
+      });
+      particles = particles.filter(p => p.life > 0 && p.y < window.innerHeight + 80);
+      if (particles.length === 0) {
+        fxOn = false;
+        fx.classList.add('hidden');
+      } else {
+        requestAnimationFrame(tickFx);
+      }
+    }
+
+    toastBtn?.addEventListener('click', () => {
+      showToast('TOAST: brutal mais poli.');
+      log('TOAST: déclenché');
+    });
+
+    confettiBtn?.addEventListener('click', () => {
+      fxOn = true;
+      fx.classList.remove('hidden');
+      spawn(150);
+      log('BRUIT: particules');
+      requestAnimationFrame(tickFx);
+    });
+
+    // =====================
+    // Mini form
+    // =====================
+    const miniForm = $('#miniForm');
+    miniForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const alias = $('#alias').value.trim();
+      const message = $('#message').value.trim();
+      showToast(`OK ${alias || 'ANONYME'}: reçu.`);
+      log(`FORM: ${alias || 'ANONYME'} → ${message.slice(0, 80)}${message.length > 80 ? '…' : ''}`);
+      miniForm.reset();
+    });
+
+    // =====================
+    // Clear log
+    // =====================
+    $('#clearLog')?.addEventListener('click', () => {
+      logEl.textContent = '';
+      log('Console vidée.');
+    });
+
+    // =====================
+    // Year
+    // =====================
+    $('#year').textContent = new Date().getFullYear();
+
+    // Initial log
+    log('Système initialisé.');
+    log('Astuce: clique PING / maintiens GLITCH.');
+  </script>
+</body>
+</html>

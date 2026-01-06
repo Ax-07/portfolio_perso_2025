@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atelier Coupe — Salon de coiffure</title>
+
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      html { scroll-behavior: smooth; }
+      /* micro-texture + glow très subtil */
+      .grain {
+        background-image:
+          radial-gradient(circle at 20% 10%, rgba(255,255,255,.06), transparent 35%),
+          radial-gradient(circle at 80% 20%, rgba(255,255,255,.05), transparent 40%),
+          radial-gradient(circle at 40% 85%, rgba(255,255,255,.04), transparent 45%),
+          linear-gradient(180deg, rgba(255,255,255,.04), transparent 45%);
+      }
+      /* reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1);
+        will-change: opacity, transform;
+      }
+      .reveal.is-in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* parallax légère (JS ajuste) */
+      .parallax {
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+      }
+      /* focus ring sobre */
+      .focus-ring:focus-visible {
+        outline: 2px solid rgba(255,255,255,.35);
+        outline-offset: 3px;
+      }
+    </style>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['ui-sans-serif', 'system-ui', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial'],
+            },
+            colors: {
+              ink: '#0B0D10',
+              ash: '#12151A',
+              stone: '#1A1F26',
+              mist: '#B9C0CA'
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+
+  <body class="bg-ink text-white font-display antialiased selection:bg-white/20 selection:text-white">
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 grain">
+      <div class="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/30"></div>
+      <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/6 blur-3xl"></div>
+      <div class="absolute -bottom-40 left-1/3 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/5 blur-3xl"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/25 bg-black/15 border-b border-white/10">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="flex h-16 items-center justify-between">
+          <a href="#top" class="flex items-center gap-3 focus-ring rounded-lg">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+              <!-- icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-90">
+                <path d="M6 3l12 6-12 6V3z" stroke="white" stroke-width="1.6" opacity=".85"/>
+                <path d="M7 21h10" stroke="white" stroke-width="1.6" opacity=".85"/>
+              </svg>
+            </span>
+            <div class="leading-tight">
+              <div class="text-sm tracking-wide text-white/90">Atelier Coupe</div>
+              <div class="text-[11px] text-mist/80">Salon • Couleur • Soin</div>
+            </div>
+          </a>
+
+          <nav class="hidden md:flex items-center gap-7 text-sm text-white/75">
+            <a class="hover:text-white transition focus-ring rounded-md px-2 py-1" href="#services">Services</a>
+            <a class="hover:text-white transition focus-ring rounded-md px-2 py-1" href="#galerie">Galerie</a>
+            <a class="hover:text-white transition focus-ring rounded-md px-2 py-1" href="#equipe">Équipe</a>
+            <a class="hover:text-white transition focus-ring rounded-md px-2 py-1" href="#avis">Avis</a>
+            <a class="hover:text-white transition focus-ring rounded-md px-2 py-1" href="#contact">Contact</a>
+          </nav>
+
+          <div class="flex items-center gap-2">
+            <a href="#rdv"
+              class="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm font-medium hover:bg-white/90 transition focus-ring">
+              Prendre RDV
+              <span class="opacity-70">→</span>
+            </a>
+
+            <!-- Mobile menu -->
+            <button id="menuBtn" class="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 h-10 w-10 hover:bg-white/15 transition focus-ring" aria-label="Ouvrir le menu">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 7h14M5 12h14M5 17h14" stroke="white" stroke-width="1.6" opacity=".9"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- mobile panel -->
+        <div id="mobilePanel" class="md:hidden hidden pb-4">
+          <div class="rounded-2xl border border-white/10 bg-black/30 p-3">
+            <div class="grid gap-2 text-sm text-white/80">
+              <a class="rounded-xl px-3 py-2 hover:bg-white/10 transition focus-ring" href="#services">Services</a>
+              <a class="rounded-xl px-3 py-2 hover:bg-white/10 transition focus-ring" href="#galerie">Galerie</a>
+              <a class="rounded-xl px-3 py-2 hover:bg-white/10 transition focus-ring" href="#equipe">Équipe</a>
+              <a class="rounded-xl px-3 py-2 hover:bg-white/10 transition focus-ring" href="#avis">Avis</a>
+              <a class="rounded-xl px-3 py-2 hover:bg-white/10 transition focus-ring" href="#contact">Contact</a>
+              <a class="mt-2 inline-flex items-center justify-center rounded-xl bg-white text-black px-4 py-2 font-medium hover:bg-white/90 transition focus-ring" href="#rdv">
+                Prendre RDV →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <main id="top">
+      <section class="relative">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 sm:py-20">
+          <div class="grid lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-6">
+              <div class="reveal inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/75">
+                <span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>
+                Ouvert du mardi au samedi • 09:00–19:00
+              </div>
+
+              <h1 class="reveal mt-5 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
+                La coupe qui tombe <span class="text-white/70">juste</span>.
+              </h1>
+
+              <p class="reveal mt-4 text-base sm:text-lg text-mist/90 max-w-xl">
+                Un salon intimiste où chaque détail compte : diagnostic, gestuelle précise, finitions propres.
+                Couleurs sobres, ambiance calme, résultat net.
+              </p>
+
+              <div class="reveal mt-7 flex flex-col sm:flex-row gap-3">
+                <a href="#rdv"
+                  class="inline-flex items-center justify-center rounded-2xl bg-white text-black px-5 py-3 text-sm font-semibold hover:bg-white/90 transition focus-ring">
+                  Réserver un créneau
+                  <span class="ml-2 opacity-70">→</span>
+                </a>
+                <a href="#services"
+                  class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 transition focus-ring">
+                  Voir les services
+                </a>
+              </div>
+
+              <div class="reveal mt-9 grid grid-cols-3 gap-3 max-w-lg">
+                <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                  <div class="text-2xl font-semibold">4.9</div>
+                  <div class="text-xs text-white/70 mt-1">Note moyenne</div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                  <div class="text-2xl font-semibold">35 min</div>
+                  <div class="text-xs text-white/70 mt-1">Coupe express</div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                  <div class="text-2xl font-semibold">100%</div>
+                  <div class="text-xs text-white/70 mt-1">Sur-mesure</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero visual -->
+            <div class="lg:col-span-6">
+              <div class="reveal relative">
+                <div class="absolute -inset-3 rounded-[28px] bg-white/5 blur-xl"></div>
+                <div class="relative overflow-hidden rounded-[28px] border border-white/10 bg-black/25">
+                  <!-- Unsplash image (remplaçable) -->
+                  <img
+                    class="parallax w-full h-[420px] sm:h-[520px] object-cover opacity-90"
+                    data-parallax="0.25"
+                    alt="Salon de coiffure minimal et élégant"
+                    src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1400&q=80"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"></div>
+
+                  <div class="absolute bottom-4 left-4 right-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div class="rounded-2xl border border-white/10 bg-black/35 backdrop-blur px-4 py-3">
+                        <div class="text-sm font-semibold">Diagnostic + Coupe + Coiffage</div>
+                        <div class="text-xs text-white/70 mt-1">Un rituel simple, précis, efficace.</div>
+                      </div>
+                      <a href="#contact"
+                        class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold hover:bg-white/15 transition focus-ring">
+                        Nous trouver
+                        <span class="ml-2 opacity-70">↘</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Floating chips -->
+                <div class="reveal absolute -top-4 -right-2 sm:-right-6 rounded-2xl border border-white/10 bg-black/35 backdrop-blur px-4 py-3">
+                  <div class="text-xs text-white/70">Spécialité</div>
+                  <div class="text-sm font-semibold">Balayage naturel</div>
+                </div>
+
+                <div class="reveal absolute -bottom-5 -left-2 sm:-left-6 rounded-2xl border border-white/10 bg-black/35 backdrop-blur px-4 py-3">
+                  <div class="text-xs text-white/70">Ambiance</div>
+                  <div class="text-sm font-semibold">Calme & minimal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Separator -->
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+        </div>
+      </section>
+
+      <!-- Services -->
+      <section id="services" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal flex items-end justify-between gap-6">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Services</h2>
+              <p class="mt-2 text-mist/90 max-w-2xl">
+                Une carte courte : moins d’options, plus de maîtrise. Chaque prestation commence par un diagnostic.
+              </p>
+            </div>
+            <a href="#rdv" class="hidden sm:inline-flex text-sm text-white/80 hover:text-white transition focus-ring rounded-md px-2 py-1">
+              Tarifs & réservation →
+            </a>
+          </div>
+
+          <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- card -->
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Coupe Signature</div>
+                <div class="text-xs text-white/70">à partir de 39€</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Coupe structurée, finition propre, coiffage adapté à tes habitudes.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Diagnostic</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Coiffage</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Conseils</span>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Couleur & Patine</div>
+                <div class="text-xs text-white/70">à partir de 65€</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Nuances sobres, brillance contrôlée, résultat naturel.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Test mèche</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Patine</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Soin</span>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Balayage Fin</div>
+                <div class="text-xs text-white/70">à partir de 110€</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Éclaircissement progressif, contrastes doux, repousse harmonieuse.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Placement</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Fondu</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Gloss</span>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Rituel Soin</div>
+                <div class="text-xs text-white/70">à partir de 25€</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Hydratation, réparation ou brillance : on choisit selon tes cheveux.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Massage</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Vapeur</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Scalp</span>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Barbe & Contours</div>
+                <div class="text-xs text-white/70">à partir de 18€</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Nettoyage, lignes nettes, soin peau — sans effet “trop”.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Contours</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Soin</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Finition</span>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 hover:bg-white/5 transition">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold">Coiffage Événement</div>
+                <div class="text-xs text-white/70">sur devis</div>
+              </div>
+              <p class="mt-3 text-sm text-white/75">
+                Attaches sobres, volume maîtrisé, tenue longue durée.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
+                <span class="rounded-full border borderwhite/10 bg-white/5 px-3 py-1">Essai</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Fixation</span>
+                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Timing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gallery -->
+      <section id="galerie" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal flex items-end justify-between gap-6">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Galerie</h2>
+              <p class="mt-2 text-mist/90 max-w-2xl">Avant / après, textures, lumière : du réel, sans filtre agressif.</p>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-xs text-white/70">
+              <span class="inline-flex h-2 w-2 rounded-full bg-white/50"></span>
+              Scroll pour découvrir
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-4 lg:grid-cols-12">
+            <figure class="reveal lg:col-span-7 overflow-hidden rounded-3xl border border-white/10 bg-black/25">
+              <img
+                class="parallax h-[360px] sm:h-[420px] w-full object-cover opacity-90"
+                data-parallax="0.18"
+                alt="Coupe et coiffage naturel"
+                src="https://images.unsplash.com/photo-1520975958225-35b97e2d161b?auto=format&fit=crop&w=1400&q=80"
+                loading="lazy"
+              />
+              <figcaption class="p-4 text-xs text-white/70">Coupe signature — lignes nettes, tombé naturel.</figcaption>
+            </figure>
+
+            <figure class="reveal lg:col-span-5 overflow-hidden rounded-3xl border border-white/10 bg-black/25">
+              <img
+                class="parallax h-[360px] sm:h-[420px] w-full object-cover opacity-90"
+                data-parallax="0.22"
+                alt="Balayage fin"
+                src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1400&q=80"
+                loading="lazy"
+              />
+              <figcaption class="p-4 text-xs text-white/70">Balayage fin — contraste doux, repousse harmonieuse.</figcaption>
+            </figure>
+
+            <figure class="reveal lg:col-span-4 overflow-hidden rounded-3xl border border-white/10 bg-black/25">
+              <img
+                class="parallax h-[300px] w-full object-cover opacity-90"
+                data-parallax="0.14"
+                alt="Rituel soin"
+                src="https://images.unsplash.com/photo-1527799820374-dcf8d9d4a0c0?auto=format&fit=crop&w=1400&q=80"
+                loading="lazy"
+              />
+              <figcaption class="p-4 text-xs text-white/70">Rituel soin — cuir chevelu apaisé, brillance contrôlée.</figcaption>
+            </figure>
+
+            <figure class="reveal lg:col-span-8 overflow-hidden rounded-3xl border border-white/10 bg-black/25">
+              <img
+                class="parallax h-[300px] w-full object-cover opacity-90"
+                data-parallax="0.16"
+                alt="Espace salon minimaliste"
+                src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1400&q=80"
+                loading="lazy"
+              />
+              <figcaption class="p-4 text-xs text-white/70">Un espace sobre, lumière douce, concentration sur le geste.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team -->
+      <section id="equipe" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Équipe</h2>
+            <p class="mt-2 text-mist/90 max-w-2xl">Deux coiffeurs, un même standard : précision, douceur, écoute.</p>
+          </div>
+
+          <div class="mt-8 grid md:grid-cols-2 gap-4">
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 flex gap-5">
+              <img class="h-16 w-16 rounded-2xl object-cover border border-white/10"
+                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=300&q=80" alt="Portrait coiffeuse" loading="lazy">
+              <div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold">Lina</div>
+                  <div class="text-xs text-white/70">Coupe • Brushing</div>
+                </div>
+                <p class="mt-2 text-sm text-white/75">
+                  Spécialiste des coupes structurées et des finitions propres. Style minimal, résultat durable.
+                </p>
+              </div>
+            </div>
+
+            <div class="reveal rounded-3xl border border-white/10 bg-black/25 p-6 flex gap-5">
+              <img class="h-16 w-16 rounded-2xl object-cover border border-white/10"
+                src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?auto=format&fit=crop&w=300&q=80" alt="Portrait coiffeur" loading="lazy">
+              <div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold">Noé</div>
+                  <div class="text-xs text-white/70">Couleur • Balayage</div>
+                </div>
+                <p class="mt-2 text-sm text-white/75">
+                  Nuances sobres, fondus doux. Objectif : une couleur qui vieillit bien, sans entretien lourd.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section id="avis" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal flex items-end justify-between gap-6">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Avis</h2>
+              <p class="mt-2 text-mist/90 max-w-2xl">Des retours qui parlent du calme, de l’écoute et du détail.</p>
+            </div>
+            <div class="hidden sm:flex text-xs text-white/70">
+              ★★★★★ 4.9 • 280+ avis
+            </div>
+          </div>
+
+          <div class="mt-8 grid lg:grid-cols-3 gap-4">
+            <blockquote class="reveal rounded-3xl border border-white/10 bg-black/25 p-6">
+              <p class="text-sm text-white/80">“Coupe impeccable, rien à retoucher. Ambiance hyper posée, ça fait du bien.”</p>
+              <footer class="mt-4 text-xs text-white/60">— Camille</footer>
+            </blockquote>
+            <blockquote class="reveal rounded-3xl border border-white/10 bg-black/25 p-6">
+              <p class="text-sm text-white/80">“Balayage très naturel, exactement ce que je voulais. Le diagnostic est top.”</p>
+              <footer class="mt-4 text-xs text-white/60">— Sarah</footer>
+            </blockquote>
+            <blockquote class="reveal rounded-3xl border border-white/10 bg-black/25 p-6">
+              <p class="text-sm text-white/80">“Finitions nettes, conseils simples et utiles. Je reviens.”</p>
+              <footer class="mt-4 text-xs text-white/60">— Mehdi</footer>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      <!-- Booking -->
+      <section id="rdv" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal rounded-[32px] border border-white/10 bg-gradient-to-br from-white/10 via-black/20 to-black/10 p-6 sm:p-10 overflow-hidden relative">
+            <div class="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white/8 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-12 gap-8 items-center">
+              <div class="lg:col-span-7">
+                <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Prendre rendez-vous</h2>
+                <p class="mt-2 text-mist/90 max-w-2xl">
+                  Dis-nous ce que tu veux (coupe, couleur, soin). On te répond rapidement avec le meilleur créneau.
+                </p>
+
+                <div class="mt-6 grid sm:grid-cols-3 gap-3 text-xs text-white/70">
+                  <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <div class="font-semibold text-white/90">Réponse</div>
+                    <div class="mt-1">Sous 2–4h ouvrées</div>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <div class="font-semibold text-white/90">Paiement</div>
+                    <div class="mt-1">CB / espèces</div>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <div class="font-semibold text-white/90">Annulation</div>
+                    <div class="mt-1">J-1 sans frais</div>
+                  </div>
+                </div>
+              </div>
+
+              <form class="lg:col-span-5 rounded-3xl border border-white/10 bg-black/25 p-6">
+                <label class="block text-xs text-white/70">Nom</label>
+                <input class="mt-2 w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="Votre nom" />
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs text-white/70">Téléphone</label>
+                    <input class="mt-2 w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-white/20"
+                      placeholder="06…" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-white/70">Prestation</label>
+                    <select class="mt-2 w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/20">
+                      <option class="bg-ink">Coupe</option>
+                      <option class="bg-ink">Couleur</option>
+                      <option class="bg-ink">Balayage</option>
+                      <option class="bg-ink">Soin</option>
+                      <option class="bg-ink">Barbe</option>
+                    </select>
+                  </div>
+                </div>
+
+                <label class="mt-4 block text-xs text-white/70">Message</label>
+                <textarea rows="3"
+                  class="mt-2 w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="Ex: coupe courte + photo si vous avez"></textarea>
+
+                <button type="button"
+                  class="mt-5 w-full rounded-2xl bg-white text-black px-5 py-3 text-sm font-semibold hover:bg-white/90 transition focus-ring">
+                  Envoyer la demande
+                </button>
+
+                <p class="mt-3 text-[11px] text-white/55">
+                  (Démo) Connecte ce formulaire à ton outil de réservation / email.
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Contact</h2>
+            <p class="mt-2 text-mist/90 max-w-2xl">On est à deux pas du centre. Passe nous voir, ou appelle.</p>
+          </div>
+
+          <div class="mt-8 grid lg:grid-cols-12 gap-4">
+            <div class="reveal lg:col-span-5 rounded-3xl border border-white/10 bg-black/25 p-6">
+              <div class="space-y-4 text-sm text-white/80">
+                <div>
+                  <div class="text-xs text-white/60">Adresse</div>
+                  <div class="mt-1 font-semibold text-white/90">12 Rue des Reflets, 75000 Paris</div>
+                </div>
+                <div>
+                  <div class="text-xs text-white/60">Téléphone</div>
+                  <a class="mt-1 inline-block font-semibold text-white/90 hover:text-white transition focus-ring rounded-md px-1"
+                    href="tel:+33123456789">+33 1 23 45 67 89</a>
+                </div>
+                <div>
+                  <div class="text-xs text-white/60">Email</div>
+                  <a class="mt-1 inline-block font-semibold text-white/90 hover:text-white transition focus-ring rounded-md px-1"
+                    href="mailto:bonjour@ateliercoupe.fr">bonjour@ateliercoupe.fr</a>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs text-white/60">Horaires</div>
+                  <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-white/70">
+                    <div class="rounded-2xl border border-white/10 bg-white/5 p-3">Mar–Ven<br><span class="text-white/90 font-semibold">09:00–19:00</span></div>
+                    <div class="rounded-2xl border border-white/10 bg-white/5 p-3">Samedi<br><span class="text-white/90 font-semibold">09:00–17:00</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex gap-3">
+                <a href="#rdv" class="flex-1 inline-flex items-center justify-center rounded-2xl bg-white text-black px-4 py-3 text-sm font-semibold hover:bg-white/90 transition focus-ring">
+                  Réserver
+                </a>
+                <a href="#top" class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold hover:bg-white/10 transition focus-ring">
+                  Haut ↑
+                </a>
+              </div>
+            </div>
+
+            <div class="reveal lg:col-span-7 overflow-hidden rounded-3xl border border-white/10 bg-black/25 relative">
+              <!-- Map placeholder -->
+              <div class="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-black/20 pointer-events-none"></div>
+              <img
+                class="parallax w-full h-[340px] sm:h-[420px] object-cover opacity-80"
+                data-parallax="0.12"
+                alt="Plan urbain minimal"
+                src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1400&q=80"
+                loading="lazy"
+              />
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="rounded-2xl border border-white/10 bg-black/35 backdrop-blur px-4 py-3 text-sm">
+                  <div class="font-semibold">Accès</div>
+                  <div class="mt-1 text-xs text-white/70">Métro • Bus • Parking à 3 min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-black/20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div>
+            <div class="text-sm font-semibold">Atelier Coupe</div>
+            <div class="mt-1 text-xs text-white/60">© <span id="year"></span> — Tous droits réservés</div>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs text-white/60">
+            <a class="rounded-full border border-white/10 bg-white/5 px-3 py-1 hover:bg-white/10 transition focus-ring" href="#services">Services</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-3 py-1 hover:bg-white/10 transition focus-ring" href="#galerie">Galerie</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-3 py-1 hover:bg-white/10 transition focus-ring" href="#rdv">RDV</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-3 py-1 hover:bg-white/10 transition focus-ring" href="#contact">Contact</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      const menuBtn = document.getElementById('menuBtn');
+      const mobilePanel = document.getElementById('mobilePanel');
+      menuBtn?.addEventListener('click', () => {
+        mobilePanel.classList.toggle('hidden');
+      });
+
+      // Reveal on scroll
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add('is-in');
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+      // Subtle parallax (respect reduced motion)
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function updateParallax() {
+        if (reduceMotion) return;
+        const y = window.scrollY || 0;
+        document.querySelectorAll('[data-parallax]').forEach((el) => {
+          const f = parseFloat(el.getAttribute('data-parallax') || '0.1');
+          el.style.transform = `translate3d(0, ${y * f * -0.08}px, 0)`;
+        });
+      }
+      updateParallax();
+      window.addEventListener('scroll', updateParallax, { passive: true });
+
+      // Year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Close mobile panel when clicking a link
+      document.querySelectorAll('#mobilePanel a').forEach(a => {
+        a.addEventListener('click', () => mobilePanel.classList.add('hidden'));
+      });
+    </script>
+  </body>
+</html>

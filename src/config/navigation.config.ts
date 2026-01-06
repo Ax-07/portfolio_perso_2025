@@ -18,7 +18,7 @@ export interface NavigationItem {
 export const MAIN_NAVIGATION: NavigationItem[] = [
   {
     name: "Accueil",
-    href: "/#",
+    href: "/",
     icon: Home,
     description: "Retour à l'accueil"
   },
@@ -40,6 +40,12 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
     icon: Mail,
     description: "Travaillons ensemble"
   },
+  {
+    name: "Blog",
+    href: "/blog",
+    icon: FolderOpen,
+    description: "Articles et tutoriels"
+  }
 ] as const;
 
 // ==================================

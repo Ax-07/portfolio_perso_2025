@@ -24,7 +24,7 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Le site est accessible sur `http://localhost:3001`
+Le site est accessible sur `http://localhost:3000`
 
 ## Configuration Email (optionnel)
 
@@ -47,7 +47,7 @@ pnpm start        # Serveur de production
 
 ## Structure
 
-```
+```txt
 src/
 ├── app/                 # Pages Next.js
 ├── components/          # Composants React
@@ -57,4 +57,4 @@ src/
 
 ---
 
-**Développé par Xavier Affringue**
+***Développé par Xavier Affringue***

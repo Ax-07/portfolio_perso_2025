@@ -1,3 +1,4 @@
+import { Header } from "@/components/layouts/header";
 import { SEO_CONFIG } from "@/config";
 import type { Metadata } from "next";
 
@@ -14,6 +15,8 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
   <>
+      <Header/>
+
   {children}
   </>
   );

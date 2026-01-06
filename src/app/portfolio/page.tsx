@@ -4,7 +4,6 @@ import { PortfolioPage } from "@/components/pages";
 export default function Portfolio() {
   return (
     <>
-      <Header/>
       <PortfolioPage />
     </>
   );

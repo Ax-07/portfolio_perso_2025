@@ -43,7 +43,7 @@ export function PortfolioPage() {
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 {'Tous mes '}
-                <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"> projets</span>
+                <span className="bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"> projets</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 {'Explorez l\'ensemble de mes réalisations. Cliquez sur un projet pour découvrir tous les détails techniques et fonctionnalités.'}

@@ -79,7 +79,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
             </div>
 
             {/* Image du projet */}
-            <div className="relative border-1 border-primary-200/50 rounded-xl shadow-primary-200/50 shadow-md">
+            <div className="relative border border-primary-200/50 rounded-xl shadow-primary-200/50 shadow-md">
               <ProjectImage
                 src={project.image}
                 alt={project.title}
@@ -332,7 +332,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     {hasFrontendTechnologies(project.technologies.all.frontend) && (
-                      <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border border-blue-200 dark:border-blue-800">
+                      <div className="p-4 rounded-lg bg-linear-to-r from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border border-blue-200 dark:border-blue-800">
                         <h3 className="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide mb-3 flex items-center gap-2">
                           <MonitorSmartphone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                           Frontend
@@ -396,7 +396,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     )}
 
                     {hasBackendTechnologies(project.technologies.all.backend) && (
-                      <div className="p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border border-yellow-200 dark:border-yellow-800">
+                      <div className="p-4 rounded-lg bg-linear-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border border-yellow-200 dark:border-yellow-800">
                         <h3 className="text-sm font-bold text-yellow-700 dark:text-yellow-300 uppercase tracking-wide mb-3 flex items-center gap-2">
                           <Server className="size-4 text-yellow-600 dark:text-yellow-400" />
                           Backend
@@ -467,7 +467,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     )}
 
                     {hasDatabaseTechnologies(project.technologies.all.database) && (
-                      <div className="p-4 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-200 dark:border-indigo-800">
+                      <div className="p-4 rounded-lg bg-linear-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-200 dark:border-indigo-800">
                         <h3 className="text-sm font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide mb-3 flex items-center gap-2">
                           <Database className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                           Base de données
@@ -496,7 +496,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     )}
 
                     {project.technologies.all.tools && project.technologies.all.tools.length > 0 && (
-                      <div className="p-4 rounded-lg bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 border border-slate-200 dark:border-slate-800">
+                      <div className="p-4 rounded-lg bg-linear-to-r from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 border border-slate-200 dark:border-slate-800">
                         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-2">
                           <ToolCase className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                           Outils
@@ -511,7 +511,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     )}
 
                     {hasDeploymentTechnologies(project.technologies.all.deployment) && (
-                      <div className="p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800">
+                      <div className="p-4 rounded-lg bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800">
                         <h3 className="text-sm font-bold text-green-700 dark:text-green-300 uppercase tracking-wide mb-3 flex items-center gap-2">
                           <Cloud className="h-4 w-4 text-green-600 dark:text-green-400" />
                           Déploiement
@@ -567,7 +567,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     <div className="grid md:grid-cols-2 gap-4">
                       {project.technicalHighlights.map((highlight, index) => (
                         <div key={index} className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-400 mt-2"></div>
+                          <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-400 mt-2"></div>
                           <span className="text-sm text-foreground leading-relaxed">{highlight}</span>
                         </div>
                       ))}

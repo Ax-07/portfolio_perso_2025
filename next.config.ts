@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   // Optimisation des images
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -72,5 +73,7 @@ const nextConfig: NextConfig = {
     },
   ],
 };
+
+
 
 export default nextConfig;

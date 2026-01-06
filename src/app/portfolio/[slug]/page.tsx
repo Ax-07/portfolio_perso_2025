@@ -1,7 +1,6 @@
 import { ProjectDetailPage } from "@/components/pages";
 import { ProjectStructuredData } from "@/components/seo/project-structured-data";
 import { PROJECTS_SECTION_CONTENT } from "@/constants";
-import { Header } from "@/components/layouts/header";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -18,7 +17,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <>
-      <Header/>
       <ProjectStructuredData project={project} />
       <ProjectDetailPage project={project} />
     </>

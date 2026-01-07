@@ -1,9 +1,6 @@
 import { Header } from "@/components/layouts/header";
-import { Button } from "@/components/ui/button";
 import { SEO_CONFIG } from "@/config";
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Portfolio",
@@ -18,9 +15,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Header/>
-
-
+      <Header />
       {children}
     </>
   );

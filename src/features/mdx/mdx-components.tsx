@@ -1,17 +1,20 @@
-import { type ComponentPropsWithoutRef } from "react";
+import { type ComponentPropsWithoutRef, type ReactNode, isValidElement, type ReactElement } from "react";
 import Image from "next/image";
 import { CopyButton } from "./copy-button";
 
 // Fonction pour extraire le texte du code
-function getTextContent(children: any): string {
+function getTextContent(children: ReactNode): string {
   if (typeof children === "string") {
     return children;
   }
   if (Array.isArray(children)) {
     return children.map(getTextContent).join("");
   }
-  if (children?.props?.children) {
-    return getTextContent(children.props.children);
+  if (isValidElement(children)) {
+    const element = children as ReactElement<{ children?: ReactNode }>;
+    if (element.props?.children) {
+      return getTextContent(element.props.children);
+    }
   }
   return "";
 }
@@ -19,7 +22,7 @@ function getTextContent(children: any): string {
 // Composant pour les blocs de code <pre>
 export function Pre({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
   const textContent = getTextContent(children);
-  
+
   return (
     <div className="relative group">
       <pre {...props}>{children}</pre>
@@ -30,15 +33,16 @@ export function Pre({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
 
 // Composant pour le code inline et dans les blocs
 export function Code({ children, ...props }: ComponentPropsWithoutRef<"code">) {
-  return <code {...props} className="overflow-x-auto">{children}</code>;
+  return (
+    <code {...props} className="overflow-x-auto">
+      {children}
+    </code>
+  );
 }
 
 export function H1({ children, ...props }: ComponentPropsWithoutRef<"h1">) {
   return (
-    <h1
-      className="mt-8 scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl"
-      {...props}
-    >
+    <h1 className="mt-8 scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl" {...props}>
       {children}
     </h1>
   );
@@ -47,10 +51,7 @@ export function H1({ children, ...props }: ComponentPropsWithoutRef<"h1">) {
 // Composant pour les titres avec ancres
 export function H2({ children, ...props }: ComponentPropsWithoutRef<"h2">) {
   return (
-    <h2
-      className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
-      {...props}
-    >
+    <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0" {...props}>
       {children}
     </h2>
   );
@@ -58,10 +59,7 @@ export function H2({ children, ...props }: ComponentPropsWithoutRef<"h2">) {
 
 export function H3({ children, ...props }: ComponentPropsWithoutRef<"h3">) {
   return (
-    <h3
-      className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight"
-      {...props}
-    >
+    <h3 className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight" {...props}>
       {children}
     </h3>
   );
@@ -69,10 +67,7 @@ export function H3({ children, ...props }: ComponentPropsWithoutRef<"h3">) {
 
 export function H4({ children, ...props }: ComponentPropsWithoutRef<"h4">) {
   return (
-    <h4
-      className="mt-6 scroll-m-20 text-xl font-semibold tracking-tight"
-      {...props}
-    >
+    <h4 className="mt-6 scroll-m-20 text-xl font-semibold tracking-tight" {...props}>
       {children}
     </h4>
   );
@@ -107,10 +102,7 @@ export function Ol({ children, ...props }: ComponentPropsWithoutRef<"ol">) {
 // Composant pour les blockquotes
 export function Blockquote({ children, ...props }: ComponentPropsWithoutRef<"blockquote">) {
   return (
-    <blockquote
-      className="mt-6 border-l-4 border-primary pl-6 italic text-muted-foreground"
-      {...props}
-    >
+    <blockquote className="mt-6 border-l-4 border-primary pl-6 italic text-muted-foreground" {...props}>
       {children}
     </blockquote>
   );
@@ -119,10 +111,7 @@ export function Blockquote({ children, ...props }: ComponentPropsWithoutRef<"blo
 // Composant pour les liens
 export function A({ children, ...props }: ComponentPropsWithoutRef<"a">) {
   return (
-    <a
-      className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-      {...props}
-    >
+    <a className="font-medium text-primary underline underline-offset-4 hover:text-primary/80" {...props}>
       {children}
     </a>
   );
@@ -191,21 +180,17 @@ export function Img({ src, alt, title, width, height, ...props }: ComponentProps
 
   return (
     <figure className="my-8">
-        <Image
-          src={src as string}
-          alt={alt || ""}
-          width={(width as number) || 1000}
-          height={(height as number) || 500}
-          fill
-          className="h-auto w-full rounded-md object-fill aspect-video"
-          // style={{ width: '100%', height: 'auto' }}
-          {...props}
-        />
-      {title && (
-        <figcaption className="mt-2 text-center text-sm text-muted-foreground">
-          {title}
-        </figcaption>
-      )}
+      <Image
+        src={src as string}
+        alt={alt || ""}
+        width={(width as number) || 1000}
+        height={(height as number) || 500}
+        fill
+        className="h-auto w-full rounded-md object-fill aspect-video"
+        // style={{ width: '100%', height: 'auto' }}
+        {...props}
+      />
+      {title && <figcaption className="mt-2 text-center text-sm text-muted-foreground">{title}</figcaption>}
     </figure>
   );
 }

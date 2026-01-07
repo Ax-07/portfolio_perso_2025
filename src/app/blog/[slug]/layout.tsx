@@ -1,5 +1,4 @@
 import ScrollToTopBtn from "@/components/customs/ScrollToTopBtn";
-import { Header } from "@/components/layouts/header";
 import { Button } from "@/components/ui/button";
 import { SEO_CONFIG } from "@/config";
 import { ArrowLeft } from "lucide-react";

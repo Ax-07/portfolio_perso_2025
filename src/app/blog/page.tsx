@@ -1,10 +1,36 @@
 // app/blog/page.tsx
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllBlogPosts } from "@/lib/blog-utils";
 import Link from "next/link";
 import Image from "next/image";
+import { JSX } from "react";
 
-export default async function BlogIndex() {
+/**
+ * Page principale du blog affichant la liste de tous les articles publiés.
+ * 
+ * Composant serveur asynchrone qui récupère tous les articles du blog
+ * et les affiche dans une grille responsive de cartes (cards).
+ * 
+ * **Fonctionnalités** :
+ * - Récupération asynchrone des articles côté serveur
+ * - Tri par date décroissante (plus récents en premier)
+ * - Affichage en grille responsive (1 colonne mobile → 3 colonnes desktop)
+ * - Images de couverture optimisées avec Next/Image
+ * - Effet hover avec scale et changement de fond
+ * - Format de date localisé en français
+ * - Troncature du titre à 2 lignes (line-clamp-2)
+ * 
+ * @returns {Promise<JSX.Element>} La page blog avec grille d'articles
+ * 
+ * @example
+ * // Route: /blog
+ * // Affiche automatiquement tous les articles publiés
+ * 
+ * @async
+ * @server-component
+ */
+export default async function BlogIndex(): Promise<JSX.Element> {
+  // Récupération de tous les articles publiés
   const fileNames = await getAllBlogPosts();
   return (
     <main className="container mx-auto my-10 px-4 max-w-5xl">
@@ -30,9 +56,6 @@ export default async function BlogIndex() {
                       })}
                     </p>
                     <CardTitle className="line-clamp-2">{fileName.title}</CardTitle>
-                    {/* <CardDescription className="line-clamp-3 mt-2">
-                    {fileName.description}
-                  </CardDescription> */}
                   </CardHeader>
                 </Card>
               </Link>

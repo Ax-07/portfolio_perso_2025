@@ -167,6 +167,7 @@ export type Heading = {
  * - #### → level 4 (H4)
  * 
  * Les H1 (#) sont ignorés car généralement réservés au titre principal de la page.
+ * Les titres dans les blocs de code (```) sont également exclus.
  * 
  * @param {string} content - Le contenu MDX brut de l'article
  * @returns {Heading[]} Un tableau d'objets Heading avec level, text et slug
@@ -178,15 +179,30 @@ export type Heading = {
  */
 export const getHeadings = (content: string): Heading[] => {
     const slugger = new GithubSlugger();
-    const headingLines = content.split('\n').filter((line) => {
-        return line.match(/^#{2,4}\s/);
-    });
+    const lines = content.split('\n');
+    const headings: Heading[] = [];
+    let inCodeBlock = false;
 
-    return headingLines.map((raw) => {
-        const text = raw.replace(/^#{2,4}\s/, '').trim();
-        const level = raw.match(/^#{2,4}/)?.[0].length || 0;
-        const slug = slugger.slug(text);
+    for (const line of lines) {
+        // Détecte le début ou la fin d'un bloc de code
+        if (line.trim().startsWith('```')) {
+            inCodeBlock = !inCodeBlock;
+            continue;
+        }
 
-        return { text, level, slug };
-    });
+        // Ignore les titres dans les blocs de code
+        if (inCodeBlock) {
+            continue;
+        }
+
+        // Détecte les titres H2, H3, H4 uniquement en dehors des blocs de code
+        if (line.match(/^#{2,4}\s/)) {
+            const text = line.replace(/^#{2,4}\s/, '').trim();
+            const level = line.match(/^#{2,4}/)?.[0].length || 0;
+            const slug = slugger.slug(text);
+            headings.push({ text, level, slug });
+        }
+    }
+
+    return headings;
 };

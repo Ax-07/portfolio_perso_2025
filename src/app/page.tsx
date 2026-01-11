@@ -8,6 +8,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { Header } from "@/components/layouts/header";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { ResponsiveNavigation } from "@/components/layouts/responsive-navigation";
+import { MotionWrapper } from "@/components/motion/motion-wrapper";
 
 export default function Home() {
   return (
@@ -19,12 +20,23 @@ export default function Home() {
       <main>
         <HeroSection />
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-        <AboutSection />
+        
+        <MotionWrapper>
+          <AboutSection />
+        </MotionWrapper>
+        
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-        <ProjectsSection />
+        
+        <MotionWrapper>
+          <ProjectsSection />
+        </MotionWrapper>
+        
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-        <ContactSection />
+        
+        <MotionWrapper>
+          <ContactSection />
+        </MotionWrapper>
       </main>
-      </>
+    </>
   );
 }

@@ -33,7 +33,7 @@ export default async function BlogIndex(): Promise<JSX.Element> {
   // Récupération de tous les articles publiés
   const fileNames = await getAllBlogPosts();
   return (
-    <main className="container mx-auto my-10 px-4 max-w-5xl">
+    <main className="container mx-auto mt-10 mb-16 px-4 max-w-5xl">
       <h1 className="text-4xl font-bold mb-8">Blog</h1>
       <div className="grid gap-6 md:grid-cols-3">
         {fileNames

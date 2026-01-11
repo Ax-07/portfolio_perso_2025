@@ -120,7 +120,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <GoogleAnalytics />
         <Analytics />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

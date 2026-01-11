@@ -51,7 +51,7 @@ export function Pre({ children, ...props }: ComponentPropsWithoutRef<"pre">): JS
   const textContent = getTextContent(children);
 
   return (
-    <div className="relative group">
+    <div className="mx-4 relative group">
       <pre {...props}>{children}</pre>
       <CopyButton text={textContent} />
     </div>
@@ -145,7 +145,7 @@ export function H4({ children, ...props }: ComponentPropsWithoutRef<"h4">): JSX.
  */
 export function P({ children, ...props }: ComponentPropsWithoutRef<"p">): JSX.Element {
   return (
-    <p className="leading-7 not-first:mt-6" {...props}>
+    <p className="mx-4 text-muted-foreground leading-7 not-first:mt-6" {...props}>
       {children}
     </p>
   );
@@ -160,7 +160,7 @@ export function P({ children, ...props }: ComponentPropsWithoutRef<"p">): JSX.El
  */
 export function Ul({ children, ...props }: ComponentPropsWithoutRef<"ul">): JSX.Element {
   return (
-    <ul className="my-6 ml-6 list-disc [&>li]:mt-2" {...props}>
+    <ul className="text-muted-foreground ml-6 list-disc [&>li]:ml-6 [&>li]:first:mt-6" {...props}>
       {children}
     </ul>
   );
@@ -175,7 +175,7 @@ export function Ul({ children, ...props }: ComponentPropsWithoutRef<"ul">): JSX.
  */
 export function Ol({ children, ...props }: ComponentPropsWithoutRef<"ol">): JSX.Element {
   return (
-    <ol className="my-6 ml-6 list-decimal [&>li]:mt-2" {...props}>
+    <ol className="text-muted-foreground ml-6 list-decimal [&>li]:ml-6 " {...props}>
       {children}
     </ol>
   );

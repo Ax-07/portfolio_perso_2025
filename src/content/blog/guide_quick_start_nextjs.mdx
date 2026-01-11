@@ -1,0 +1,567 @@
+---
+title: "Guide de Démarrage Rapide Next.js, Tailwind et shadcn/ui"
+description: "Un guide complet pour créer et configurer rapidement un projet Next.js avec Tailwind CSS et shadcn/ui."
+date: "2026-01-10"
+tags: ["Next.js", "Tailwind CSS", "shadcn/ui", "Guide"]
+readingTime: "10 min"
+coverImage: ""
+---
+
+{/* # Guide de Démarrage Rapide avec Next.js Tailwind et shadcn/ui */}
+
+## Introduction
+
+Bienvenue dans le guide de Démarrage Rapide avec Next.js, Tailwind CSS et shadcn/ui.
+Ce guide vous aidera à configurer rapidement votre environnement de développement pour créer des applications web modernes et performantes.
+
+## Stack Technique
+
+- **Next.js 15+** (App Router) - Framework React
+- **Tailwind CSS v4** - Styling avec CSS Variables
+- **shadcn/ui** - Composants UI accessibles
+- **TypeScript** - Type safety
+- **Vercel** - Déploiement (recommandé)
+
+## 📋 Prérequis et Installation
+
+### 1. Prérequis Système
+
+```bash
+# Versions minimales requises
+Node.js 22+
+npm 10+ ou pnpm 10+ (recommandé)
+Git
+```
+
+### 2. Création du Projet
+
+```bash
+pnpm create next-app@latest my-app --typescript --eslint --app --src-dir --import-alias "@/*"
+```
+
+Répondre aux questions :
+- Would you like to use **React Compiler** ? » No
+- Would you like to use **Tailwind CSS** ? › Yes
+
+```bash
+cd my-app
+```
+
+### 3. Configuration shadcn/ui
+
+#### 3.1 Installation shadcn/ui
+```bash
+npx shadcn@latest init
+```
+
+Répondre aux questions :
+- Ok to proceed ? (y) › y
+- Which color would you like to use as **base color** ? › Zinc
+
+#### 3.2 Composants shadcn/ui par catégorie
+
+Voici une liste de commandes pour installer des composants shadcn/ui par catégorie fonctionnelle :
+(choisissez uniquement ceux nécessaires à votre projet.)
+
+Composants de base nécessaires pour le site
+```bash
+npx shadcn@latest add button card dropdown-menu separator
+```
+
+Composants pour la navigation
+```bash
+npx shadcn@latest add sheet navigation-menu
+```
+
+Composants pour les formulaires
+```bash
+npx shadcn@latest add form input label select textarea
+```
+
+Composants pour l'interaction utilisateur
+```bash
+npx shadcn@latest add dialog alert-dialog tabs
+```
+
+Composants pour l'affichage d'informations
+```bash
+npx shadcn@latest add avatar badge progress calendar table accordion
+```
+
+Composant de notification
+```bash
+npx shadcn@latest add sonner
+```
+
+Composants utilitaires
+```bash
+npx shadcn@latest add popover tooltip skeleton spinner
+```
+
+#### 3.3 Composants par Type de Projet
+
+Voici des suggestions de packs de composants shadcn/ui adaptés à différents types de projets :
+
+**"Pack Essentiel"** (Pour tout projet)
+Ces composants sont les fondations de 99% des applications (structure, boutons, navigation mobile et formulaires simples).
+
+```bash
+npx shadcn@latest add button card form input label sheet dropdown-menu separator avatar
+```
+
+Pourquoi ?
+- button, card : Composants de base pour les actions et la présentation.
+- form, input, label : Pour les formulaires utilisateur.
+- sheet : Pour les panneaux latéraux (ex: panier, navigation mobile).
+- dropdown-menu : Pour les menus contextuels.
+- separator : Pour diviser visuellement les sections.
+- avatar : Pour afficher les profils utilisateurs.
+
+**Pack "Site Vitrine / Marketing"**
+Idéal pour les landing pages, portfolios et sites d'entreprise. L'accent est mis sur la présentation de contenu et la navigation riche.
+
+```bash
+npx shadcn@latest add accordion navigation-menu dialog carousel
+```
+
+Pourquoi ?
+- navigation-menu : Pour les méga-menus modernes.
+- accordion : Pour les sections FAQ.
+- carousel : Pour les témoignages ou galeries.
+- dialog : Pour les modales de contact ou d'inscription newsletter.
+
+**Pack "SaaS / Dashboard"** (App Métier)
+Le kit lourd pour les applications riches en données, les back-offices et la gestion utilisateur complexe.
+
+```bash
+npx shadcn@latest add table select checkbox switch badge progress skeleton
+```
+
+Pourquoi ?
+- table : Le cœur de tout dashboard pour lister les données.
+- select, checkbox, switch : Pour les formulaires de configuration complexes.
+- badge : Pour les statuts et labels.
+- skeleton & progress : Pour gérer les états de chargement des données.
+
+**Pack "E-commerce"**
+Des composants spécifiques pour la présentation de produits et les filtres.
+
+```bash
+npx shadcn@latest add aspect-ratio slider radio-group scroll-area sheet
+```
+
+Pourquoi ?
+- aspect-ratio : Pour que les images produits gardent leurs dimensions uniformes.
+- slider : Pour les filtres de prix.
+- radio-group : Pour le choix de variantes (couleur, taille).
+- scroll-area : Pour les listes de filtres ou les mini-paniers.
+- sheet : (Déjà dans le pack de base, mais crucial ici pour le "Panier latéral").
+
+### 4. Ajouter le dark mode
+
+#### 4.1 Installer next-themes
+
+Installer next-themes pour gérer le mode sombre.
+
+```bash
+pnpm add next-themes
+```
+
+Dans `src/app/layout.tsx`, ajouter le provider `ThemeProvider` de `next-themes`.
+
+```tsx
+import { ThemeProvider } from "next-themes";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="fr" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+#### 4.2 Créer le composant ThemeToggle
+
+Créez un fichier `src/components/theme-toggle.tsx` :
+
+```tsx
+"use client";
+
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+
+import { Button } from "@/components/ui/button";
+
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      className="relative overflow-hidden cursor-pointer"
+      aria-label={`Basculer vers le mode ${theme === "light" ? "sombre" : "clair"}`}
+      title={`Basculer vers le mode ${theme === "light" ? "sombre" : "clair"}`}
+    >
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Toggle theme</span>
+    </Button>
+  );
+}
+```
+
+Installer les icônes lucide-react si ce n'est pas déjà fait :
+
+```bash
+pnpm add lucide-react
+```
+
+### 5. Créer un composant de navigation simple
+
+Créez un fichier **`src/components/navigation.tsx`** avec le contenu suivant :
+
+```tsx
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+
+export const Navigation = () => {
+  return (
+    <nav className="flex items-center gap-2">
+      <Link href="/docs" className={buttonVariants({ variant: "ghost" })}>
+        Docs
+      </Link>
+      <Link href="/pricing" className={buttonVariants({ variant: "ghost" })}>
+        Pricing
+      </Link>
+    </nav>
+  );
+};
+```
+
+### 6. Ajouter une structure de layout de base (Header + Main + Footer)
+
+L’objectif est d’avoir une structure claire et réutilisable :
+Créez un dossier `src/components/layout`
+
+#### 6.1 Ajouter le Header avec le ThemeToggle
+
+Créez un fichier **`src/components/layout/header.tsx`** avec le contenu suivant :
+
+```tsx
+import Link from "next/link";
+import { Navigation } from "@/components/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+export const Header = () => {
+  return (
+    <header className="flex items-center justify-between border-b px-4 py-2">
+      <Link href="/" className="text-lg font-bold">
+        MyApp
+      </Link>
+      <div className="flex items-center gap-2">
+        <Navigation />
+        <ThemeToggle />
+      </div>
+    </header>
+  );
+};
+```
+
+#### 6.2 Ajouter le Main Layout
+
+Créez un fichier **`main.tsx`** avec le contenu suivant :
+
+```tsx
+import { PropsWithChildren } from "react";
+
+export const MainLayout = ({ children }: PropsWithChildren) => {
+  return (
+    <main className="flex flex-1 flex-col px-4 py-8">
+      {children}
+    </main>
+  );
+};
+
+```
+
+#### 6.3 Ajouter le Footer
+
+Créez un fichier **`footer.tsx`** avec le contenu suivant :
+
+```tsx
+export const Footer = () => {
+  return (
+    <footer className="w-full border-t px-4 py-2 text-center">
+      <p className="text-sm text-muted-foreground">
+        &copy; {new Date().getFullYear()} MyApp. Tous droits réservés.
+      </p>
+    </footer>
+  );
+};
+```
+
+#### 6.4 Mettre à jour le Layout global (App Router)
+
+Mettez à jour le fichier `src/app/layout.tsx` pour inclure le Header, MainLayout et Footer :
+
+```tsx
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "next-themes";
+import { Header } from "@/components/layout/header";
+import { MainLayout } from "@/components/layout/main";
+import { Footer } from "@/components/layout/footer";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="fr" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          <MainLayout>{children}</MainLayout>
+          <Footer />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+```
+
+## 📁 Structure du Projet
+
+```
+preset_next_auth_stripe/
+├── docs/                             # Documentation
+├── public/                           # Fichiers statiques
+├── src/
+│   ├── app/                          # App Router Next.js 15
+│   │   ├── layout.tsx                # Layout racine avec providers
+│   │   ├── page.tsx                  # Page d'accueil
+│   │   ├── globals.css               # Styles globaux Tailwind
+│   │   └── (pages)/                  # Groupe de routes (pages publiques)
+│   ├── components/                   # Composants React
+│   │   ├── theme-toggle.tsx          # Composant de bascule thème
+│   │   ├── navigation.tsx            # Composant de navigation
+│   │   ├── ui/                       # Composants shadcn/ui
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
+│   │   │   └── ...                   # Autres composants UI
+│   │   └── layout/                   # Composants de mise en page
+│   │   │   ├── footer.tsx            # Pied de page
+│   │   │   ├── header.tsx            # En-tête avec navigation
+│   │   │   └── main.tsx              # Layout principal
+│   └── lib/                          # Bibliothèques et utilitaires
+│       └── utils.ts                  # Fonction cn() et utilitaires
+├── components.json                   # Configuration shadcn/ui
+├── postcss.config.mjs                # Configuration PostCSS
+├── tsconfig.json                     # Configuration TypeScript
+├── next.config.ts                    # Configuration Next.js
+├── package.json                      # Dépendances et scripts
+└── .env                              # Variables d'environnement (à créer)
+```
+
+## 🎯 Scripts NPM Disponibles
+
+```json
+{
+  "scripts": {
+    // Développement
+    "dev": "next dev",                              // Démarrer le serveur de développement
+    
+    // Build et Production
+    "build": "next build",                          // Créer un build de production
+    "start": "next start",                          // Démarrer le serveur de production
+    
+    // Qualité du code
+    "lint": "eslint"                                // Vérifier le code avec ESLint
+  }
+}
+```
+
+### Utilisation des scripts
+
+```bash
+# Développement quotidien
+pnpm dev
+
+# Avant de déployer
+pnpm build
+
+# Démarrer le serveur de production localement
+pnpm start
+
+# Vérifier la qualité du code
+pnpm lint
+```
+
+## 📚 Ressources Supplémentaires
+
+- [Documentation Next.js 15](https://nextjs.org/docs)
+- [Documentation shadcn/ui](https://ui.shadcn.com)
+- [Documentation Tailwind CSS v4](https://tailwindcss.com/docs)
+
+## 🤖 Copilot-instructions
+
+Pour améliorer la qualité des suggestions, vous pouvez ajouter un fichier d’instructions dédié à GitHub Copilot.
+
+Créer un dossier `.github` à la racine du projet avec un fichier `copilot-instructions.md` pour configurer GitHub Copilot :
+
+```md
+# Copilot Instructions — Next.js + Tailwind + shadcn/ui
+
+Tu es GitHub Copilot, assistant de code pour ce projet.
+Ta mission est de générer du code idiomatique, maintenable et accessible, conforme à Next.js (App Router), Tailwind CSS et shadcn/ui.
+
+## Stack & contraintes
+- Framework: Next.js (App Router) + TypeScript
+- Styling: Tailwind CSS (utility-first)
+- UI: shadcn/ui (Radix UI primitives)
+- Icons: lucide-react
+- Theming: next-themes (dark mode via class)
+- Lint/format: ESLint (et Prettier si présent)
+- Import alias: `@/*`
+
+## Objectifs de qualité
+- Priorité à la lisibilité, à l’accessibilité (a11y) et aux performances.
+- Pas de “quick hacks”. Préférer des patterns Next.js corrects.
+- Écrire du code en TypeScript strict, sans `any` (sauf justification).
+
+---
+
+# Conventions Next.js (App Router)
+## Règles générales
+- Utiliser Server Components par défaut.
+- Ajouter `"use client"` uniquement si nécessaire (hooks, state, events, refs, effets).
+- Préférer `fetch()` côté serveur (Server Components / Route Handlers) avec cache/ revalidate explicite si utile.
+- Séparer clairement:
+  - `page.tsx` = composition et orchestration
+  - `components/` = UI réutilisable
+  - `lib/` = fonctions utilitaires (fetchers, validators, formatters)
+
+## Data fetching & cache
+- Par défaut, privilégier le fetch côté serveur.
+- Indiquer explicitement la stratégie:
+  - `cache: "no-store"` pour données temps réel
+  - `next: { revalidate: 60 }` pour ISR
+- Ne pas faire de fetch inutile côté client si le serveur peut le faire.
+
+## Navigation & routing
+- Utiliser `next/link` pour les liens internes.
+- Utiliser `useRouter()` uniquement en client.
+- Pour les 404, utiliser `notFound()`.
+
+## Images
+- Utiliser `next/image` pour les images.
+- Toujours définir `alt` pertinent.
+- Définir `sizes` quand nécessaire.
+
+---
+
+# TypeScript
+- Utiliser des types explicites pour props, retours, données.
+- Préférer `type` pour les unions/objets simples, `interface` si extension prévue.
+- Éviter les enums TS si non nécessaires (préférer unions littérales).
+- Pas de `any`. Utiliser `unknown` + validation si besoin.
+
+---
+
+# Tailwind CSS
+## Style
+- Utiliser Tailwind pour la mise en page, l’espacement, la typographie.
+- Éviter les styles inline et éviter CSS custom si Tailwind suffit.
+- Utiliser `cn()` (shadcn/utils) pour composer les classes.
+- Garder les classes courtes et lisibles:
+  - extraire des composants si la liste devient trop longue
+  - utiliser des variantes (shadcn / class-variance-authority) pour états/variants
+
+## Responsive & states
+- Mobile-first (`sm:`, `md:`, `lg:`).
+- Ajouter les states utiles: `hover:`, `focus-visible:`, `disabled:`, `aria-*`, `data-*` (Radix).
+
+---
+
+# shadcn/ui
+## Règles
+- Utiliser les composants `@/components/ui/*` au lieu de réinventer.
+- Respecter l’accessibilité Radix: labels, aria, focus, keyboard.
+- Pour les formulaires, utiliser `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`.
+- Préférer `Button`, `Card`, `Dialog`, `DropdownMenu`, etc. pour cohérence UI.
+
+## Variants
+- Utiliser `buttonVariants` et les variantes officielles (ex: `variant="outline"`, `size="sm"`).
+- Ne pas hardcoder des styles incompatibles avec le thème.
+
+---
+
+# Accessibilité (a11y)
+- Tout champ de formulaire doit avoir un label.
+- Tous les boutons doivent avoir un texte ou `aria-label`.
+- Utiliser `focus-visible` et ne jamais supprimer l’outline sans alternative.
+- Les icônes décoratives doivent être `aria-hidden="true"` ou intégrées correctement.
+
+---
+
+# Patterns recommandés
+## Composants
+- Écrire des composants petits, testables, réutilisables.
+- Utiliser `PropsWithChildren` si nécessaire.
+- Ne pas mélanger data fetching et UI complexe dans le même fichier si évitable.
+
+## État & hooks
+- Limiter le state au strict nécessaire.
+- Préférer les Server Actions / Route Handlers pour mutations quand pertinent.
+- Éviter les effets `useEffect` inutiles.
+
+---
+
+# Exemples de réponses attendues de Copilot
+Quand tu génères du code, tu dois:
+- donner des fichiers complets (si demandé) avec les imports corrects
+- suivre la structure `src/` et l’alias `@/*`
+- utiliser Tailwind + shadcn/ui
+- respecter le dark mode et l’accessibilité
+
+---
+
+# Interdits
+- Ne pas proposer de pages `pages/` (on utilise App Router).
+- Ne pas ajouter de dépendances non demandées.
+- Ne pas contourner a11y (pas de div cliquable sans rôle/keyboard).
+- Ne pas utiliser `any` sans raison.
+
+```
+
+## Conclusion
+
+Vous avez maintenant une base solide pour démarrer un projet Next.js avec Tailwind CSS et shadcn/ui.

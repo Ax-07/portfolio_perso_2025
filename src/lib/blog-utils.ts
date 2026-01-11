@@ -108,7 +108,8 @@ export const getAllBlogPosts = async () => {
         }
     }
 
-  return [...blogPosts];
+    // Filtrer uniquement les articles publiés
+    return blogPosts.filter(post => post.published !== false);
 };
 
 /**
@@ -130,7 +131,7 @@ export const getAllBlogPosts = async () => {
  * 
  * @async
  */
-export const getBlogPostBySlug = async (slug: string) => {
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | undefined> => {
     const blogPosts = await getAllBlogPosts();
     const post = blogPosts.find(post => post.slug === slug);
     return post;

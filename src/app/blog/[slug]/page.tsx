@@ -177,7 +177,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
   return (
     <>
       <BlogStructuredData post={blogPost} />
-      <main className="relative container mx-auto my-10 px-4">
+      <main className="relative container mx-auto mt-10 mb-32 px-4">
       <div className="relative flex flex-col xl:flex-row gap-12 justify-center items-start">
         <article className="lg:max-w-3xl 2xl:max-w-5xl w-full">
           {blogPost.coverImage && (

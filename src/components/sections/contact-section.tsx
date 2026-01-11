@@ -96,7 +96,7 @@ export function ContactSection() {
             </Badge>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
               {CONTACT_CONTENT.title}
-              <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
                 {" "}
                 {CONTACT_CONTENT.titleHighlight}
               </span>
@@ -114,7 +114,7 @@ export function ContactSection() {
               <Card className="py-0 glass-card border-primary-200/50 dark:border-primary-800/50 overflow-hidden">
                 <div className="grid lg:grid-cols-3">
                   {/* Sidebar informatif */}
-                  <div className="bg-gradient-to-br from-primary-500/5 to-primary-600/5 p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+                  <div className="bg-linear-to-br from-primary-500/5 to-primary-600/5 p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                     <div className="space-y-3 sm:space-y-4">
                       <h3 className="text-base sm:text-lg font-bold">{CONTACT_CONTENT.infos.title}</h3>
                       <div className="space-y-2 sm:space-y-3">
@@ -122,7 +122,7 @@ export function ContactSection() {
                           const IconComponent = info.icon;
                           return (
                             <div key={info.name} className="flex items-start space-x-3">
-                              <IconComponent className="h-4 w-4 text-primary-600 mt-0.5 flex-shrink-0" />
+                              <IconComponent className="h-4 w-4 text-primary-600 mt-0.5 shrink-0" />
                               <div>
                                 <p className="text-xs sm:text-sm font-medium">{info.name}</p>
                                 <p className="text-xs text-muted-foreground">{info.description}</p>

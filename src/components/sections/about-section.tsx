@@ -28,7 +28,7 @@ export function AboutSection() {
             </Badge>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
               {ABOUT_CONTENT.title}
-              <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
                 {ABOUT_CONTENT.titleHighlight}
               </span>
             </h2>
@@ -52,7 +52,7 @@ export function AboutSection() {
                 <Card className="glass-card border-primary-200/50 dark:border-primary-800/50 floating-card">
                   <CardContent className="p-4 sm:p-6 md:p-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center primary-glow flex-shrink-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center primary-glow shrink-0">
                         <Coffee className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       </div>
                       <div>
@@ -150,7 +150,7 @@ export function AboutSection() {
                   >
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center primary-glow group-hover:scale-110 transition-transform flex-shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center primary-glow group-hover:scale-110 transition-transform shrink-0">
                           <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
                         <div className="flex-1 space-y-2">

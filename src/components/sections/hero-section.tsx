@@ -37,13 +37,13 @@ export function HeroSection() {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center py-20 md:py-32 overflow-hidden">
       {/* Overlay radial et grille */}
-      <span className="absolute inset-0 z-[2] bg-radial from-0% from-transparent to-50% to-background"></span>
-      <GridlineBackground className="z-[1] text-primary opacity-40" />
+      <span className="absolute inset-0 z-2 bg-radial from-0% from-transparent to-50% to-background"></span>
+      <GridlineBackground className="z-1 text-primary opacity-40" />
       
       {/* Éléments flottants */}
-      <div className="absolute z-[2] top-10 sm:top-20 left-10 sm:left-20 w-32 sm:w-72 h-32 sm:h-72 bg-primary-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute z-2 top-10 sm:top-20 left-10 sm:left-20 w-32 sm:w-72 h-32 sm:h-72 bg-primary-500/10 rounded-full blur-3xl animate-pulse" />
       <div
-        className="absolute z-[2] bottom-10 sm:bottom-20 right-10 sm:right-20 w-48 sm:w-96 h-48 sm:h-96 bg-primary-400/5 rounded-full blur-3xl animate-pulse"
+        className="absolute z-2 bottom-10 sm:bottom-20 right-10 sm:right-20 w-48 sm:w-96 h-48 sm:h-96 bg-primary-400/5 rounded-full blur-3xl animate-pulse"
         style={{ animationDelay: "2s" }}
       />
 

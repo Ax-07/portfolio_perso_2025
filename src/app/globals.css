@@ -173,7 +173,7 @@
 .glass-nav {
   background: oklch(var(--background) / 80%);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid oklch(var(--border));
+  /* border-bottom: 1px solid oklch(var(--border)); */
 }
 
 .emerald-glow {

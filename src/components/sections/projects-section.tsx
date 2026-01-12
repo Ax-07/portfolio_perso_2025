@@ -96,7 +96,7 @@ const ProjectSectionCard = React.memo(({ project }: ProjectSectionCardProps) => 
       <Link href={`/portfolio/${project.slug}`}>
         {/* Image du projet */}
         <div className="relative overflow-hidden rounded-t-lg border-b border-primary-200/50 dark:border-primary-800/50">
-          <div className="aspect-video bg-linear-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-primary-900 flex items-center justify-center">
+          <div className="relative aspect-video bg-linear-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-primary-900 flex items-center justify-center">
             {imageErrors[project.id] ? (
               <div className="text-primary-600 dark:text-primary-400">
                 <Globe className="h-12 w-12" />

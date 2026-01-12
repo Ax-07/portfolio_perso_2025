@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { SITE_METADATA } from "@/config";
 
 export const runtime = "edge";
-export const contentType = "image/png";
+// export const contentType = "image/png";
 
 export async function GET() {
   return new ImageResponse(

@@ -9,7 +9,7 @@ import { ColorThemeControl } from "../ui/color-theme-control";
 export function Header({ children }: { children?: React.ReactNode }) {
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-nav">
+    <header className="sticky top-0 z-50 w-full glass-nav border-b border-b-primary/20">
       <div className="flex h-16 items-center justify-between px-8 mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0 space-x-3 group" aria-label="Home">

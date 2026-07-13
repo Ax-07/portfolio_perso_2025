@@ -6,6 +6,32 @@ import { render, toPlainText  } from '@react-email/render';
 import ContactEmail from '@/emails/ContactEmail';
 import ConfirmationEmail from '@/emails/ConfirmationEmail';
 
+// ──────────────────────────────────────────────
+// Rate limiting en mémoire par IP
+// Max 3 requêtes par fenêtre de 60 secondes
+// ──────────────────────────────────────────────
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 60 secondes
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): { allowed: boolean; retryAfter: number } {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now >= entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, retryAfter: 0 };
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return { allowed: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
+  }
+
+  entry.count += 1;
+  return { allowed: true, retryAfter: 0 };
+}
+
 // Configuration du transporteur email
 const createTransporter = () => {
   // Pour Gmail/Google Workspace
@@ -42,10 +68,32 @@ const budgetLabels: Record<string, string> = {
 };
 
 export async function POST(request: NextRequest) {
+  // ── Rate limiting ──────────────────────────
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+
+  const { allowed, retryAfter } = checkRateLimit(ip);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: `Trop de requêtes. Réessayez dans ${retryAfter} secondes.` },
+      {
+        status: 429,
+        headers: { 'Retry-After': String(retryAfter) },
+      }
+    );
+  }
+
   try {
     // Validation des données
     const body = await request.json();
     const validatedData = contactSchema.parse(body);
+
+    // Honeypot anti-spam : si le champ est rempli, c'est un bot — rejet silencieux
+    if (validatedData.honeypot) {
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
 
     // Conversion de la valeur budget en label lisible
     const budgetLabel = validatedData.budget ? budgetLabels[validatedData.budget] || validatedData.budget : null;

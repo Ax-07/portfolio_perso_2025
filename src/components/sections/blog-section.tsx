@@ -3,7 +3,8 @@ import * as React from "react";
 import { Badge } from "../ui/badge";
 import { ARTICLES_CONTENT } from "@/constants/blog.content";
 import Link from "next/link";
-import { Card } from "../ui/card";
+import { Card, CardHeader, CardTitle } from "../ui/card";
+import Image from "next/image";
 
 export async function BlogSection() {
   // Récupération de tous les articles publiés
@@ -33,16 +34,32 @@ export async function BlogSection() {
           </div>
 
           {/* Grille de projets - 3 projets en aperçu */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fileNames.slice(0, 3).map((fileName) => (
-              <Link key={fileName.slug} href={`/blog/${fileName.slug}`} className="block h-full">
-                <Card className="h-full hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 overflow-hidden flex flex-col pt-0">
-                  {fileName.coverImage && (
-                    <img src={fileName.coverImage} alt={fileName.title} className="w-full h-48 object-cover" />
-                  )}
-                </Card>
-              </Link>
-            ))}
+          <div className="grid gap-6 md:grid-cols-3">
+            {fileNames
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map((fileName) => {
+                return (
+                  <Link key={fileName.slug} href={`/blog/${fileName.slug}`} className="block h-full">
+                    <Card className="h-full hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 overflow-hidden flex flex-col pt-0">
+                      {fileName.coverImage && (
+                        <div className="relative w-full h-auto aspect-video">
+                          <Image src={fileName.coverImage} alt={fileName.title} fill className="object-cover" />
+                        </div>
+                      )}
+                      <CardHeader>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {new Date(fileName.date).toLocaleDateString("fr-FR", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </p>
+                        <CardTitle className="line-clamp-2">{fileName.title}</CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                );
+              })}
           </div>
 
           {/* CTA */}

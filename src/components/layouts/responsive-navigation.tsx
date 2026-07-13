@@ -2,19 +2,13 @@
 
 import { DesktopNavigation } from "./desktop-navigation";
 import { MobileNavigation } from "./mobile-navigation";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { MAIN_NAVIGATION } from "@/config";
 
 export function ResponsiveNavigation() {
-  const isMobile = useIsMobile();
-
   return (
     <>
-      {isMobile ? (
-        <MobileNavigation navigation={MAIN_NAVIGATION} />
-      ) : (
-        <DesktopNavigation navigation={MAIN_NAVIGATION} />
-      )}
+        <MobileNavigation navigation={MAIN_NAVIGATION} className="lg:hidden"/>
+        <DesktopNavigation navigation={MAIN_NAVIGATION} className="hidden lg:flex"/>
     </>
   );
 }

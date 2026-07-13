@@ -14,7 +14,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0 space-x-3 group" aria-label="Home">
           <div className="relative">
-            <div className="size-9 md:size-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center emerald-glow">
+            <div className="size-9 md:size-10 rounded-lg bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center emerald-glow">
               <span className="text-white font-bold text-md md:text-lg">{BRAND_INFO.initials}</span>
             </div>
           </div>

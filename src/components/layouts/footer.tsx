@@ -5,9 +5,9 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-b from-background to-muted/30 border-t border-border/40">
+    <footer className="relative bg-linear-to-b from-background to-muted/30 border-t border-border/40">
       {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-primary-600/5" />
+      <div className="absolute inset-0 bg-linear-to-br from-primary-500/5 via-transparent to-primary-600/5" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Contenu principal */}
@@ -18,7 +18,7 @@ export function Footer() {
             <div className="lg:col-span-4 space-y-6 flex flex-col items-center lg:items-start">
               {/* Logo et nom */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-xl">{BRAND_INFO.initials}</span>
                 </div>
                 <div>

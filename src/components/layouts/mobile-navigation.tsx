@@ -17,19 +17,16 @@ import { BRAND_INFO, FOOTER_NAVIGATION } from "@/config";
 import { useActiveSection } from "@/hooks/use-active-section";
 import { NavigationItem } from "@/config/navigation.config";
 
-export const MobileNavigation = React.memo(({ navigation }: { navigation: NavigationItem[] }) => {
+export const MobileNavigation = React.memo(({ navigation, className }: { navigation: NavigationItem[], className?: string }) => {
   const { isActiveLink, handleNavClick } = useActiveSection();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     handleNavClick(e, href);
-    // Fermer la navigation après un délai pour permettre le scroll smooth
-    setTimeout(() => {
-      setIsOpen(false);
-    }, 100);
+    setIsOpen(false);
   };
   return (
-    <div className="lg:hidden">
+    <div className={cn(className)}>
       <div className="flex items-center justify-between">
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen} aria-describedby="mobile-menu">
@@ -42,7 +39,7 @@ export const MobileNavigation = React.memo(({ navigation }: { navigation: Naviga
             <SheetHeader>
               <SheetTitle>
                 <Link href="/" className="flex items-center gap-2" aria-label="Home" onClick={() => setIsOpen(false)}>
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center emerald-glow mx-auto">
+                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center emerald-glow mx-auto">
                     <span className="text-white font-bold text-lg">{BRAND_INFO.initials}</span>
                   </div>
                 </Link>
@@ -113,4 +110,4 @@ export const MobileNavigation = React.memo(({ navigation }: { navigation: Naviga
   );
 });
 
-MobileNavigation.displayName = "MobileNavbar";
+MobileNavigation.displayName = "MobileNavigation";

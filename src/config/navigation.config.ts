@@ -42,7 +42,7 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
   },
   {
     name: "Blog",
-    href: "/blog",
+    href: "#blog",
     icon: FolderOpen,
     description: "Articles et tutoriels"
   }

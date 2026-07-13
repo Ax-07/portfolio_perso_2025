@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { ContactSection } from "@/components/sections/contact-section";
 import { Header } from "@/components/layouts/header";
 import { ResponsiveNavigation } from "@/components/layouts/responsive-navigation";
+import { BlogSection } from "@/components/sections/blog-section";
 
 export default function Home() {
   return (
@@ -15,15 +16,12 @@ export default function Home() {
       <main>
         <HeroSection />
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-
         <AboutSection />
-
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-
         <ProjectsSection />
-
         <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
-
+        <BlogSection />
+        <Separator className="my-12 md:my-20 max-w-[80%] mx-auto bg-primary" />
         <ContactSection />
       </main>
     </>

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,11 +9,12 @@ import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { ProjectStatusBadge } from "@/components/ui/project-status-badge";
 import { ProjectImage } from "@/components/ui/project-image";
 import { TechList } from "@/components/ui/tech-list";
+import { useState } from "react";
 
 const { projects, categories } = PROJECTS_SECTION_CONTENT;
 
 export function PortfolioPage() {
-  const [selectedCategory, setSelectedCategory] = React.useState("Tous");
+  const [selectedCategory, setSelectedCategory] = useState("Tous");
   
   const filteredProjects = selectedCategory === "Tous" 
     ? projects 
@@ -128,7 +128,7 @@ export function PortfolioPage() {
                           key={index}
                           className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800"
                         >
-                          <span className="text-xs font-medium text-green-700 dark:text-green-300">{feature}</span>
+                          <span className="text-xs font-medium text-green-700 dark:text-green-300">{feature.short}</span>
                         </Badge>
                       ))}
                     </div>

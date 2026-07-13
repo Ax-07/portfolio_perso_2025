@@ -43,6 +43,8 @@ interface ProjectDetailPageProps {
 
 export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
   const isMobile = useIsMobile();
+  // Valeur par défaut pendant l'hydratation : considérer comme desktop
+  const isMobileResolved = isMobile ?? false;
   return (
     <div className="relative min-h-screen bg-background">
       {/* Header avec navigation */}
@@ -97,7 +99,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
         <div className="container px-4 md:px-6 mx-auto">
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             {/* Sidebar avec informations complémentaires */}
-            <div className={cn("lg:sticky lg:top-16 space-y-6 h-fit", isMobile ? "order-1" : "order-2")}>
+            <div className={cn("lg:sticky lg:top-16 space-y-6 h-fit", isMobileResolved ? "order-1" : "order-2")}>
               {/* Informations du projet */}
               <Card className="glass-card">
                 <CardHeader>
@@ -237,11 +239,11 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
               </Card>
 
               {/* CTA Contact */}
-              {!isMobile && <CtaContact />}
+              {!isMobileResolved && <CtaContact />}
             </div>
 
             {/* Contenu principal */}
-            <div className={cn("lg:col-span-2 space-y-8", isMobile ? "order-2" : "order-1")}>
+            <div className={cn("lg:col-span-2 space-y-8", isMobileResolved ? "order-2" : "order-1")}>
               {/* 1. Vue d'ensemble du projet */}
               <Card className="glass-card border-l-4 border-l-primary-500">
                 <CardHeader>
@@ -313,7 +315,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                     {project.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-sm text-foreground leading-relaxed">{feature}</span>
+                        <span className="text-sm text-foreground leading-relaxed">{feature.long}</span>
                       </div>
                     ))}
                   </div>
@@ -403,14 +405,14 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         </h3>
                         <div className="grid gap-2 text-sm">
                           {project.technologies.all.backend?.language && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-start gap-2">
                               <span className="font-medium text-foreground min-w-fit">Langage:</span>
                               <span className="text-muted-foreground">{project.technologies.all.backend.language}</span>
                             </div>
                           )}
                           {project.technologies.all.backend?.runtime &&
                             project.technologies.all.backend.runtime.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Runtime:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.runtime.join(", ")}
@@ -419,7 +421,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.backend?.frameworks &&
                             project.technologies.all.backend.frameworks.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Frameworks:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.frameworks.join(", ")}
@@ -428,7 +430,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.backend?.apiTypes &&
                             project.technologies.all.backend.apiTypes.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">API Types:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.apiTypes.join(", ")}
@@ -437,7 +439,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.backend?.security &&
                             project.technologies.all.backend.security.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Security:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.security.join(", ")}
@@ -446,7 +448,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.backend?.authentication &&
                             project.technologies.all.backend.authentication.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Authentication:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.authentication.join(", ")}
@@ -455,7 +457,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.backend?.libraries &&
                             project.technologies.all.backend.libraries.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Libraries:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.backend.libraries.join(", ")}
@@ -475,7 +477,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         <div className="grid gap-2 text-sm">
                           {project.technologies.all.database?.databases &&
                             project.technologies.all.database.databases.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Databases:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.database.databases.join(", ")}
@@ -484,7 +486,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.database?.orm &&
                             project.technologies.all.database.orm.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">ORM:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.database.orm.join(", ")}
@@ -502,7 +504,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                           Outils
                         </h3>
                         <div className="grid gap-2 text-sm">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-start gap-2">
                             <span className="font-medium text-foreground min-w-fit">Tools:</span>
                             <span className="text-muted-foreground">{project.technologies.all.tools.join(", ")}</span>
                           </div>
@@ -519,7 +521,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                         <div className="grid gap-2 text-sm">
                           {project.technologies.all.deployment?.platforms &&
                             project.technologies.all.deployment.platforms.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Platforms:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.deployment.platforms.join(", ")}
@@ -528,7 +530,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.deployment?.containerization &&
                             project.technologies.all.deployment.containerization.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">Containerization:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.deployment.containerization.join(", ")}
@@ -537,7 +539,7 @@ export function ProjectDetailPage({ project }: ProjectDetailPageProps) {
                             )}
                           {project.technologies.all.deployment?.ciCd &&
                             project.technologies.all.deployment.ciCd.length > 0 && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-start gap-2">
                                 <span className="font-medium text-foreground min-w-fit">CI/CD:</span>
                                 <span className="text-muted-foreground">
                                   {project.technologies.all.deployment.ciCd.join(", ")}

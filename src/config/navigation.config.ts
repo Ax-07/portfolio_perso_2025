@@ -24,19 +24,19 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
   },
   {
     name: "À propos",
-    href: "/#about",
+    href: "#about",
     icon: User,
     description: "Découvrez mon parcours"
   },
   {
     name: "Projets",
-    href: "/#projects",
+    href: "#projects",
     icon: Code2,
     description: "Mes réalisations"
   },
   {
     name: "Contact",
-    href: "/#contact",
+    href: "#contact",
     icon: Mail,
     description: "Travaillons ensemble"
   },

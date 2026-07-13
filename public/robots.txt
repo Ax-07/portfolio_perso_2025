@@ -2,7 +2,8 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://portfolio-perso-2025.vercel.app/sitemap.xml
+Sitemap: https://ax-07/sitemap.xml
+Sitemap: https://ax-07/blog/sitemap.xml
 
 # Bloquer les fichiers sensibles
 Disallow: /api/

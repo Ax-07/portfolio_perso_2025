@@ -1,0 +1,148 @@
+---
+title: "Instructions pour la création d'un portfolio avec blog"
+description: "Guide détaillé pour configurer un portfolio de développeur avec un blog MDX en utilisant Next.js et shadcn/ui."
+date: "2024-06-15"
+lastUpdated: "2024-06-15"
+category: "Guide"
+tags: ["nextjs", "portfolio", "blog", "mdx", "shadcn", "nodemailer"]
+readingTime: "10 min"
+coverImage: ""
+published: false
+---
+{/* # copilot-instructions.md */}
+
+{/* # Instructions pour GitHub Copilot – Portfolio avec Blog MDX */}
+
+## Objectif
+Créer un portfolio de développeur web avec Next.js (App Router) intégrant un blog basé sur des fichiers MDX. Le portfolio doit inclure une page d'accueil, une page "À propos", une liste de projets, un blog avec articles MDX, et un formulaire de contact utilisant Nodemailer.
+
+## Stack & contraintes
+- Framework : Next.js (App Router)
+- UI : shadcn/ui + Tailwind CSS
+- Contenu : MDX (articles de blog)
+- Email : Nodemailer (formulaire de contact)
+- Langage : TypeScript strict
+- Qualité : ESLint + Prettier
+- Accessibilité : priorité (ARIA, navigation clavier)
+- SEO : métadonnées par page + OpenGraph
+- Performance : images Next/Image, lazy loading, éviter les JS inutiles
+
+## Principes de code
+- Préférer des composants simples, découplés et testables.
+- Pas de logique business dans les composants UI : extraire dans `lib/` ou `services/`.
+- Utiliser des noms explicites, éviter les abréviations.
+- Zéro `any` (sauf cas exceptionnel justifié).
+- Toujours gérer les erreurs (try/catch, messages utilisateurs, logs serveur).
+- Ne jamais exposer de secrets côté client (Nodemailer uniquement côté serveur).
+- Éviter d’ajouter des dépendances si ce n’est pas nécessaire.
+
+## Architecture recommandée
+- `app/` : routes (App Router), layouts, pages
+- `app/(site)/` : pages publiques (home, about, projects, blog)
+- `app/api/` : routes serveur (contact, previews si besoin)
+- `components/` : composants réutilisables (UI & features)
+- `components/ui/` : composants shadcn
+- `content/blog/` : fichiers `.mdx` (posts)
+- `lib/` :
+  - `mdx/` : parsing, metadata, reading files
+  - `email/` : transport Nodemailer, templates
+  - `seo/` : helpers OpenGraph/metadata
+  - `utils/` : helpers génériques
+- `styles/` si nécessaire (mais Tailwind d’abord)
+
+## Routing attendu
+- `/` : landing + sections (about, featured projects, latest posts)
+- `/about`
+- `/projects` + éventuellement `/projects/[slug]`
+- `/blog`
+- `/blog/[slug]` (rendu MDX)
+- `/contact` (formulaire) + `POST /api/contact`
+
+## MDX (Blog)
+### Objectifs
+- Les posts sont des fichiers MDX dans `content/blog`.
+- Chaque post contient un frontmatter :
+  - `title` (string)
+  - `description` (string)
+  - `date` (ISO string)
+  - `tags` (string[])
+  - `published` (boolean)
+  - `cover` (string, optional)
+- Générer :
+  - liste des posts triés par `date desc`
+  - page post par `slug`
+  - (optionnel) tags / search
+
+### Conventions
+- Le slug = nom de fichier sans extension.
+- Ne pas charger tout le contenu MDX côté client : parsing côté serveur.
+- Ajouter des composants MDX custom (ex: `Callout`, `CodeBlock`, `TweetEmbed` si besoin) via `MDXComponents`.
+
+### Ce que tu dois produire quand on te le demande
+- Fonctions utilitaires : `getAllPosts()`, `getPostBySlug(slug)`
+- Types : `PostFrontmatter`, `Post`
+- Rendu MDX compatible App Router
+- Composants : `PostCard`, `MDXRenderer`
+
+## UI / shadcn
+- Utiliser shadcn pour Buttons, Cards, Inputs, etc.
+- Styles cohérents :
+  - layout responsive (mobile-first)
+  - sections claires, spacing généreux
+- Accessibilité :
+  - labels pour inputs
+  - focus visible
+  - contrastes corrects
+
+## Formulaire de contact (Nodemailer)
+### Contraintes de sécurité
+- Envoi email uniquement dans une route serveur : `app/api/contact/route.ts`
+- Variables d’env :
+  - `SMTP_HOST`
+  - `SMTP_PORT`
+  - `SMTP_USER`
+  - `SMTP_PASS`
+  - `MAIL_FROM`
+  - `MAIL_TO`
+- Validation serveur obligatoire (et côté client en bonus).
+- Anti-abus :
+  - honeypot + rate limit (simple in-memory ou middleware si proposé)
+  - message d’erreur générique côté client
+- Ne jamais logguer les secrets.
+
+### Ce que tu dois produire quand on te le demande
+- Schéma de validation (ex: zod)
+- API route `POST` avec gestion d’erreurs
+- Composant `ContactForm` (client) avec états (loading/success/error)
+- Template email simple (texte + HTML optionnel)
+
+## SEO / Metadata
+- Utiliser `generateMetadata` pour les pages dynamiques (blog post).
+- Ajouter OpenGraph + Twitter card.
+- Ajouter un `sitemap.xml` et `robots.txt` si demandé.
+
+## Contenu & i18n
+- Langue principale : français.
+- Microcopy claire, courte, orientée dev.
+- Si i18n est demandé : proposer une approche simple (ex: `next-intl`) mais ne pas l’ajouter sans demande explicite.
+
+## Standards de livraison pour chaque réponse
+Quand tu proposes du code :
+1) Donne les fichiers à créer/modifier avec leurs chemins
+2) Fournis le code complet des fichiers (pas des extraits incomplets)
+3) Explique brièvement les choix (2–6 lignes)
+4) Mentionne les variables d’environnement nécessaires
+5) Ajoute une checklist “à tester” (manuelle)
+
+## Interdits / à éviter
+- Éviter les solutions non compatibles App Router.
+- Pas de secrets côté client.
+- Pas d’utilisation de `dangerouslySetInnerHTML` sauf nécessité expliquée.
+- Pas d’over-engineering : rester pragmatique.
+
+## Demandes fréquentes (guidelines)
+Si l’utilisateur demande :
+- “un design” → proposer une structure (hero, sections, CTA) + composants shadcn adaptés.
+- “blog” → prioriser MDX + frontmatter + pages `/blog` et `/blog/[slug]`.
+- “contact” → API route + nodemailer + validation + anti-spam.
+- “améliore perf/seo” → images optimisées, metadata, caching, statique quand possible.

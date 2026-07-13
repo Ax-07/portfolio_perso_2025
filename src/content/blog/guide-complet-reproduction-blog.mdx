@@ -1,0 +1,1491 @@
+---
+title: "Guide : Créer un blog Next.js 15 & MDX de A à Z"
+description: "Tutoriel étape par étape pour construire un blog performant avec Next.js App Router, MDX Remote, Zod et Tailwind CSS, exactement comme celui-ci."
+date: "2026-01-06"
+lastUpdated: "2026-01-06"
+category: "Guide"
+tags: ["nextjs", "tutorial", "mdx", "guide", "typescript"]
+readingTime: "15 min"
+coverImage: "/pictures/blog/thumbnail-create-blog.png"
+published: true
+---
+
+Vous souhaitez créer un blog technique performant, entièrement personnalisable et intégré à votre application Next.js ? Ce guide est fait pour vous.
+Je vais vous montrer exactement comment j'ai construit le blog sur lequel vous naviguez actuellement.
+
+Ce n'est pas un exemple théorique, c'est le **code réel** de ce portfolio.
+
+## Prérequis
+
+- Un projet **Next.js 15** (App Router) initialisé.
+- **TypeScript** configuré.
+- **Tailwind CSS** pour le style.
+- **Shadcn/ui** (optionnel, mais utilisé pour les `Card` dans les exemples).
+
+## 1. Installation des dépendances
+
+Nous avons besoin de plusieurs paquets pour gérer le MDX, la validation des données et la coloration syntaxique.
+
+```bash
+pnpm add next-mdx-remote-client gray-matter zod github-slugger lucide-react
+pnpm add -D remark-gfm rehype-slug @shikijs/rehype
+```
+
+**Pour shadcn/ui (composants Card)** :
+
+```bash
+# Si shadcn/ui n'est pas déjà installé
+pnpx shadcn@latest init
+
+# Puis ajouter le composant Card
+pnpx shadcn@latest add card
+```
+
+- **next-mdx-remote-client** : Pour charger et rendre le MDX via les Server Components (RSC).
+- **gray-matter** : Pour parser les métadonnées (Front Matter) des fichiers `.mdx`.
+- **zod** : Pour valider strictement que chaque article a un titre, une date, etc.
+- **github-slugger** : Pour générer des slugs d'URL propres.
+- **Plugins** : `remark-gfm` (tables, etc.), `rehype-slug` (ancres sur les titres), `rehype-shiki` (coloration de code).
+
+## 2. Structure des dossiers
+
+Organisons notre projet pour séparer clairement le contenu, la logique et la présentation :
+
+```
+public/
+├── pictures/
+│   └── blog/                           # Images des articles
+src/
+├── app/
+│   └── blog/
+│       ├── page.tsx                    # Liste des articles
+│       ├── layout.tsx                  # Layout du blog (optionnel)
+│       └── [slug]/
+│           └── page.tsx                # Page d'un article
+├── content/
+│   └── blog/
+│       ├── mon-premier-article.mdx     # Vos articles
+│       └── guide-nextjs.mdx
+├── features/
+│   └── mdx/
+│       ├── mdx.tsx                     # Configuration MDX Remote
+│       ├── mdx-components.tsx          # Composants personnalisés
+│       ├── copy-button.tsx             # Bouton de copie de code
+│       └── TableOfContents.tsx         # Sommaire interactif
+├── lib/
+│   ├── blog-utils.ts                   # Logique de lecture des articles
+│   └── utils.ts                        # Fonction cn() et autres utilitaires
+└── components/
+    └── ui/
+        └── card.tsx                    # Composant Card de shadcn/ui
+```
+
+## 3. Utilitaires essentiels (`lib/`)
+
+### 3.1. Fonction `cn()` pour Tailwind
+
+Créez `src/lib/utils.ts` pour gérer les classes CSS dynamiquement :
+
+```typescript
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+Installez les dépendances si nécessaire :
+
+```bash
+pnpm add clsx tailwind-merge
+```
+
+### 3.2. Logique de gestion des articles
+
+C'est le cœur du système. Nous allons créer un utilitaire pour lire les fichiers et valider leur contenu.
+
+Créez `src/lib/blog-utils.ts` :
+
+```typescript
+// src/lib/blog-utils.ts
+
+import fs from 'fs/promises';
+import path from 'path';
+import z from 'zod';
+import matter from 'gray-matter';
+import GithubSlugger from 'github-slugger';
+
+/**
+ * Chemin vers le répertoire des articles de blog.
+ */
+const blogPostDirectory = path.join(process.cwd(), 'src', 'content', 'blog');
+
+/**
+ * Schéma de validation Zod des métadonnées (front matter) d'un article de blog.
+ * 
+ * Assure que chaque article respecte les bonnes pratiques SEO et contient les données nécessaires.
+ * 
+ * @property {string} title - Titre de l'article (30-60 caractères pour le SEO)
+ * @property {string} [description] - Méta-description (100-160 caractères pour le SEO)
+ * @property {string} date - Date de publication (format: "YYYY-MM-DD")
+ * @property {string} [lastUpdated] - Date de dernière mise à jour
+ * @property {boolean} [published=true] - Statut de publication (false = brouillon)
+ * @property {string[]} [tags] - Liste de tags/catégories
+ * @property {string} [readingTime] - Temps de lecture estimé (ex: "5 min")
+ * @property {string} [coverImage] - Chemin vers l'image de couverture
+ */
+const postSchema = z.object({
+    title: z.string().min(30).max(60), // Titre entre 30 et 60 caractères recommandés pour le SEO
+    description: z.string().min(100).max(160).optional(), // Description entre 100 et 160 caractères recommandés pour le SEO
+    date: z.coerce.string(),
+    lastUpdated: z.coerce.string().optional(),
+    published: z.boolean().optional().default(true),
+    tags: z.array(z.string()).optional(),
+    readingTime: z.string().optional(),
+    coverImage: z.string().optional(),
+});
+
+/**
+ * Type représentant un article de blog validé avec ses métadonnées et son contenu.
+ * 
+ * Combine les propriétés validées par Zod (postSchema) avec des champs calculés.
+ * 
+ * @typedef {Object} BlogPost
+ * @property {string} slug - Identifiant unique de l'article (nom du fichier sans extension)
+ * @property {string} content - Contenu MDX brut de l'article (sans le front matter)
+ * @property {string} title - Titre de l'article
+ * @property {string} date - Date de publication
+ * @property {string} [description] - Description courte de l'article
+ * @property {string} [lastUpdated] - Date de dernière modification
+ * @property {boolean} [published] - Statut de publication
+ * @property {string[]} [tags] - Tags associés
+ * @property {string} [readingTime] - Durée de lecture estimée
+ * @property {string} [coverImage] - URL de l'image de couverture
+ */
+type BlogPost = z.infer<typeof postSchema> & {
+    slug: string;
+    content: string;
+}
+/**
+ * Récupère tous les articles de blog publiés depuis le répertoire de contenu.
+ * 
+ * Cette fonction asynchrone :
+ * 1. Lit tous les fichiers .mdx du répertoire blog
+ * 2. Parse le front matter avec gray-matter
+ * 3. Valide les métadonnées avec Zod
+ * 4. Filtre les articles non publiés (published: false)
+ * 5. Log les erreurs de validation dans la console serveur
+ * 
+ * Les articles invalides sont ignorés et ne cassent pas le build.
+ * 
+ * @returns {Promise<BlogPost[]>} Un tableau d'articles de blog validés
+ * 
+ * @example
+ * const posts = await getAllBlogPosts();
+ * posts.forEach(post => console.log(post.title));
+ * 
+ * @async
+ */
+export const getAllBlogPosts = async () => {
+    const files = await fs.readdir(blogPostDirectory);
+    const fileNames = files.filter(file => file.endsWith('.mdx'));
+    const blogPosts: BlogPost[] = [];
+
+    for await (const fileName of fileNames) {
+        console.log('[SERVER] Processing blog file:', fileName);
+        const fullPath = path.join(blogPostDirectory, fileName);
+        const fileContents = await fs.readFile(fullPath, 'utf8');
+        const frontMatter = matter(fileContents);
+
+        const safeData = postSchema.safeParse(frontMatter.data);
+        if (!safeData.success) {
+            console.error(`[SERVER] ❌ Front matter validation failed for ${fileName}:`);
+            safeData.error.issues.forEach(issue => {
+                console.error(`[SERVER]  - ${issue.path.join('.')}: ${issue.message}`);
+            });
+            continue;
+        }
+
+        try {
+            blogPosts.push({
+                ...safeData.data,
+                slug: fileName.replace(/\.mdx?$/, ''),
+                content: frontMatter.content,
+            });
+        } catch (e) {
+            console.error(`Invalid front matter in ${fileName}:`, e);
+        }
+    }
+
+  return [...blogPosts];
+};
+
+/**
+ * Récupère un article de blog spécifique par son slug (identifiant unique).
+ * 
+ * Le slug correspond au nom du fichier MDX sans l'extension.
+ * Par exemple : "mon-article.mdx" → slug = "mon-article"
+ * 
+ * @param {string} slug - L'identifiant unique de l'article (nom du fichier sans .mdx)
+ * @returns {Promise<BlogPost | undefined>} L'article trouvé, ou undefined si aucun article ne correspond
+ * 
+ * @example
+ * const post = await getBlogPostBySlug("introduction-nextjs");
+ * if (post) {
+ *   console.log(post.title);
+ * } else {
+ *   notFound(); // Next.js 404
+ * }
+ * 
+ * @async
+ */
+export const getBlogPostBySlug = async (slug: string) => {
+    const blogPosts = await getAllBlogPosts();
+    const post = blogPosts.find(post => post.slug === slug);
+    return post;
+};
+
+/**
+ * Type représentant un titre (heading) extrait du contenu MDX.
+ * Utilisé pour générer le sommaire (Table of Contents).
+ * 
+ * @typedef {Object} Heading
+ * @property {number} level - Niveau du titre (2 pour ##, 3 pour ###, 4 pour ####)
+ * @property {string} text - Texte brut du titre (sans les #)
+ * @property {string} slug - Identifiant URL-safe généré par github-slugger (pour les ancres)
+ * 
+ * @example
+ * { level: 2, text: "Introduction", slug: "introduction" }
+ * { level: 3, text: "Prérequis", slug: "prerequis" }
+ */
+export type Heading = {
+    level: number;
+    text: string;
+    slug: string;
+};
+
+/**
+ * Extrait tous les titres (H2, H3, H4) d'un contenu MDX pour générer un sommaire.
+ * 
+ * Utilise des expressions régulières pour détecter les titres Markdown (##, ###, ####)
+ * et github-slugger pour générer des slugs URL-safe uniques.
+ * 
+ * **Niveaux supportés** :
+ * - ## → level 2 (H2)
+ * - ### → level 3 (H3)
+ * - #### → level 4 (H4)
+ * 
+ * Les H1 (#) sont ignorés car généralement réservés au titre principal de la page.
+ * Les titres dans les blocs de code (```) sont également exclus.
+ * 
+ * @param {string} content - Le contenu MDX brut de l'article
+ * @returns {Heading[]} Un tableau d'objets Heading avec level, text et slug
+ * 
+ * @example
+ * const content = `## Introduction\n### Prérequis\n## Installation`;
+ * const headings = getHeadings(content);
+ * // [{ level: 2, text: "Introduction", slug: "introduction" }, ...]
+ */
+export const getHeadings = (content: string): Heading[] => {
+    const slugger = new GithubSlugger();
+    const lines = content.split('\n');
+    const headings: Heading[] = [];
+    let inCodeBlock = false;
+
+    for (const line of lines) {
+        // Détecte le début ou la fin d'un bloc de code
+        if (line.trim().startsWith('```')) {
+            inCodeBlock = !inCodeBlock;
+            continue;
+        }
+
+        // Ignore les titres dans les blocs de code
+        if (inCodeBlock) {
+            continue;
+        }
+
+        // Détecte les titres H2, H3, H4 uniquement en dehors des blocs de code
+        if (line.match(/^#{2,4}\s/)) {
+            const text = line.replace(/^#{2,4}\s/, '').trim();
+            const level = line.match(/^#{2,4}/)?.[0].length || 0;
+            const slug = slugger.slug(text);
+            headings.push({ text, level, slug });
+        }
+    }
+
+    return headings;
+};
+
+```
+
+## 4. Configuration du moteur MDX (`features/mdx/`)
+
+Nous devons configurer comment le MDX est transformé en HTML, notamment pour la coloration syntaxique.
+
+Créez `src/features/mdx/mdx.tsx` :
+
+```tsx
+import { MDXRemote } from "next-mdx-remote-client/rsc";
+import { JSX, Suspense } from "react";
+import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
+import rehypeShiki from "@shikijs/rehype";
+import { mdxComponents } from "./mdx-components";
+
+/**
+ * Composant serveur asynchrone pour rendre du contenu MDX avec plugins et composants personnalisés.
+ * 
+ * Configure le pipeline de transformation MDX avec :
+ * - **remarkGfm** : Support des tables, listes de tâches, barré, etc. (GitHub Flavored Markdown)
+ * - **rehypeSlug** : Génère automatiquement des IDs pour les titres (pour les ancres de navigation)
+ * - **rehypeShiki** : Coloration syntaxique du code avec le thème "dark-plus"
+ * 
+ * Utilise Suspense pour gérer le chargement asynchrone et éviter les layouts shifts.
+ * 
+ * @param {Object} props - Props du composant
+ * @param {string} props.children - Le contenu MDX brut à rendre (chaîne de caractères)
+ * @returns {Promise<JSX.Element>} Le contenu MDX transformé en composants React
+ * 
+ * @example
+ * // Dans un Server Component
+ * const post = await getBlogPost();
+ * <Mdx>{post.content}</Mdx>
+ * 
+ * @async
+ * @server-component
+ */
+export const Mdx = async ({ children }: { children: string }): Promise<JSX.Element> => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MDXRemote 
+        source={children}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm],
+            rehypePlugins: [
+              rehypeSlug,
+              [
+                rehypeShiki,
+                {
+                  themes: {
+                    light: "dark-plus",
+                    dark: "dark-plus",
+                  },
+                },
+              ],
+            ],
+          },
+        }}
+        components={mdxComponents}
+      />
+    </Suspense>
+  );
+};
+
+```
+
+Ensuite, définissez vos composants personnalisés dans `src/features/mdx/mdx-components.tsx` pour styliser le Markdown avec Tailwind :
+
+**Important** : Créez d'abord le composant `CopyButton` dans `src/features/mdx/copy-button.tsx` :
+
+```tsx
+"use client";
+
+import { JSX, useState } from "react";
+import { Check, Copy } from "lucide-react";
+
+/**
+ * Props du composant CopyButton.
+ * 
+ * @interface CopyButtonProps
+ * @property {string} text - Le texte à copier dans le presse-papier
+ */
+interface CopyButtonProps {
+  text: string;
+}
+
+/**
+ * Bouton client pour copier du texte dans le presse-papier avec feedback visuel.
+ * 
+ * Utilise l'API Clipboard pour copier le contenu et affiche un état de confirmation
+ * pendant 2 secondes avec une icône de validation verte.
+ * 
+ * **Fonctionnalités** :
+ * - Copie du texte dans le presse-papier via l'API Clipboard
+ * - Feedback visuel avec changement d'icône (Copy → Check)
+ * - Animation de scale au hover pour améliorer l'UX
+ * - Accessible via aria-label et title dynamique
+ * - Position absolue pour s'intégrer dans les blocs de code
+ * - Backdrop blur pour un effet moderne
+ * 
+ * @param {CopyButtonProps} props - Props du composant
+ * @param {string} props.text - Le contenu textuel à copier
+ * @returns {JSX.Element} Un bouton avec icône animée et feedback visuel
+ * 
+ * @example
+ * <CopyButton text="const x = 5;" />
+ * 
+ * @client-component
+ */
+export function CopyButton({ text }: CopyButtonProps): JSX.Element {
+  // État pour gérer l'affichage du feedback de copie
+  const [copied, setCopied] = useState(false);
+
+  /**
+   * Gère la copie du texte dans le presse-papier.
+   * Active le feedback visuel pendant 2 secondes.
+   */
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    // Réinitialiser l'état après 5 secondes
+    setTimeout(() => setCopied(false), 5000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-3 right-3 z-10 rounded-md border border-border bg-background/90 p-2 backdrop-blur-sm transition-all hover:bg-muted hover:scale-105"
+      aria-label="Copier le code"
+      title={copied ? "Copié !" : "Copier le code"}
+    >
+      {copied ? (
+        <Check className="h-4 w-4 text-green-500" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
+```
+
+Puis créez les composants MDX dans `src/features/mdx/mdx-components.tsx` :
+
+```tsx
+import { type ComponentPropsWithoutRef, type ReactNode, isValidElement, type ReactElement, JSX } from "react";
+import Image from "next/image";
+import { CopyButton } from "./copy-button";
+
+/**
+ * Récupère le contenu textuel d'un nœud React, en parcourant récursivement ses enfants.
+ * Utile pour extraire le texte brut d'un bloc de code afin de le copier dans le presse-papier.
+ * 
+ * @param {ReactNode} children - Le nœud React à analyser (string, array, element, etc.)
+ * @return {string} Le contenu textuel extrait, ou une chaîne vide si aucun texte n'est trouvé
+ * 
+ * @example
+ * getTextContent("Hello") // "Hello"
+ * getTextContent(["Hello", " ", "World"]) // "Hello World"
+ * getTextContent(<code>const x = 5;</code>) // "const x = 5;"
+ */
+function getTextContent(children: ReactNode): string {
+  // Si l'enfant est une chaîne de caractères, la retourner directement
+  if (typeof children === "string") {
+    return children;
+  }
+  
+  // Si l'enfant est un tableau, parcourir récursivement tous les éléments et concaténer leur contenu textuel
+  if (Array.isArray(children)) {
+    return children.map(getTextContent).join("");
+  }
+  
+  // Si l'enfant est un élément React valide, extraire récursivement le contenu textuel de ses props.children
+  if (isValidElement(children)) {
+    const element = children as ReactElement<{ children?: ReactNode }>;
+    if (element.props?.children) {
+      return getTextContent(element.props.children);
+    }
+  }
+  
+  // Retourner une chaîne vide pour les autres types (number, boolean, null, undefined, etc.)
+  return "";
+}
+
+/**
+ * Composant pour les blocs de code préformatés avec fonctionnalité de copie.
+ * Entoure le contenu d'un conteneur relatif pour positionner le bouton de copie.
+ * 
+ * @param {ComponentPropsWithoutRef<"pre">} props - Props standard HTML pour l'élément <pre>
+ * @returns {JSX.Element} Un bloc de code avec bouton de copie intégré
+ * 
+ * @example
+ * <Pre><code>const x = 5;</code></Pre>
+ */
+export function Pre({ children, ...props }: ComponentPropsWithoutRef<"pre">): JSX.Element {
+  const textContent = getTextContent(children);
+
+  return (
+    <div className="mx-4 relative group">
+      <pre {...props}>{children}</pre>
+      <CopyButton text={textContent} />
+    </div>
+  );
+}
+
+/**
+ * Composant pour le code inline et dans les blocs de code.
+ * Ajoute un défilement horizontal automatique pour le contenu qui dépasse.
+ * 
+ * @param {ComponentPropsWithoutRef<"code">} props - Props standard HTML pour l'élément <code>
+ * @returns {JSX.Element} Un élément code avec overflow-x-auto
+ * 
+ * @example
+ * <Code>console.log('Hello')</Code>
+ */
+export function Code({ children, ...props }: ComponentPropsWithoutRef<"code">): JSX.Element {
+  return (
+    <code {...props} className="overflow-x-auto">
+      {children}
+    </code>
+  );
+}
+
+/**
+ * Composant pour les titres de niveau 1 (H1) avec styles personnalisés.
+ * Utilise les classes Tailwind pour un design moderne et responsive.
+ * 
+ * @param {ComponentPropsWithoutRef<"h1">} props - Props standard HTML pour l'élément <h1>
+ * @returns {JSX.Element} Un titre H1 stylisé avec scroll-margin pour l'ancrage
+ */
+export function H1({ children, ...props }: ComponentPropsWithoutRef<"h1">): JSX.Element {
+  return (
+    <h1 className="mt-8 scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl" {...props}>
+      {children}
+    </h1>
+  );
+}
+
+/**
+ * Composant pour les titres de niveau 2 (H2) avec bordure inférieure et support d'ancrage.
+ * Optimisé pour la navigation par ancres avec scroll-margin.
+ * 
+ * @param {ComponentPropsWithoutRef<"h2">} props - Props standard HTML pour l'élément <h2>
+ * @returns {JSX.Element} Un titre H2 stylisé avec bordure et capacité d'ancrage
+ */
+export function H2({ children, ...props }: ComponentPropsWithoutRef<"h2">): JSX.Element {
+  return (
+    <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0" {...props}>
+      {children}
+    </h2>
+  );
+}
+
+/**
+ * Composant pour les titres de niveau 3 (H3).
+ * Style semi-bold avec taille de texte 2xl.
+ * 
+ * @param {ComponentPropsWithoutRef<"h3">} props - Props standard HTML pour l'élément <h3>
+ * @returns {JSX.Element} Un titre H3 stylisé
+ */
+export function H3({ children, ...props }: ComponentPropsWithoutRef<"h3">): JSX.Element {
+  return (
+    <h3 className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight" {...props}>
+      {children}
+    </h3>
+  );
+}
+
+/**
+ * Composant pour les titres de niveau 4 (H4).
+ * Style semi-bold avec taille de texte xl.
+ * 
+ * @param {ComponentPropsWithoutRef<"h4">} props - Props standard HTML pour l'élément <h4>
+ * @returns {JSX.Element} Un titre H4 stylisé
+ */
+export function H4({ children, ...props }: ComponentPropsWithoutRef<"h4">): JSX.Element {
+  return (
+    <h4 className="mt-6 scroll-m-20 text-xl font-semibold tracking-tight" {...props}>
+      {children}
+    </h4>
+  );
+}
+
+/**
+ * Composant pour les paragraphes avec espacement vertical automatique.
+ * Applique une marge supérieure à tous les paragraphes sauf le premier.
+ * 
+ * @param {ComponentPropsWithoutRef<"p">} props - Props standard HTML pour l'élément <p>
+ * @returns {JSX.Element} Un paragraphe avec leading optimisé et espacement
+ */
+export function P({ children, ...props }: ComponentPropsWithoutRef<"p">): JSX.Element {
+  return (
+    <p className="leading-7 not-first:mt-6" {...props}>
+      {children}
+    </p>
+  );
+}
+
+/**
+ * Composant pour les listes non ordonnées (à puces).
+ * Affiche des puces de type disc avec espacement entre les items.
+ * 
+ * @param {ComponentPropsWithoutRef<"ul">} props - Props standard HTML pour l'élément <ul>
+ * @returns {JSX.Element} Une liste non ordonnée stylisée
+ */
+export function Ul({ children, ...props }: ComponentPropsWithoutRef<"ul">): JSX.Element {
+  return (
+    <ul className="my-6 ml-6 list-disc [&>li]:mt-2" {...props}>
+      {children}
+    </ul>
+  );
+}
+
+/**
+ * Composant pour les listes ordonnées (numérotées).
+ * Affiche des numéros décimaux avec espacement entre les items.
+ * 
+ * @param {ComponentPropsWithoutRef<"ol">} props - Props standard HTML pour l'élément <ol>
+ * @returns {JSX.Element} Une liste ordonnée stylisée
+ */
+export function Ol({ children, ...props }: ComponentPropsWithoutRef<"ol">): JSX.Element {
+  return (
+    <ol className="my-6 ml-6 list-decimal [&>li]:mt-2" {...props}>
+      {children}
+    </ol>
+  );
+}
+
+/**
+ * Composant pour les citations en bloc (blockquotes).
+ * Affiche une bordure gauche colorée et un style italique pour différencier les citations.
+ * 
+ * @param {ComponentPropsWithoutRef<"blockquote">} props - Props standard HTML pour l'élément <blockquote>
+ * @returns {JSX.Element} Une citation en bloc stylisée avec bordure latérale
+ */
+export function Blockquote({ children, ...props }: ComponentPropsWithoutRef<"blockquote">): JSX.Element {
+  return (
+    <blockquote className="mt-6 border-l-4 border-primary pl-6 italic text-muted-foreground" {...props}>
+      {children}
+    </blockquote>
+  );
+}
+
+/**
+ * Composant pour les liens hypertextes.
+ * Style avec soulignement et effet hover pour une meilleure UX.
+ * 
+ * @param {ComponentPropsWithoutRef<"a">} props - Props standard HTML pour l'élément <a>
+ * @returns {JSX.Element} Un lien stylisé avec couleur primaire et animation
+ */
+export function A({ children, ...props }: ComponentPropsWithoutRef<"a">): JSX.Element {
+  return (
+    <a className="font-medium text-primary underline underline-offset-4 hover:text-primary/80" {...props}>
+      {children}
+    </a>
+  );
+}
+
+/**
+ * Composant pour les séparateurs horizontaux.
+ * Ajoute un espacement vertical et utilise la couleur de bordure du thème.
+ * 
+ * @param {ComponentPropsWithoutRef<"hr">} props - Props standard HTML pour l'élément <hr>
+ * @returns {JSX.Element} Un séparateur horizontal stylisé
+ */
+export function Hr(props: ComponentPropsWithoutRef<"hr">): JSX.Element {
+  return <hr className="my-8 border-border" {...props} />;
+}
+
+/**
+ * Composant conteneur pour les tableaux avec défilement horizontal automatique.
+ * Wrapper nécessaire pour gérer le débordement du contenu sur mobile.
+ * 
+ * @param {ComponentPropsWithoutRef<"table">} props - Props standard HTML pour l'élément <table>
+ * @returns {JSX.Element} Un tableau responsive avec overflow-y-auto
+ */
+export function Table({ children, ...props }: ComponentPropsWithoutRef<"table">): JSX.Element {
+  return (
+    <div className="my-6 w-full overflow-y-auto">
+      <table className="w-full border-collapse border border-border" {...props}>
+        {children}
+      </table>
+    </div>
+  );
+}
+
+/**
+ * Composant pour l'en-tête de tableau.
+ * Applique un fond légèrement coloré pour distinguer l'en-tête du corps.
+ * 
+ * @param {ComponentPropsWithoutRef<"thead">} props - Props standard HTML pour l'élément <thead>
+ * @returns {JSX.Element} Un en-tête de tableau stylisé
+ */
+export function Thead({ children, ...props }: ComponentPropsWithoutRef<"thead">): JSX.Element {
+  return (
+    <thead className="bg-muted/50" {...props}>
+      {children}
+    </thead>
+  );
+}
+
+/**
+ * Composant pour le corps de tableau.
+ * Conteneur standard pour les lignes de données.
+ * 
+ * @param {ComponentPropsWithoutRef<"tbody">} props - Props standard HTML pour l'élément <tbody>
+ * @returns {JSX.Element} Un corps de tableau
+ */
+export function Tbody({ children, ...props }: ComponentPropsWithoutRef<"tbody">): JSX.Element {
+  return <tbody {...props}>{children}</tbody>;
+}
+
+/**
+ * Composant pour les lignes de tableau.
+ * Ajoute une bordure inférieure et un effet hover pour améliorer la lisibilité.
+ * 
+ * @param {ComponentPropsWithoutRef<"tr">} props - Props standard HTML pour l'élément <tr>
+ * @returns {JSX.Element} Une ligne de tableau avec effet hover
+ */
+export function Tr({ children, ...props }: ComponentPropsWithoutRef<"tr">): JSX.Element {
+  return (
+    <tr className="border-b border-border transition-colors hover:bg-muted/50" {...props}>
+      {children}
+    </tr>
+  );
+}
+
+/**
+ * Composant pour les cellules d'en-tête de tableau.
+ * Style semi-bold avec support de l'alignement (left, center, right).
+ * 
+ * @param {ComponentPropsWithoutRef<"th">} props - Props standard HTML pour l'élément <th>
+ * @returns {JSX.Element} Une cellule d'en-tête stylisée avec bordures
+ */
+export function Th({ children, ...props }: ComponentPropsWithoutRef<"th">): JSX.Element {
+  return (
+    <th
+      className="border border-border px-4 py-2 text-left font-semibold [[align=center]]:text-center [[align=right]]:text-right"
+      {...props}
+    >
+      {children}
+    </th>
+  );
+}
+
+/**
+ * Composant pour les cellules de données de tableau.
+ * Style standard avec support de l'alignement (left, center, right).
+ * 
+ * @param {ComponentPropsWithoutRef<"td">} props - Props standard HTML pour l'élément <td>
+ * @returns {JSX.Element} Une cellule de données stylisée avec bordures
+ */
+export function Td({ children, ...props }: ComponentPropsWithoutRef<"td">): JSX.Element {
+  return (
+    <td
+      className="border border-border px-4 py-2 text-left [[align=center]]:text-center [[align=right]]:text-right"
+      {...props}
+    >
+      {children}
+    </td>
+  );
+}
+
+/**
+ * Composant pour les images optimisées avec Next/Image.
+ * Utilise le composant Image de Next.js pour l'optimisation automatique et le lazy loading.
+ * Supporte les légendes via l'attribut title.
+ * 
+ * @param {ComponentPropsWithoutRef<"img">} props - Props standard HTML pour l'élément <img>
+ * @param {string} src - URL de l'image (obligatoire)
+ * @param {string} alt - Texte alternatif pour l'accessibilité
+ * @param {string} title - Légende optionnelle affichée sous l'image
+ * @param {number} width - Largeur de l'image (par défaut: 1000)
+ * @param {number} height - Hauteur de l'image (par défaut: 500)
+ * @returns {JSX.Element | null} Une figure avec image optimisée et légende optionnelle, ou null si pas de src
+ */
+export function Img({ src, alt, title, width, height, ...props }: ComponentPropsWithoutRef<"img">): JSX.Element | null {
+  if (!src) return null;
+
+  return (
+    <figure className="my-8">
+      <Image
+        src={src as string}
+        alt={alt || ""}
+        width={(width as number) || 1000}
+        height={(height as number) || 500}
+        fill
+        className="h-auto w-full rounded-md object-fill aspect-video"
+        // style={{ width: '100%', height: 'auto' }}
+        {...props}
+      />
+      {title && <figcaption className="mt-2 text-center text-sm text-muted-foreground">{title}</figcaption>}
+    </figure>
+  );
+}
+
+// Exporter tous les composants MDX
+export const mdxComponents = {
+  pre: Pre,
+  code: Code,
+  h1: H1,
+  h2: H2,
+  h3: H3,
+  h4: H4,
+  p: P,
+  ul: Ul,
+  ol: Ol,
+  blockquote: Blockquote,
+  a: A,
+  hr: Hr,
+  table: Table,
+  thead: Thead,
+  tbody: Tbody,
+  tr: Tr,
+  th: Th,
+  td: Td,
+  img: Img,
+};
+
+```
+
+## 5. Le Sommaire Interactif (`TableOfContents`)
+
+Pour afficher un sommaire sur le côté, créez `src/features/mdx/TableOfContents.tsx`. Ce composant client utilise `IntersectionObserver` pour surligner le titre actif.
+
+```tsx
+"use client";
+
+import { JSX, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { Heading } from "@/lib/blog-utils";
+
+/**
+ * Props du composant TableOfContents.
+ * 
+ * @interface TableOfContentsProps
+ * @property {Heading[]} headings - Liste des titres extraits du contenu MDX
+ */
+interface TableOfContentsProps {
+  headings: Heading[];
+}
+
+/**
+ * Composant client pour afficher un sommaire interactif avec détection du scroll.
+ * 
+ * Utilise l'API IntersectionObserver pour détecter quel titre est actuellement visible
+ * et le surligner dans le sommaire. Permet une navigation smooth vers les sections.
+ * 
+ * **Fonctionnalités** :
+ * - Détection automatique du titre visible (IntersectionObserver)
+ * - Scroll smooth vers les sections au clic
+ * - Mise à jour de l'URL avec l'ancre sans recharger la page
+ * - Indentation progressive selon le niveau de titre (H2, H3, H4)
+ * - Masqué sur mobile, visible uniquement sur XL+ (≥1280px)
+ * - Position sticky pour suivre le scroll
+ * 
+ * @param {TableOfContentsProps} props - Props du composant
+ * @param {Heading[]} props.headings - Liste des titres avec level, text et slug
+ * @returns {JSX.Element | null} Le sommaire ou null si aucun titre n'est fourni
+ * 
+ * @example
+ * const headings = getHeadings(post.content);
+ * <TableOfContents headings={headings} />
+ * 
+ * @client-component
+ */
+export function TableOfContents({ headings }: TableOfContentsProps): JSX.Element | null {
+  // État pour suivre l'ID du titre actuellement visible
+  const [activeId, setActiveId] = useState<string>("");
+
+  useEffect(() => {
+    // Utiliser un Set pour suivre les IDs des éléments actuellement visibles
+    const visibleHeadings = new Set<string>();
+
+    // Configuration de l'IntersectionObserver pour détecter les titres visibles
+    // rootMargin négatif de 66% en bas pour activer quand le titre est dans les 34% supérieurs
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visibleHeadings.add(entry.target.id);
+          } else {
+            visibleHeadings.delete(entry.target.id);
+          }
+        });
+
+        // Trouver le titre visible le plus haut (le premier dans l'ordre du DOM)
+        const firstVisibleHeading = headings.find((heading) =>
+          visibleHeadings.has(heading.slug)
+        );
+
+        if (firstVisibleHeading) {
+          setActiveId(firstVisibleHeading.slug);
+        }
+      },
+      { 
+        rootMargin: "0px 0px -66% 0px",
+        threshold: [0, 1]
+      }
+    );
+
+    // Observer tous les titres présents dans la page
+    headings.forEach((heading) => {
+      const element = document.getElementById(heading.slug);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    // Cleanup : arrêter d'observer les éléments au démontage du composant
+    return () => {
+      headings.forEach((heading) => {
+        const element = document.getElementById(heading.slug);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+    };
+  }, [headings]);
+
+  // Ne rien afficher si aucun titre n'est disponible
+  if (headings.length === 0) return null;
+
+  return (
+    <nav className="sticky top-24 hidden xl:block w-70 shrink-0 pl-12 border-l border-border max-h-[calc(100vh-11rem)] overflow-y-auto">
+      <h4 className="mb-4 text-xl underline font-semibold text-foreground">
+        Sur cette page
+      </h4>
+      <ul className="space-y-2 text-sm">
+        {headings.map((heading) => (
+          <li
+            key={heading.slug}
+            className={cn(
+              "transition-colors hover:text-foreground",
+              heading.level === 3 && "pl-4",
+              heading.level === 4 && "pl-8",
+              activeId === heading.slug
+                ? "font-medium text-foreground"
+                : "text-muted-foreground"
+            )}
+          >
+            <a
+              href={`#${heading.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(heading.slug)?.scrollIntoView({
+                  behavior: "smooth",
+                });
+                setActiveId(heading.slug);
+                window.history.pushState(null, "", `#${heading.slug}`);
+              }}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+```
+
+## 6. Création des pages (`app/blog/`)
+
+Maintenant, assemblons le tout.
+
+### La liste des articles (`app/blog/page.tsx`)
+
+```tsx
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { getAllBlogPosts } from "@/lib/blog-utils";
+import Link from "next/link";
+import Image from "next/image";
+import { JSX } from "react";
+
+/**
+ * Page principale du blog affichant la liste de tous les articles publiés.
+ * 
+ * Composant serveur asynchrone qui récupère tous les articles du blog
+ * et les affiche dans une grille responsive de cartes (cards).
+ * 
+ * **Fonctionnalités** :
+ * - Récupération asynchrone des articles côté serveur
+ * - Tri par date décroissante (plus récents en premier)
+ * - Affichage en grille responsive (1 colonne mobile → 3 colonnes desktop)
+ * - Images de couverture optimisées avec Next/Image
+ * - Effet hover avec scale et changement de fond
+ * - Format de date localisé en français
+ * - Troncature du titre à 2 lignes (line-clamp-2)
+ * 
+ * @returns {Promise<JSX.Element>} La page blog avec grille d'articles
+ * 
+ * @example
+ * // Route: /blog
+ * // Affiche automatiquement tous les articles publiés
+ * 
+ * @async
+ * @server-component
+ */
+export default async function BlogIndex(): Promise<JSX.Element> {
+  // Récupération de tous les articles publiés
+  const fileNames = await getAllBlogPosts();
+  return (
+    <main className="container mx-auto my-10 px-4 max-w-5xl">
+      <h1 className="text-4xl font-bold mb-8">Blog</h1>
+      <div className="grid gap-6 md:grid-cols-3">
+        {fileNames
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .map((fileName) => {
+            return (
+              <Link key={fileName.slug} href={`/blog/${fileName.slug}`} className="block h-full">
+                <Card className="h-full hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 overflow-hidden flex flex-col pt-0">
+                  {fileName.coverImage && (
+                    <div className="relative w-full h-auto object-fill aspect-video">
+                      <Image src={fileName.coverImage} alt={fileName.title} fill className="object-fill" />
+                    </div>
+                  )}
+                  <CardHeader>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {new Date(fileName.date).toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <CardTitle className="line-clamp-2">{fileName.title}</CardTitle>
+                  </CardHeader>
+                </Card>
+              </Link>
+            );
+          })}
+      </div>
+    </main>
+  );
+}
+
+```
+
+### La page de l'article (`app/blog/[slug]/page.tsx`)
+
+```tsx
+import { notFound } from "next/navigation";
+import { getBlogPostBySlug, getHeadings } from "@/lib/blog-utils";
+import { Mdx } from "@/features/mdx/mdx";
+import { TableOfContents } from "@/features/mdx/TableOfContents";
+import Image from "next/image";
+
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
+
+  if (!post) notFound();
+
+  const headings = getHeadings(post.content);
+
+  return (
+    <main className="relative container mx-auto my-10 px-4">
+      <div className="relative flex flex-col xl:flex-row gap-12 justify-center items-start">
+        <article className="lg:max-w-3xl 2xl:max-w-5xl w-full">
+          {post.coverImage && (
+            <div className="relative w-full aspect-video mb-8 rounded-lg overflow-hidden">
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                className="object-fill"
+                priority
+              />
+            </div>
+          )}
+          <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+          <p className="text-sm text-muted-foreground mb-8 lead">
+            {new Date(post.date).toLocaleDateString("fr-FR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+          <Mdx>{post.content}</Mdx>
+        </article>
+        <TableOfContents headings={headings} />
+      </div>
+    </main>
+  );
+}
+```
+
+## 6. Créer votre premier article
+
+Il ne vous reste plus qu'à créer un fichier dans `src/content/blog/mon-premier-post.mdx` :
+
+```mdx
+---
+title: "Hello World"
+description: "Ceci est mon premier article de blog."
+date: "2026-01-06"
+coverImage: "/images/hello.jpg"
+tags: ["intro"]
+---
+
+# Bienvenue !
+
+Voici du contenu en **Markdown**.
+
+## Un peu de code
+
+\`\`\`typescript
+const greeting = "Hello World";
+console.log(greeting);
+\`\`\`
+```
+
+## 7. Bonus : Génération Statique (SSG)
+
+Pour que vos pages de blog soient ultra-rapides et hébergeables sur un CDN, ajoutez cette fonction dans `app/blog/[slug]/page.tsx` :
+
+```tsx
+import { getAllBlogPosts } from "@/lib/blog-utils";
+
+export async function generateStaticParams() {
+  const posts = await getAllBlogPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+```
+
+## Récapitulatif : Checklist complète
+
+### ✅ Dépendances installées
+- [ ] `next-mdx-remote-client`, `gray-matter`, `zod`, `github-slugger`
+- [ ] `remark-gfm`, `rehype-slug`, `@shikijs/rehype`
+- [ ] `lucide-react` (pour les icônes)
+- [ ] `clsx`, `tailwind-merge` (pour la fonction `cn()`)
+- [ ] shadcn/ui et composant `Card`
+
+### 📁 Fichiers créés
+- [ ] `src/lib/utils.ts` (fonction `cn()`)
+- [ ] `src/lib/blog-utils.ts` (logique du blog)
+- [ ] `src/features/mdx/mdx.tsx` (configuration MDX)
+- [ ] `src/features/mdx/copy-button.tsx` (bouton copie)
+- [ ] `src/features/mdx/mdx-components.tsx` (composants stylisés)
+- [ ] `src/features/mdx/TableOfContents.tsx` (sommaire)
+- [ ] `src/app/blog/page.tsx` (liste des articles)
+- [ ] `src/app/blog/[slug]/page.tsx` (page article)
+- [ ] `src/content/blog/mon-premier-post.mdx` (votre premier article)
+
+### 🎨 Fonctionnalités
+- [ ] Validation stricte des métadonnées avec Zod
+- [ ] Coloration syntaxique du code avec Shiki
+- [ ] Bouton de copie sur les blocs de code
+- [ ] Sommaire interactif avec détection du scroll
+- [ ] Images optimisées avec Next/Image
+- [ ] Génération statique (SSG) pour la performance
+- [ ] Support des tables, listes, citations, etc.
+
+## 8. SEO : Optimisation pour les moteurs de recherche
+
+Un blog performant doit être bien référencé. Voici comment implémenter un SEO complet pour vos articles.
+
+### 8.1. Métadonnées dynamiques
+
+Ajoutez la fonction `generateMetadata` dans `app/blog/[slug]/page.tsx` :
+
+```tsx
+import { Metadata } from "next";
+import { getBlogPostBySlug } from "@/lib/blog-utils";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: "Article non trouvé",
+    };
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  const articleUrl = `${siteUrl}/blog/${post.slug}`;
+  const imageUrl = post.coverImage 
+    ? `${siteUrl}${post.coverImage}` 
+    : `${siteUrl}/og-image-default.png`;
+
+  return {
+    title: post.title,
+    description: post.description,
+    authors: [{ name: "Votre Nom" }],
+    keywords: post.tags,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      url: articleUrl,
+      siteName: "Votre Blog",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      locale: "fr_FR",
+      type: "article",
+      publishedTime: post.date,
+      modifiedTime: post.lastUpdated || post.date,
+      authors: ["Votre Nom"],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [imageUrl],
+      creator: "@votre_twitter",
+    },
+    alternates: {
+      canonical: articleUrl,
+    },
+  };
+}
+```
+
+### 8.2. Données structurées (JSON-LD)
+
+Créez `src/components/seo/blog-structured-data.tsx` :
+
+```tsx
+import { BlogPost } from "@/lib/blog-utils";
+
+interface BlogStructuredDataProps {
+  post: BlogPost;
+}
+
+export function BlogStructuredData({ post }: BlogStructuredDataProps) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.coverImage ? `${siteUrl}${post.coverImage}` : undefined,
+    datePublished: post.date,
+    dateModified: post.lastUpdated || post.date,
+    author: {
+      "@type": "Person",
+      name: "Votre Nom",
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Votre Blog",
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/blog/${post.slug}`,
+    },
+    keywords: post.tags?.join(", "),
+    articleSection: post.tags?.[0],
+    wordCount: post.content.split(/\s+/).length,
+    timeRequired: post.readingTime,
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  );
+}
+```
+
+Puis intégrez-le dans `app/blog/[slug]/page.tsx` :
+
+```tsx
+import { BlogStructuredData } from "@/components/seo/blog-structured-data";
+
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
+
+  if (!post) notFound();
+
+  return (
+    <>
+      <BlogStructuredData post={post} />
+      {/* ... reste du code */}
+    </>
+  );
+}
+```
+
+### 8.3. Sitemap dynamique
+
+Créez `app/blog/sitemap.xml/route.ts` :
+
+```tsx
+import { getAllBlogPosts } from "@/lib/blog-utils";
+import { MetadataRoute } from "next";
+
+export async function GET(): Promise<Response> {
+  const posts = await getAllBlogPosts();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+
+  const sitemap: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: post.lastUpdated || post.date,
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${sitemap
+    .map(
+      (item) => `
+  <url>
+    <loc>${item.url}</loc>
+    <lastmod>${new Date(item.lastModified!).toISOString()}</lastmod>
+    <changefreq>${item.changeFrequency}</changefreq>
+    <priority>${item.priority}</priority>
+  </url>`
+    )
+    .join("")}
+</urlset>`;
+
+  return new Response(xml, {
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+}
+```
+
+### 8.4. Flux RSS
+
+Créez `app/blog/rss.xml/route.ts` :
+
+```tsx
+import { getAllBlogPosts } from "@/lib/blog-utils";
+
+export async function GET(): Promise<Response> {
+  const posts = await getAllBlogPosts();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Votre Blog</title>
+    <link>${siteUrl}/blog</link>
+    <description>Articles techniques sur Next.js, React et le développement web</description>
+    <language>fr-FR</language>
+    <atom:link href="${siteUrl}/blog/rss.xml" rel="self" type="application/rss+xml"/>
+    ${posts
+      .map(
+        (post) => `
+    <item>
+      <title>${escapeXml(post.title)}</title>
+      <link>${siteUrl}/blog/${post.slug}</link>
+      <description>${escapeXml(post.description || "")}</description>
+      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+      ${post.tags?.map((tag) => `<category>${escapeXml(tag)}</category>`).join("\n      ") || ""}
+    </item>`
+      )
+      .join("")}
+  </channel>
+</rss>`;
+
+  return new Response(rss, {
+    headers: {
+      "Content-Type": "application/xml",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
+    },
+  });
+}
+
+/**
+ * Échappe les caractères spéciaux XML pour éviter les erreurs de parsing.
+ * 
+ * @param {string} text - Texte à échapper
+ * @returns {string} Texte sécurisé pour XML
+ */
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+```
+
+### 8.5. robots.txt optimisé
+
+Créez ou mettez à jour `public/robots.txt` :
+
+```txt
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin/private pages if any
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemap location
+Sitemap: https://votre-site.com/sitemap.xml
+Sitemap: https://votre-site.com/blog/sitemap.xml
+```
+
+### 8.6. Variables d'environnement
+
+Créez `.env.local` :
+
+```env
+NEXT_PUBLIC_SITE_URL=https://votre-site.com
+```
+
+### 8.7. Checklist SEO complète
+
+✅ **Métadonnées** :
+- [ ] Titre unique par article (30-60 caractères)
+- [ ] Description optimisée (100-160 caractères)
+- [ ] Tags/mots-clés pertinents
+- [ ] Canonical URL pour éviter le duplicate content
+
+✅ **Open Graph & Twitter** :
+- [ ] Image de couverture 1200x630px
+- [ ] Métadonnées complètes pour le partage social
+- [ ] Preview cards optimisées
+
+✅ **Structured Data** :
+- [ ] JSON-LD BlogPosting pour Google Rich Results
+- [ ] Informations d'auteur et de publication
+- [ ] Temps de lecture estimé
+
+✅ **Indexation** :
+- [ ] Sitemap XML dynamique
+- [ ] robots.txt configuré
+- [ ] Flux RSS pour les lecteurs
+
+✅ **Performance** :
+- [ ] Images optimisées avec Next/Image
+- [ ] Génération statique (SSG) activée
+- [ ] Cache headers configurés
+
+## 9. Aller plus loin
+
+- **Recherche** : Implémentez une barre de recherche avec Fuse.js pour filtrer les articles
+- **Pages par tags** : Créez des pages `/blog/tag/[tag]` pour filtrer par catégorie
+- **Pagination** : Ajoutez une pagination si vous avez beaucoup d'articles
+- **Commentaires** : Intégrez Giscus ou Disqus pour les discussions
+- **Analytics** : Suivez la popularité avec Vercel Analytics ou Google Analytics
+- **Newsletter** : Ajoutez un formulaire d'inscription avec Mailchimp ou ConvertKit
+- **Temps de lecture** : Calculez automatiquement le temps de lecture estimé
+- **Vues** : Comptez les vues avec une base de données (Prisma + PostgreSQL)
+- **Dark/Light mode** : Synchronisez le thème Shiki avec votre thème global
+
+Vous avez maintenant un blog **complet, professionnel et optimisé SEO** ! 🎉🚀

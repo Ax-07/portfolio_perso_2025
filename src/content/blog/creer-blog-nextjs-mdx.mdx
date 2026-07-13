@@ -1,0 +1,379 @@
+---
+title: "Créer un blog avec Next.js, MDX et TypeScript"
+description: "Guide complet pour implémenter un système de blog avec Next.js App Router, MDX, validation Zod et génération statique."
+date: "2025-12-22"
+lastUpdated: "2025-12-22"
+category: "Guide"
+tags: ["nextjs", "mdx", "typescript", "blog", "tutorial"]
+readingTime: "12 min"
+coverImage: "/pictures/blog/thumbnail-create-blog.png"
+published: false
+---
+
+{/* # Créer un blog avec Next.js, MDX et TypeScript */}
+{/* ![Texte alternatif](/pictures/blog/thumbnail-create-blog.png "Créer un blog avec Next.js, MDX et TypeScript") */}
+Dans cet article, je vais expliquer pas à pas comment j'ai implémenté le système de blog de ce portfolio. L'objectif : un blog simple, performant, avec du contenu en MDX et une validation stricte des métadonnées.
+
+## Architecture globale
+
+Le blog repose sur 4 piliers :
+
+1. **Fichiers MDX** : contenu stocké dans `src/content/`
+2. **Utilitaires serveur** : parsing et validation dans `lib/blog-utils.ts`
+3. **Routes dynamiques** : pages Next.js dans `app/blog/` et `app/blog/[slug]/`
+4. **Composant MDX** : rendu du contenu avec `next-mdx-remote-client`
+
+## Structure des dossiers
+
+```
+src/
+├── app/
+│   └── blog/
+│       ├── page.tsx           # Liste des articles
+│       └── [slug]/
+│           └── page.tsx       # Article individuel
+├── content/
+│   ├── test-blog.mdx
+│   └── creer-blog-nextjs-mdx.mdx
+├── features/
+│   └── mdx/
+│       └── mdx.tsx            # Composant de rendu MDX
+└── lib/
+    └── blog-utils.ts          # Logique métier du blog
+```
+
+## Étape 1 : Installer les dépendances
+
+```bash
+pnpm add next-mdx-remote-client gray-matter zod remark-gfm
+```
+
+### Rôle de chaque package
+
+| Package | Usage |
+|:--------|:------|
+| `next-mdx-remote-client` | Rendu des fichiers MDX côté serveur |
+| `gray-matter` | Extraction du front matter (métadonnées YAML) |
+| `zod` | Validation stricte des métadonnées |
+| `remark-gfm` | Support des tableaux et autres extensions Markdown |
+
+## Étape 2 : Créer les utilitaires serveur
+
+Créez `src/lib/blog-utils.ts` :
+
+```typescript
+import fs from 'fs/promises';
+import path from 'path';
+import z from 'zod';
+import matter from 'gray-matter';
+
+// Chemin vers les articles
+const blogPostDirectory = path.join(process.cwd(), 'src', 'content');
+
+// Schéma de validation Zod
+const postSchema = z.object({
+  title: z.string().min(45).max(60),
+  description: z.string().optional(),
+  date: z.coerce.string(),
+  lastUpdated: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  readingTime: z.string().optional(),
+});
+
+type BlogPost = z.infer<typeof postSchema> & {
+  slug: string;
+  content: string;
+};
+
+// Récupérer tous les articles
+export const getBlogPosts = async () => {
+  const files = await fs.readdir(blogPostDirectory);
+  const fileNames = files.filter(file => file.endsWith('.mdx'));
+  const blogPosts: BlogPost[] = [];
+
+  for await (const fileName of fileNames) {
+    const fullPath = path.join(blogPostDirectory, fileName);
+    const fileContents = await fs.readFile(fullPath, 'utf8');
+    const frontMatter = matter(fileContents);
+
+    // Validation Zod
+    const safeData = postSchema.safeParse(frontMatter.data);
+    if (!safeData.success) {
+      console.error(`❌ Validation failed for ${fileName}`);
+      continue;
+    }
+
+    blogPosts.push({
+      ...safeData.data,
+      slug: fileName.replace(/\.mdx?$/, ''),
+      content: frontMatter.content,
+    });
+  }
+
+  return blogPosts;
+};
+
+// Récupérer un article par slug
+export const getBlogPost = async (slug: string) => {
+  const blogPosts = await getBlogPosts();
+  return blogPosts.find(post => post.slug === slug);
+};
+```
+
+### Points clés
+
+- **Validation stricte** : le titre doit faire entre 45 et 60 caractères (SEO)
+- **Slug automatique** : généré à partir du nom de fichier
+- **Type-safe** : TypeScript infère le type depuis le schéma Zod
+- **Gestion des erreurs** : les articles invalides sont ignorés silencieusement
+
+## Étape 3 : Page d'index du blog
+
+Créez `src/app/blog/page.tsx` :
+
+```tsx
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { getBlogPosts } from "@/lib/blog-utils";
+import Link from "next/link";
+
+export default async function BlogIndex() {
+  const posts = await getBlogPosts();
+
+  return (
+    <main style={{ maxWidth: 760, margin: "40px auto", padding: "0 16px" }}>
+      <h1>Blog</h1>
+      <ul style={{ paddingLeft: 16 }}>
+        {posts.map((post) => (
+          <li key={post.slug}>
+            <Card>
+              <CardHeader>
+                <p>{new Date(post.date).toLocaleDateString('fr-FR')}</p>
+                <CardTitle>{post.title}</CardTitle>
+                <CardDescription>{post.description}</CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href={`/blog/${post.slug}`}>
+                  Lire l'article →
+                </Link>
+              </CardFooter>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+```
+
+### Ce qui se passe ici
+
+- **Server Component** : `getBlogPosts()` s'exécute côté serveur
+- **Composants shadcn/ui** : pour un design cohérent
+- **Tri automatique** : on peut ajouter `.sort()` par date si besoin
+
+## Étape 4 : Page article dynamique
+
+Créez `src/app/blog/[slug]/page.tsx` :
+
+```tsx
+import { notFound } from "next/navigation";
+import { getBlogPost } from "@/lib/blog-utils";
+import { Mdx } from "@/features/mdx/mdx";
+
+export default async function BlogPost(props: { 
+  params: Promise<{ slug: string }> 
+}) {
+  const params = await props.params;
+  const blogPost = await getBlogPost(params.slug);
+
+  if (!blogPost) {
+    notFound();
+  }
+
+  return (
+    <main className="w-full max-w-3xl mx-auto my-10 px-4">
+      <article className="max-w-none">
+        <Mdx>{blogPost.content}</Mdx>
+      </article>
+    </main>
+  );
+}
+```
+
+### Explications
+
+- **Route dynamique** : `[slug]` capture le nom de l'article
+- **notFound()** : retourne une 404 si l'article n'existe pas
+
+## Étape 5 : Composant de rendu MDX
+
+Créez `src/features/mdx/mdx.tsx` :
+
+```tsx
+import { MDXRemote } from "next-mdx-remote-client/rsc";
+import { Suspense } from "react";
+import remarkGfm from "remark-gfm";
+
+export const Mdx = ({ children }: { children: string }) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MDXRemote 
+        source={children}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        }}
+      />
+    </Suspense>
+  );
+};
+```
+
+### Pourquoi ce composant ?
+
+- **next-mdx-remote-client** : compile le MDX en React Server Component
+- **remark-gfm** : active les tables, les listes de tâches, etc.
+- **Suspense** : améliore la performance avec le streaming SSR
+
+## Étape 6 : Créer un article
+
+Créez `src/content/mon-premier-article.mdx` :
+
+```mdx
+---
+title: "Mon premier article de blog sur Next.js et TypeScript"
+description: "Découvrez comment j'ai créé ce blog en 30 minutes chrono."
+date: "2025-12-22"
+tags: ["nextjs", "tutorial"]
+readingTime: "5 min"
+---
+
+# Mon premier article
+
+Ceci est un exemple d'article.
+
+## Section avec du code
+
+\```typescript
+const message = "Hello, world!";
+console.log(message);
+\```
+
+## Section avec un tableau
+
+| Technologie | Version |
+|:------------|:--------|
+| Next.js     | 15.5    |
+| React       | 19.1    |
+```
+
+### Format du front matter
+
+- **title** : 45-60 caractères (SEO)
+- **description** : résumé pour la méta et la liste
+- **date** : format ISO (YYYY-MM-DD)
+- **tags** : tableau de mots-clés
+
+## Améliorations possibles
+
+### 1. Génération statique (SSG)
+
+Ajoutez dans `app/blog/[slug]/page.tsx` :
+
+```tsx
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map(post => ({ slug: post.slug }));
+}
+```
+
+### 2. Tri par date
+
+Dans `getBlogPosts()` :
+
+```typescript
+return blogPosts.sort((a, b) => 
+  new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+```
+
+### 3. Composants MDX personnalisés
+
+Dans `mdx.tsx` :
+
+```tsx
+const components = {
+  h1: (props) => <h1 className="text-4xl font-bold" {...props} />,
+  a: (props) => <a className="text-blue-500 hover:underline" {...props} />,
+};
+
+<MDXRemote 
+  source={children}
+  components={components}
+  // ...
+/>
+```
+
+### 4. Recherche et filtres
+
+- Ajouter un input de recherche sur la page d'index
+- Filtrer par tags
+- Pagination si >10 articles
+
+### 5. Métadonnées SEO dynamiques
+
+Ajoutez dans `app/blog/[slug]/page.tsx` :
+
+```tsx
+export async function generateMetadata(props: { 
+  params: Promise<{ slug: string }> 
+}) {
+  const params = await props.params;
+  const post = await getBlogPost(params.slug);
+  
+  if (!post) return {};
+
+  return {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: 'article',
+      publishedTime: post.date,
+    },
+  };
+}
+```
+
+## Avantages de cette approche
+
+| Avantage | Détail |
+|:---------|:-------|
+| **Simplicité** | Pas de CMS externe, juste des fichiers MDX |
+| **Performance** | SSR/SSG natif avec Next.js |
+| **Type-safety** | Validation Zod + TypeScript |
+| **Flexibilité** | Composants React dans le MDX si besoin |
+| **SEO** | Contrôle total sur les métadonnées |
+
+## Conclusion
+
+Ce système de blog est :
+
+- **Léger** : ~5 fichiers de code
+- **Maintenable** : validation stricte, pas de surprise
+- **Évolutif** : facile d'ajouter des fonctionnalités (recherche, tags, etc.)
+
+Si tu veux aller plus loin :
+
+- Ajoute un système de commentaires (giscus)
+- Intègre du code highlighting (Shiki ou Prism)
+- Configure un RSS feed
+
+**Prochaine étape** : je peux publier un article sur l'intégration de Shiki pour la coloration syntaxique avancée.
+
+---
+
+*Temps de mise en place : ~30 minutes*  
+*Lignes de code : ~150*

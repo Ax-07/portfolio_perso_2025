@@ -1,2 +1,4 @@
 export { PILEAH } from './pileah';
-// export { BOOKING_PRO } from './booking-pro';
+export { DAVEZ_PIZZA } from './davez-pizza';
+export { CPTS_ENTRE_FLEUVES } from './cpts';
+export { PREVISIA } from './previsia';

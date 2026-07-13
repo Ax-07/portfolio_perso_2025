@@ -93,12 +93,12 @@ export const PILEAH: Project = {
     }
   ],
   features: [
-    "Recherche géolocalisée de praticiens",
-    "Filtrage par spécialité, distance et prix",
-    "Carte interactive avec marqueurs",
-    "Interface multilingue (FR/EN/NL)",
-    "Formulaire de contact sécurisé",
-    "Interface responsive"
+    { short: "Recherche géolocalisée",     long: "Recherche géolocalisée de praticiens" },
+    { short: "Filtrage avancé",            long: "Filtrage par spécialité, distance et prix" },
+    { short: "Carte interactive",          long: "Carte interactive avec marqueurs" },
+    { short: "Multilingue FR/EN/NL",       long: "Interface multilingue (FR/EN/NL)" },
+    { short: "Contact sécurisé",           long: "Formulaire de contact sécurisé" },
+    { short: "Responsive",                 long: "Interface responsive" },
   ],
   technicalHighlights: [
     "Architecture client/serveur séparée",
@@ -112,6 +112,6 @@ export const PILEAH: Project = {
     demo: "https://pileah.com",
     // github: "https://github.com/FrePileah/Pileah"
   },
-  status: "En cours",
+  status: "Livré au client",
   year: "2025"
 };

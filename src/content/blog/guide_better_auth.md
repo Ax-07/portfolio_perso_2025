@@ -1,0 +1,630 @@
+# Guide d'authentification avec Nextjs, Prisma et Better-Auth
+
+## Introduction
+
+Ce guide vous expliquera comment intégrer une authentification robuste dans votre application Next.js en utilisant Prisma comme ORM et Better-Auth pour la gestion des utilisateurs et des sessions.
+
+## Prérequis
+
+- Un projet Next.js configuré
+- Une base de données (PostgreSQL, MySQL, SQLite, etc.) configurée
+- Prisma installé et configuré dans votre projet (voir le guide [Prisma](./guide_prisma.md) pour plus de détails)
+
+## Installation des dépendances
+
+Pour commencer, vous devez installer les dépendances nécessaires. Exécutez la commande suivante dans votre terminal :
+
+```bash
+pnpm add better-auth
+```
+
+## Configuration des variables d'environnement
+
+Ensuite, vous devez définir les variables d'environnement nécessaires pour Better-Auth. Ajoutez les variables suivantes à votre fichier `.env` :
+
+```env
+BETTER_AUTH_SECRET="votre_secret" # Remplacer par une chaîne secrète sécurisée
+BETTER_AUTH_URL=http://localhost:3000 # URL de votre application
+```
+
+## Configuration de Better-Auth avec prisma
+
+### 1. Configurer la base de données
+
+Créez un fichier `auth.ts` dans le dossier `lib/auth` avec le contenu suivant :
+
+```typescript
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+// If your Prisma file is located elsewhere, you can change the path
+import { prisma } from "@/lib/database/prisma.client";
+
+export const auth = betterAuth({
+    database: prismaAdapter(prisma, {
+        provider: "postgresql", // or "mysql", "sqlite", ...etc
+    }),
+});
+```
+
+### 2. Créer le schéma Prisma pour Better-Auth
+
+Après avoir configuré Better-Auth, vous devez créer les tables nécessaires dans votre base de données. Vous pouvez le faire en exécutant la commande suivante :
+
+```bash
+npx @better-auth/cli generate --config src/lib/auth/auth.ts
+```
+
+Cela générera un schéma prisma nécessaires dans votre base de données.
+
+Ensuite, exécutez les migrations Prisma pour appliquer les changements à votre base de données :
+
+```bash
+pnpm prisma-migrate
+```
+
+### 3. Ajouter les providers
+
+Ajouter le provider emailAndPassword en modifiant le fichier `auth.ts` comme suit :
+
+```typescript
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+// If your Prisma file is located elsewhere, you can change the path
+import { prisma } from "@/lib/database/prisma.client";
+
+export const auth = betterAuth({
+    database: prismaAdapter(prisma, {
+        provider: "postgresql", // or "mysql", "sqlite", ...etc
+    }),
+  emailAndPassword: { 
+    enabled: true, 
+  }, 
+});
+```
+
+### 4. Utilisation de l'authentification dans vos API routes
+
+Pour gérer les requêtes API liées à l'authentification, créez un fichier `src/app/api/auth/[...all]/route.ts` avec le contenu suivant :
+
+```typescript
+import { auth } from "@/lib/auth/auth"; // path to your auth file
+import { toNextJsHandler } from "better-auth/next-js";
+
+export const { POST, GET } = toNextJsHandler(auth);
+```
+
+### 5. Utilisation de l'authentification côté client
+
+Créez un fichier `auth-client.ts` dans le dossier `lib/auth` avec le contenu suivant :
+
+```typescript
+import { createAuthClient } from "better-auth/react"
+export const authClient = createAuthClient({})
+export const { useSession, signIn, signOut, signUp} = authClient
+```
+
+Vous pouvez maintenant utiliser les hooks `useSession`, `signIn`, `signOut` et `signUp` dans vos composants React pour gérer l'authentification des utilisateurs.
+
+## Création des pages d'authentification
+
+**prérequis** : Avoir installé les composants shadcn/ui `form`, `input`, `button`, `card`
+
+### 1. Page d'inscription
+
+Créez un dossier `src/app/auth/signup` et ajoutez un fichier `page.tsx` avec le contenu suivant :
+
+```tsx
+import { MainLayout } from "@/components/layout/main";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SignupForm } from "./signup-form";
+
+export default function SignUpPage() {
+  return (
+    <MainLayout>
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Sign Up</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SignupForm />
+        </CardContent>
+      </Card>
+    </MainLayout>
+  );
+}
+```
+
+Créez un composant `signup-form.tsx` dans `src/app/auth/signup` :
+
+```tsx
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+
+const signupFormSchema = z.object({
+  name: z.string().min(2).max(100).nonempty(),
+  email: z.string().email().nonempty(),
+  password: z.string().min(8).max(100).nonempty(),
+  confirmPassword: z.string().min(8).max(100).nonempty(),
+});
+
+export const SignupForm = ({ ...props }: React.ComponentProps<typeof Card>) => {
+  const form = useForm<z.infer<typeof signupFormSchema>>({
+    resolver: zodResolver(signupFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof signupFormSchema>) => {
+    console.log(data);
+  };
+  return (
+    <Card {...props}>
+      <CardHeader>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>Enter your information below to create your account</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{"Name"}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{"Email"}</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="" {...field} />
+                  </FormControl>
+                  <FormDescription>{"We'll never share your email."}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{"Password"}</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="" {...field} />
+                  </FormControl>
+                  <FormDescription>{"Your password must be at least 8 characters long."}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="" {...field} />
+                  </FormControl>
+                  <FormDescription>{"Please confirm your password."}</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FieldGroup>
+              <Field>
+                <Button type="submit">Create Account</Button>
+                <Button variant="outline" type="button">
+                  Sign up with Google
+                </Button>
+                <FieldDescription className="px-6 text-center">
+                  Already have an account? <a href="#">Sign in</a>
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+};
+```
+
+### 6. Utilisation de l'authentification côté serveur
+
+Créez un fichier `auth-server.ts` dans le dossier `lib/auth` avec le contenu suivant :
+
+```typescript
+import { redirect } from "next/navigation";
+import { auth } from "./auth"; // path to your Better Auth server instance
+import { headers } from "next/headers";
+
+export const getSession = async () => {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    return session;
+};
+
+export const getUser = async () => {
+    const session = await getSession();
+    return session?.user;
+}
+
+export const signOut = async () => {
+  await auth.api.signOut({ headers: await headers() });
+  redirect("/auth/signin");
+};
+```
+
+### 7. Création d'un hook personnalisé pour l'authentification
+
+Le fichier `auth-client.ts` contient déjà le client Better-Auth. Enrichissons-le avec des fonctions utilitaires :
+
+```typescript
+import { createAuthClient } from "better-auth/react"
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+
+export const authClient = createAuthClient({})
+export const { useSession, signIn, signOut, signUp} = authClient
+
+export type ProviderEnum = Parameters<typeof signIn.social>[0]["provider"];
+
+export const useAuthentification = () => {
+  const { signIn, signUp } = authClient;
+  const router = useRouter();
+
+  const signUpWithCredential = async (data: { name: string; email: string; password: string; }) => {
+    return await signUp.email(
+      {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onSuccess: (user) => {
+          console.log("User signed up successfully:", user);
+          router.push("/auth");
+        },
+        onError: (error) => {
+          console.error("Error signing up:", error);
+          toast.error("Error signing up: " + error.error.message);
+        },
+      }
+    );
+  };
+
+  const signInWithCredential = async (data: { email: string; password: string; }) => {
+    return await signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onSuccess: (user) => {
+          console.log("User signed in successfully:", user);
+          router.push("/auth");
+        },
+        onError: (error) => {
+          console.error("Error signing in:", error);
+          toast.error("Error signing in: " + error.error.message);
+        },
+      }
+    );
+  }
+
+  const signInWithProvider = async (provider: ProviderEnum) => {
+    await signIn.social(
+      { provider, callbackURL: "/auth" },
+      {
+        onSuccess: () => {},
+        onError: (error) => {
+          console.error("Error signing in:", error);
+          toast.error("Error signing in: " + error.error.message);
+        },
+      }
+    );
+  };
+
+  return { signInWithCredential, signInWithProvider, signUpWithCredential };
+}
+```
+
+### 8. Composant de boutons d'authentification
+
+Créez un composant `auth-buttons.tsx` qui affiche soit un bouton "Sign up" soit un menu utilisateur :
+
+```tsx
+import { getUser, signOut } from "@/lib/auth/auth-server";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOutIcon, User2 } from "lucide-react";
+
+export const AuthButtons = async () => {
+  const user = await getUser();
+
+  if (!user) {
+    return (
+      <Link href="/auth/signup" className={buttonVariants({ size: "sm", variant: "outline" })}>
+        Sign up
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <Avatar className="size-7">
+            <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
+            <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          {user.name}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-full">
+        <DropdownMenuItem asChild>
+          <Link href="/auth" className="flex items-center gap-2 w-full">
+            <User2 className="size-4" />
+            Mon compte
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <form>
+            <button
+              formAction={async () => {
+                "use server";
+                await signOut();
+              }}
+              className="flex items-center gap-2 w-full"
+            >
+              <LogOutIcon className="size-4" />
+              Se déconnecter
+            </button>
+          </form>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+```
+
+### 9. Intégration dans le Header
+
+Modifiez votre `header.tsx` pour utiliser le composant `AuthButtons` :
+
+```tsx
+import Link from "next/link";
+import { AuthButtons } from "@/lib/auth/auth-buttons";
+import { Suspense } from "react";
+import { Skeleton } from "../ui/skeleton";
+
+export const Header = () => {
+  return (
+    <header className="flex items-center justify-between border-b px-4 py-2">
+      <Link href="/" className="text-lg font-bold">
+        MyApp
+      </Link>
+      <Suspense fallback={<Skeleton className="h-9 w-32" />}>
+        <AuthButtons />
+      </Suspense>
+    </header>
+  );
+};
+```
+
+### 10. Protection des routes
+
+Créez une page protégée avec vérification de session :
+
+```tsx
+// src/app/auth/page.tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getUser } from "@/lib/auth/auth-server";
+import { CheckIcon } from "lucide-react";
+import { unauthorized } from "next/navigation";
+
+export default async function AuthPage() {
+  const user = await getUser();
+
+  if (!user) {
+    return unauthorized();
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">User Profile</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col space-y-2">
+        <p>
+          <strong>Name:</strong> {user.name}
+        </p>
+        <p>
+          <strong>Email:</strong> {user.email}
+          {user.emailVerified ? <CheckIcon className="inline size-4 ml-2 text-green-500" /> : null}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+Créez également une page `unauthorized.tsx` :
+
+```tsx
+// src/app/auth/unauthorized.tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+export default function UnauthorizedPage() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Accès non autorisé</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="mb-4">Vous devez être connecté pour accéder à cette page.</p>
+        <div className="flex gap-2">
+          <Link href="/auth/signin">
+            <Button>Se connecter</Button>
+          </Link>
+          <Link href="/auth/signup">
+            <Button variant="outline">S'inscrire</Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### 11. Configuration Next.js pour Better-Auth
+
+Ajoutez dans votre `next.config.ts` :
+
+```typescript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  experimental: {
+    authInterrupts: true,
+  }
+};
+
+export default nextConfig;
+```
+
+## 🔐 Fonctionnalités avancées
+
+### Vérification de l'email
+
+Better-Auth supporte la vérification par email. Pour l'activer :
+
+```typescript
+// src/lib/auth/auth.ts
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true, // Ajouter cette ligne
+  },
+  // Configurer l'envoi d'emails
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      // Implémenter l'envoi d'email avec Nodemailer
+      // Voir la documentation Better-Auth pour plus de détails
+    },
+  },
+});
+```
+
+### Récupération de mot de passe
+
+```typescript
+export const auth = betterAuth({
+  // ... configuration existante
+  passwordReset: {
+    enabled: true,
+    sendResetPasswordEmail: async ({ user, url }) => {
+      // Implémenter l'envoi d'email de réinitialisation
+    },
+  },
+});
+```
+
+### Utilisation du hook useSession
+
+```tsx
+"use client";
+
+import { useSession } from "@/lib/auth/auth-client";
+
+export function MyComponent() {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) {
+    return <div>Chargement...</div>;
+  }
+
+  if (!session) {
+    return <div>Non connecté</div>;
+  }
+
+  return <div>Bonjour {session.user.name}</div>;
+}
+```
+
+## 🐛 Résolution des problèmes
+
+### Erreur : "BETTER_AUTH_SECRET is not defined"
+
+Assurez-vous d'avoir défini `BETTER_AUTH_SECRET` dans votre fichier `.env` :
+
+```bash
+# Générer un secret
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### Erreur : "Session not found"
+
+Vérifiez que :
+
+1. Le serveur Better-Auth est démarré (route API `/api/auth/[...all]`)
+2. Les cookies sont autorisés dans votre navigateur
+3. Les migrations Prisma ont été appliquées
+
+### Erreur Google OAuth
+
+Vérifiez que :
+
+1. `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` sont définis
+2. L'URI de redirection dans Google Cloud Console correspond à : `http://localhost:3000/api/auth/callback/google`
+3. L'API Google+ est activée
+
+## 📚 Ressources supplémentaires
+
+- [Documentation Better-Auth](https://better-auth.com/docs)
+- [Guide des providers sociaux](https://better-auth.com/docs/authentication/social)
+- [Guide de sécurité](https://better-auth.com/docs/security)
+
+## 🎓 Conclusion
+
+Vous avez maintenant une authentification complète avec :
+
+- ✅ Inscription/Connexion par email
+- ✅ Authentification Google
+- ✅ Gestion des sessions
+- ✅ Protection des routes
+- ✅ Interface utilisateur complète
+
+N'hésitez pas à consulter la documentation de Better-Auth pour explorer d'autres fonctionnalités avancées !
+

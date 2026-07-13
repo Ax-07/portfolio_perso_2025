@@ -1,89 +1,25 @@
 "use client";
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { Controller } from "react-hook-form";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Field, FieldLabel, FieldError, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send, Clock, CheckCircle } from "lucide-react";
 import { CONTACT_CONTENT } from "@/constants";
 import Link from "next/link";
-import { contactSchema } from "@/lib/validations";
+import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "../ui/combobox";
+import { cn } from "@/lib/utils";
+import { useContactForm } from "@/hooks/use-contact-form";
 
 export function ContactSection() {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
-
-  const form = useForm<z.infer<typeof contactSchema>>({
-    resolver: zodResolver(contactSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      company: "",
-      budget: "",
-      message: "",
-    },
-  });
-
-  // Surveiller les valeurs du formulaire pour désactiver/activer le bouton
-  const watchedValues = form.watch();
-  const isFormValid = React.useMemo(() => {
-    return (
-      watchedValues.name?.trim().length >= 2 &&
-      watchedValues.email?.trim() &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(watchedValues.email) &&
-      watchedValues.message?.trim().length >= 10
-    );
-  }, [watchedValues.name, watchedValues.email, watchedValues.message]);
-
-  const onSubmit = async (values: z.infer<typeof contactSchema>) => {
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erreur lors de l'envoi");
-      }
-
-      const result = await response.json();
-      console.log("Message envoyé avec succès:", result);
-
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      form.reset();
-
-      // Reset success state après 5 secondes
-      setTimeout(() => setIsSubmitted(false), 5000);
-    } catch (error) {
-      console.error("Erreur lors de l'envoi:", error);
-      setIsSubmitting(false);
-
-      // Vous pouvez ajouter une gestion d'erreur ici
-      // Par exemple, afficher un toast d'erreur
-      alert(error instanceof Error ? error.message : "Erreur lors de l'envoi du message");
-    }
-  };
+  const { register, control, handleSubmit, onSubmit, errors, isValid, isSubmitting, isSubmitted, setIsSubmitted } =
+    useContactForm();
 
   return (
     <section id="contact" className="py-20 md:py-32 relative overflow-hidden">
-      {/* Background */}
-      {/* <div className="absolute inset-0 corporate-grid opacity-30" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" /> */}
-
       <div className="container px-4 md:px-6 mx-auto relative z-10">
         <div className="space-y-16">
           {/* En-tête de section */}
@@ -185,181 +121,138 @@ export function ContactSection() {
                           <p className="text-muted-foreground text-xs sm:text-sm">{CONTACT_CONTENT.form.subtitle}</p>
                         </div>
 
-                        <Form {...form}>
-                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel htmlFor="contact-name">
-                                      {CONTACT_CONTENT.form.fields.name.label}
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        id="contact-name"
-                                        placeholder={CONTACT_CONTENT.form.fields.name.placeholder}
-                                        {...field}
-                                        className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
-                                        aria-describedby="contact-name-desc"
-                                      />
-                                    </FormControl>
-                                    <FormDescription id="contact-name-desc" className="sr-only">
-                                      Votre prénom et nom pour vous identifier dans votre message
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field data-invalid={!!errors.name}>
+                              <FieldLabel htmlFor="contact-name">{CONTACT_CONTENT.form.fields.name.label}</FieldLabel>
+                              <Input
+                                id="contact-name"
+                                placeholder={CONTACT_CONTENT.form.fields.name.placeholder}
+                                {...register("name")}
+                                className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
                               />
-                              <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel htmlFor="contact-email">
-                                      {CONTACT_CONTENT.form.fields.email.label}
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        id="contact-email"
-                                        type="email"
-                                        placeholder={CONTACT_CONTENT.form.fields.email.placeholder}
-                                        {...field}
-                                        className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
-                                        aria-describedby="contact-email-desc"
-                                      />
-                                    </FormControl>
-                                    <FormDescription id="contact-email-desc" className="sr-only">
-                                      Votre adresse email sera utilisée uniquement pour vous répondre et ne sera pas
-                                      partagée
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                              <FieldDescription className="sr-only">
+                                Votre prénom et nom pour vous identifier dans votre message
+                              </FieldDescription>
+                              <FieldError errors={[errors.name]} />
+                            </Field>
+                            <Field data-invalid={!!errors.email}>
+                              <FieldLabel htmlFor="contact-email">{CONTACT_CONTENT.form.fields.email.label}</FieldLabel>
+                              <Input
+                                id="contact-email"
+                                type="email"
+                                placeholder={CONTACT_CONTENT.form.fields.email.placeholder}
+                                {...register("email")}
+                                className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
                               />
-                            </div>
+                              <FieldDescription className="sr-only">
+                                Votre adresse email sera utilisée uniquement pour vous répondre et ne sera pas partagée
+                              </FieldDescription>
+                              <FieldError errors={[errors.email]} />
+                            </Field>
+                          </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="company"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel htmlFor="contact-company">
-                                      {CONTACT_CONTENT.form.fields.company.label}
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        id="contact-company"
-                                        placeholder={CONTACT_CONTENT.form.fields.company.placeholder}
-                                        {...field}
-                                        className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
-                                        aria-describedby="contact-company-desc"
-                                      />
-                                    </FormControl>
-                                    <FormDescription id="contact-company-desc" className="sr-only">
-                                      Optionnel - Le nom de votre entreprise ou organisation
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field data-invalid={!!errors.company}>
+                              <FieldLabel htmlFor="contact-company">
+                                {CONTACT_CONTENT.form.fields.company.label}
+                              </FieldLabel>
+                              <Input
+                                id="contact-company"
+                                placeholder={CONTACT_CONTENT.form.fields.company.placeholder}
+                                {...register("company")}
+                                className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
                               />
-                              <FormField
-                                control={form.control}
+                              <FieldDescription className="sr-only">
+                                Optionnel - Le nom de votre entreprise ou organisation
+                              </FieldDescription>
+                              <FieldError errors={[errors.company]} />
+                            </Field>
+                            <Field data-invalid={!!errors.budget}>
+                              <FieldLabel htmlFor="budget-trigger">
+                                {CONTACT_CONTENT.form.fields.budget.label}
+                              </FieldLabel>
+                              <Controller
+                                control={control}
                                 name="budget"
                                 render={({ field }) => (
-                                  <FormItem className="grid gap-2">
-                                    {/* Label accessible sans htmlFor (évite l'orphelin) */}
-                                    <span id="budget-label" className="text-sm font-medium">
-                                      {CONTACT_CONTENT.form.fields.budget.label}
-                                    </span>
-
-                                    <Select name="budget" value={field.value} onValueChange={field.onChange}>
-                                      <FormControl className="w-full">
-                                        <SelectTrigger
-                                          id="budget-trigger"
-                                          role="combobox"
-                                          aria-labelledby="budget-label"
-                                          aria-describedby="budget-desc"
-                                          aria-controls="budget-options"
-                                          className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400"
-                                        >
-                                          <SelectValue placeholder={CONTACT_CONTENT.form.fields.budget.placeholder} />
-                                        </SelectTrigger>
-                                      </FormControl>
-
-                                      <SelectContent
-                                        id="budget-options"
-                                        className="border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950/50"
-                                      >
+                                  <Combobox
+                                    value={CONTACT_CONTENT.form.fields.budget.options?.find((option) => option.value === field.value)?.label || ""}
+                                    onValueChange={(newValue) => field.onChange(newValue ?? "")}
+                                  >
+                                    <ComboboxInput
+                                      placeholder={CONTACT_CONTENT.form.fields.budget.placeholder}
+                                      showClear
+                                      className="border-primary-200 focus-within:border-primary-500 dark:border-primary-800 dark:focus-within:border-primary-400"
+                                    />
+                                    <ComboboxContent className={cn('glass-card p-1 outline-1 outline-primary-500/50!')}>
+                                      <ComboboxList>
                                         {CONTACT_CONTENT.form.fields.budget.options?.map((option) => (
-                                          <SelectItem key={option.value} value={option.value}>
+                                          <ComboboxItem key={option.value} value={option.value} className={"hover:bg-primary/50!"}>
                                             {option.label}
-                                          </SelectItem>
+                                          </ComboboxItem>
                                         ))}
-                                      </SelectContent>
-                                    </Select>
-
-                                    <FormDescription id="budget-desc" className="sr-only">
-                                      Optionnel - Sélectionnez une fourchette de budget pour mieux adapter ma
-                                      proposition à vos besoins
-                                    </FormDescription>
-
-                                    <FormMessage />
-                                  </FormItem>
+                                      </ComboboxList>
+                                    </ComboboxContent>
+                                  </Combobox>
                                 )}
                               />
-                            </div>
+                              <FieldDescription className="sr-only">
+                                Optionnel - Sélectionnez une fourchette de budget pour mieux adapter ma proposition à
+                                vos besoins
+                              </FieldDescription>
+                              <FieldError errors={[errors.budget]} />
+                            </Field>
+                          </div>
 
-                            <FormField
-                              control={form.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel htmlFor="contact-message">
-                                    {CONTACT_CONTENT.form.fields.message.label}
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Textarea
-                                      id="contact-message"
-                                      placeholder={CONTACT_CONTENT.form.fields.message.placeholder}
-                                      rows={6}
-                                      {...field}
-                                      className="border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400 resize-none"
-                                      aria-describedby="contact-message-desc"
-                                    />
-                                  </FormControl>
-                                  <FormDescription id="contact-message-desc" className="sr-only">
-                                    Obligatoire - Décrivez votre projet en détail, vos besoins et objectifs. Minimum 10
-                                    caractères requis
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                          <Field data-invalid={!!errors.message}>
+                            <FieldLabel htmlFor="contact-message">
+                              {CONTACT_CONTENT.form.fields.message.label}
+                            </FieldLabel>
+                            <Textarea
+                              id="contact-message"
+                              placeholder={CONTACT_CONTENT.form.fields.message.placeholder}
+                              rows={6}
+                              {...register("message")}
+                              className="field-sizing-fixed border-primary-200 focus:border-primary-500 dark:border-primary-800 dark:focus:border-primary-400 resize-none"
                             />
+                            <FieldDescription className="sr-only">
+                              Obligatoire - Décrivez votre projet en détail, vos besoins et objectifs. Minimum 10
+                              caractères requis
+                            </FieldDescription>
+                            <FieldError errors={[errors.message]} />
+                          </Field>
 
-                            <Button
-                              type="submit"
-                              disabled={isSubmitting || !isFormValid}
-                              className="w-full professional-button"
-                            >
-                              {isSubmitting ? (
-                                <>
-                                  <Clock className="h-4 w-4 mr-2 animate-spin" />
-                                  {CONTACT_CONTENT.form.submit.loading}
-                                </>
-                              ) : (
-                                <>
-                                  <Send className="h-4 w-4 mr-2" />
-                                  {CONTACT_CONTENT.form.submit.text}
-                                </>
-                              )}
-                            </Button>
+                          <Button
+                            type="submit"
+                            disabled={isSubmitting || !isValid}
+                            className="w-full professional-button"
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <Clock className="h-4 w-4 mr-2 animate-spin" />
+                                {CONTACT_CONTENT.form.submit.loading}
+                              </>
+                            ) : (
+                              <>
+                                <Send className="h-4 w-4 mr-2" />
+                                {CONTACT_CONTENT.form.submit.text}
+                              </>
+                            )}
+                          </Button>
 
-                            <p className="text-xs text-muted-foreground text-center">{CONTACT_CONTENT.form.privacy}</p>
-                          </form>
-                        </Form>
+                          {/* Honeypot anti-spam — invisible aux humains, piège pour les bots */}
+                          <input
+                            type="text"
+                            {...register("honeypot")}
+                            className="sr-only"
+                            tabIndex={-1}
+                            autoComplete="off"
+                            aria-hidden="true"
+                          />
+
+                          <p className="text-xs text-muted-foreground text-center">{CONTACT_CONTENT.form.privacy}</p>
+                        </form>
                       </div>
                     )}
                   </div>

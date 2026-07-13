@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PROJECTS_SECTION_CONTENT } from "@/constants";
 import { TechList } from "@/components/ui/tech-list";
+import { ProjectStatusBadge } from "@/components/ui/project-status-badge";
 
 const { projects } = PROJECTS_SECTION_CONTENT;
 
@@ -63,31 +64,6 @@ const ProjectSectionCard = React.memo(({ project }: ProjectSectionCardProps) => 
     setImageErrors((prev) => ({ ...prev, [projectId]: true }));
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      Terminé: {
-        color: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400",
-        icon: "✓",
-      },
-      "En cours": {
-        color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400",
-        icon: "⏳",
-      },
-      Planifié: {
-        color: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400",
-        icon: "📋",
-      },
-    };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig["Planifié"];
-
-    return (
-      <Badge variant="outline" className={config.color}>
-        {config.icon} {status}
-      </Badge>
-    );
-  };
-
   return (
     <Card
       key={project.id}
@@ -113,7 +89,7 @@ const ProjectSectionCard = React.memo(({ project }: ProjectSectionCardProps) => 
             )}
           </div>
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-          <div className="absolute top-3 left-3">{getStatusBadge(project.status)}</div>
+          <div className="absolute top-3 left-3"><ProjectStatusBadge status={project.status} size="sm" /></div>
           {/* Overlay avec bouton voir plus */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
             <Button asChild size="sm" className="bg-white text-black hover:bg-gray-100">

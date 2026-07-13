@@ -12,10 +12,6 @@ import Link from "next/link";
 export function AboutSection() {
   return (
     <section id="about" className="py-20 md:py-32 relative overflow-hidden">
-      {/* Background */}
-      {/* <div className="absolute inset-0 corporate-grid opacity-30" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" /> */}
-
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
         <div className="space-y-16">
           {/* En-tête de section */}
@@ -73,7 +69,7 @@ export function AboutSection() {
                     {/* Technologies principales en badges flottants */}
                     <div className="flex flex-wrap gap-2">
                       {ABOUT_CONTENT.journey.values.map((value) => (
-                        <Badge key={value} variant="outline" className="border-primary-500/50 text-primary-500 text-xs sm:text-sm">
+                        <Badge key={value} variant="outline" className="border-primary-500/50 text-primary-500 text-xs sm:text-sm rounded-md">
                           {value}
                         </Badge>
                       ))}
@@ -105,7 +101,7 @@ export function AboutSection() {
                       <div className="space-y-3 sm:space-y-4">
                         {/* Header avec icône */}
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/20 transition-colors">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-primary-500/10 border border-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/20 transition-colors">
                             <IconComponent className={`h-4 w-4 sm:h-5 sm:w-5 ${skillGroup.color}`} />
                           </div>
                           <h4 className="font-semibold text-sm sm:text-base">{skillGroup.name}</h4>

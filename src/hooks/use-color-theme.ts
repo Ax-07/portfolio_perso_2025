@@ -61,19 +61,11 @@ export function useColorTheme(): UseColorThemeReturn {
     try {
       // Récupérer le thème sauvegardé
       const savedTheme = localStorage.getItem('color-theme');
-      console.log('Thème récupéré du localStorage:', savedTheme);
       
       if (savedTheme) {
         const theme = COLOR_HUES.find(t => t.name === savedTheme);
-        if (theme) {
-          console.log('Application du thème trouvé:', theme);
-          applyColorTheme(theme);
-        } else {
-          console.log('Thème non trouvé, utilisation du défaut');
-          applyColorTheme(COLOR_HUES[0]);
-        }
+        applyColorTheme(theme ?? COLOR_HUES[0]);
       } else {
-        console.log('Aucun thème sauvegardé, utilisation du défaut');
         applyColorTheme(COLOR_HUES[0]);
       }
     } catch (error) {

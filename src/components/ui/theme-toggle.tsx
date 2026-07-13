@@ -12,7 +12,7 @@ export function ThemeToggle() {
   return (
     <Button
       variant="outline"
-      size="icon"
+      size="icon-lg"
       onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
       className="relative overflow-hidden cursor-pointer"
       aria-label={`Basculer vers le mode ${resolvedTheme === "light" ? "sombre" : "clair"}`}

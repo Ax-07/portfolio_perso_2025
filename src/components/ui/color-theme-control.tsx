@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Palette, 
@@ -38,7 +37,7 @@ export function ColorThemeControl({}: ColorThemeControlProps) {
         <DropdownMenuTrigger asChild>
           <Button 
             variant="outline" 
-            size="icon" 
+            size="icon-lg" 
             className="relative cursor-pointer" 
             aria-label={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}
             title={`Changer le thème de couleur. Thème actuel : ${currentTheme.label}`}

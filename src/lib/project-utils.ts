@@ -1,4 +1,4 @@
-import { Project } from '@/types/project';
+import { Project, ProjectStatus } from '@/types/project';
 
 /**
  * Convertit les technologies organisées par catégorie en tableau plat
@@ -65,19 +65,35 @@ export const getTotalTechnologiesCount = (technologies: Project['technologies'])
 /**
  * Configuration des statuts de projet avec leurs couleurs et icônes
  */
-export const PROJECT_STATUS_CONFIG = {
-  "Terminé": { 
+export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, { color: string; iconName: string }> = {
+  "Terminé": {
     color: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400",
-    iconName: "CheckCircle" 
+    iconName: "CheckCircle"
   },
-  "En cours": { 
+  "Livré au client": {
+    color: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400",
+    iconName: "CheckCircle"
+  },
+  "En cours": {
     color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400",
-    iconName: "Clock" 
+    iconName: "Clock"
   },
-  "Planifié": { 
+  "En développement": {
+    color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400",
+    iconName: "Clock"
+  },
+  "Planifié": {
     color: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400",
-    iconName: "Calendar" 
-  }
+    iconName: "Calendar"
+  },
+  "En pause": {
+    color: "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400",
+    iconName: "PauseCircle"
+  },
+  "Archivé": {
+    color: "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-900 dark:text-gray-400",
+    iconName: "Archive"
+  },
 } as const;
 
 /**

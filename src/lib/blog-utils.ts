@@ -27,10 +27,11 @@ const blogPostDirectory = path.join(process.cwd(), 'src', 'content', 'blog');
  */
 const postSchema = z.object({
     title: z.string().min(30).max(60), // Titre entre 30 et 60 caractères recommandés pour le SEO
-    description: z.string().min(100).max(160).optional(), // Description entre 100 et 160 caractères recommandés pour le SEO
+    description: z.string().min(60).max(160).optional(), // Description entre 100 et 160 caractères recommandés pour le SEO
     date: z.coerce.string(),
     lastUpdated: z.coerce.string().optional(),
     published: z.boolean().optional().default(true),
+    category: z.string().optional(), // Catégorie de l'article pour le regroupement
     tags: z.array(z.string()).optional(),
     readingTime: z.string().optional(),
     coverImage: z.string().optional(),
@@ -49,12 +50,14 @@ const postSchema = z.object({
  * @property {string} [description] - Description courte de l'article
  * @property {string} [lastUpdated] - Date de dernière modification
  * @property {boolean} [published] - Statut de publication
+ * @property {string} [category] - Catégorie de l'article
  * @property {string[]} [tags] - Tags associés
  * @property {string} [readingTime] - Durée de lecture estimée
  * @property {string} [coverImage] - URL de l'image de couverture
  */
 type BlogPost = z.infer<typeof postSchema> & {
     slug: string;
+    category?: string;
     content: string;
 }
 /**
@@ -206,4 +209,18 @@ export const getHeadings = (content: string): Heading[] => {
     }
 
     return headings;
+};
+
+
+export const getCategories = async (): Promise<string[]> => {
+    const blogPosts = await getAllBlogPosts();
+    const categorySet = new Set<string>();
+
+    blogPosts.forEach((post) => {
+        if (post.category) {
+            categorySet.add(post.category);
+        }
+    });
+
+    return Array.from(categorySet);
 };

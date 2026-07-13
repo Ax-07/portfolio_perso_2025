@@ -13,6 +13,7 @@ export const contactSchema = z.object({
   message: z.string().min(10, {
     message: CONTACT_CONTENT.form.fields.message.errorMessage,
   }),
+  honeypot: z.literal("").optional(),
 });
 
 export type ContactFormData = z.infer<typeof contactSchema>;

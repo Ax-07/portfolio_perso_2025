@@ -1,9 +1,15 @@
 // app/blog/page.tsx
+import type { Metadata } from "next";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllBlogPosts } from "@/lib/blog-utils";
 import Link from "next/link";
 import Image from "next/image";
 import { JSX } from "react";
+
+export const metadata: Metadata = {
+  title: "Blog — Xavier Affringue",
+  description: "Articles sur le développement web, React, Next.js, TypeScript et les bonnes pratiques du développement Full Stack.",
+};
 
 /**
  * Page principale du blog affichant la liste de tous les articles publiés.
@@ -33,7 +39,7 @@ export default async function BlogIndex(): Promise<JSX.Element> {
   // Récupération de tous les articles publiés
   const fileNames = await getAllBlogPosts();
   return (
-    <main className="container flex-1 mx-auto mt-10 mb-16 px-4 max-w-5xl">
+    <main className="relative container flex-1 mx-auto mt-8 mb-16 px-4 max-w-5xl">
       <h1 className="text-4xl font-bold mb-8">Blog</h1>
       <div className="grid gap-6 md:grid-cols-3">
         {fileNames
@@ -43,8 +49,8 @@ export default async function BlogIndex(): Promise<JSX.Element> {
               <Link key={fileName.slug} href={`/blog/${fileName.slug}`} className="block h-full">
                 <Card className="h-full hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 overflow-hidden flex flex-col pt-0">
                   {fileName.coverImage && (
-                    <div className="relative w-full h-auto object-fill aspect-video">
-                      <Image src={fileName.coverImage} alt={fileName.title} fill className="object-fill" />
+                    <div className="relative w-full h-auto aspect-video">
+                      <Image src={fileName.coverImage} alt={fileName.title} fill className="object-cover" />
                     </div>
                   )}
                   <CardHeader>

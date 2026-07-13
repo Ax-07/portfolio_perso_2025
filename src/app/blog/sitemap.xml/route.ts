@@ -42,7 +42,7 @@ import { MetadataRoute } from "next";
  */
 export async function GET(): Promise<Response> {
   const posts = await getAllBlogPosts();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio-perso-2025.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   const sitemap: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,

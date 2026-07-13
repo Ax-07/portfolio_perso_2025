@@ -1,4 +1,13 @@
 // Types pour le portfolio
+export type ProjectStatus =
+  | "En cours"
+  | "En développement"
+  | "Terminé"
+  | "Livré au client"
+  | "Planifié"
+  | "En pause"
+  | "Archivé";
+
 export interface Project {
   id: number;
   slug: string;
@@ -55,13 +64,16 @@ export interface Project {
     nom: string;
     description: string;
   }[];
-  features: string[];
+  features: {
+    short: string; // Version condensée pour les badges dans la liste (2–4 mots)
+    long: string;  // Version complète pour la page détail du projet
+  }[];
   technicalHighlights?: string[];
   links: {
     demo: string;
     github?: string;
   };
-  status: string;
+  status: ProjectStatus;
   year: string;
 }
 

@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ColorThemeInitializer } from "@/components/ui/color-theme-initializer";
 import { generatePageMetadata, getStructuredData } from "@/config";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { Footer } from "@/components/layouts/footer";
 import { SITE_URL } from "@/config/brand.config";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -124,9 +124,9 @@ export default function RootLayout({
         <GoogleAnalytics />
         <Analytics />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <ColorThemeInitializer />
           {children}
           <Footer />
+          <Toaster richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

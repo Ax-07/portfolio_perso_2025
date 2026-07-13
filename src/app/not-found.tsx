@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Home } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Page non trouvée — Xavier Affringue",
+  description: "La page que vous recherchez n'existe pas ou a été déplacée.",
+};
 
 export default function NotFound() {
   return (
@@ -9,7 +15,7 @@ export default function NotFound() {
         <div className="max-w-2xl mx-auto text-center space-y-8">
           {/* Illustration de la 404 */}
           <div className="relative">
-            <p className="text-[150px] md:text-[200px] font-bold text-primary/20 leading-none select-none">
+            <p aria-hidden="true" className="text-[150px] md:text-[200px] font-bold text-primary/20 leading-none select-none">
               404
             </p>
             <div className="absolute inset-0 flex items-center justify-center">

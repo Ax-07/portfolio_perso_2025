@@ -6,8 +6,8 @@ export const PREVISIA: Project = {
   title: "Previsia",
   description: {
     short:
-      "Clone de RCA Prévisionnel — SaaS de prévisionnel financier pour porteurs de projet et experts-comptables.",
-    long: `Bâti sur Next.js 16, TypeScript strict, Prisma/PostgreSQL et Tailwind v4, Previsia implémente un moteur financier pur TS côté client générant 14 états (CR, bilan, trésorerie, BFR) en temps réel via useMemo. Un moteur de paie autonome couvre la réglementation sociale française 2026.`,
+      "SaaS de pilotage et de prévision financière destiné aux porteurs de projet et aux experts-comptables.",
+    long: `Conçu avec Next.js 16, TypeScript strict, Prisma, PostgreSQL et Tailwind CSS v4, Previsia permet de construire, analyser et présenter un prévisionnel financier complet. Son moteur de calcul en TypeScript génère en temps réel 14 états financiers, notamment le compte de résultat, le bilan, la trésorerie et le BFR. L'application intègre également un moteur de paie autonome adapté à la réglementation sociale française 2026.`,
   },
   image: "/images/previsia/landing_previsia.png",
   favicon: {
@@ -20,9 +20,9 @@ export const PREVISIA: Project = {
   },
   category: "Full Stack",
   objectif:
-    "Reproduire les mécanismes et la logique métier du logiciel RCA Prévisionnel sous forme de SaaS web accessible à tout porteur de projet souhaitant construire un prévisionnel financier complet et bancable sans expertise comptable.",
+    "Proposer une plateforme SaaS accessible permettant aux entrepreneurs, dirigeants et professionnels du chiffre de construire un prévisionnel financier complet, cohérent et exploitable. Previsia centralise la saisie des hypothèses, automatise les calculs financiers et facilite la présentation du projet auprès des partenaires, investisseurs et établissements bancaires.",
   defi:
-    "Implémenter un moteur de calcul financier exhaustif (CR, bilan, BFR, trésorerie mensuelle, SIG, CAF, IS, TVA, emprunts…) entièrement côté client, en garantissant la cohérence des séries temporelles mensuelles sur 1 à 3 exercices. Le moteur de paie a nécessité de modéliser finement la réglementation Urssaf, Agirc-Arrco et TNS 2026, avec gestion des exonérations par type de contrat.",
+    "Concevoir un moteur de calcul financier capable de transformer des hypothèses métier en états financiers cohérents sur une période de 1 à 3 exercices. L'un des principaux défis a été de garantir la fiabilité des séries temporelles mensuelles et l'interdépendance des calculs liés au compte de résultat, au bilan, au BFR, à la trésorerie, à la fiscalité, aux investissements et aux financements. Le moteur de paie a également nécessité une modélisation détaillée de la réglementation Urssaf, Agirc-Arrco et TNS 2026, avec la prise en charge des exonérations propres à chaque type de contrat.",
   technologies: {
     principales: ["Next.js 16", "TypeScript", "PostgreSQL", "Prisma", "Tailwind CSS v4", "Zustand"],
     all: {
@@ -68,17 +68,17 @@ export const PREVISIA: Project = {
     {
       nom: "Landing page",
       description:
-        "Page marketing présentant le produit : hero, fonctionnalités, modules, tarifs, FAQ et call-to-action. Entièrement en Server Components.",
+        "Page marketing présentant l'univers de Previsia, ses fonctionnalités, ses différents modules, ses offres, sa FAQ et ses principaux appels à l'action. Elle est entièrement construite avec des Server Components.",
     },
     {
       nom: "Dashboard dossiers",
       description:
-        "Liste de tous les dossiers prévisionnels de l'utilisateur avec accès rapide à chaque projet et création d'un nouveau dossier.",
+        "Espace central permettant de créer, consulter et gérer les différents dossiers prévisionnels de l'utilisateur.",
     },
     {
       nom: "Workspace dossier",
       description:
-        "Espace de travail principal organisé en 4 onglets : Saisie (11 modules de formulaires), Contrôle (14 états financiers), Diaporama et Imports.",
+        "Espace de travail principal d'un dossier, organisé autour de quatre sections complémentaires : saisie des hypothèses, contrôle financier, présentation et import de données.",
     },
     {
       nom: "Onglet Saisie",
@@ -88,7 +88,7 @@ export const PREVISIA: Project = {
     {
       nom: "Onglet Contrôle",
       description:
-        "14 tableaux de résultats calculés en temps réel côté client : compte de résultat, SIG, budget, CAF, seuil de rentabilité, BFR, tableau de financement, plan de financement, bilan, ratios, trésorerie mensuelle, TVA, synthèse et dashboard KPI.",
+        "Espace d'analyse regroupant 14 états financiers calculés en temps réel : compte de résultat, SIG, budget, CAF, seuil de rentabilité, BFR, tableaux de financement, bilan, ratios, trésorerie mensuelle, TVA, synthèse et dashboard de KPI.",
     },
     {
       nom: "Simulateur de paie",
@@ -104,15 +104,15 @@ export const PREVISIA: Project = {
   features: [
     {
       short: "Moteur financier temps réel",
-      long: "Un moteur de calcul financier pur TypeScript (`buildFinCalc`) tourne entièrement côté client via `useMemo`. Toute modification d'une hypothèse recalcule instantanément l'ensemble du modèle (CR, bilan, BFR, trésorerie, IS…) sans aucun appel réseau.",
+      long: "Le moteur de calcul financier `buildFinCalc`, développé en TypeScript sous forme de fonctions pures, s'exécute entièrement côté client via `useMemo`. Chaque modification d'une hypothèse met instantanément à jour l'ensemble du modèle financier, sans appel réseau supplémentaire.",
     },
     {
       short: "14 états financiers",
-      long: "Compte de résultat prévisionnel, SIG, budget de trésorerie, CAF, seuil de rentabilité, BFR, tableau de financement, plan de financement, bilan, ratios financiers, trésorerie mensuelle, TVA, synthèse et dashboard KPI — tous calculés côté client.",
+      long: "Previsia génère automatiquement les principaux documents nécessaires à l'analyse d'un projet : compte de résultat prévisionnel, SIG, budget de trésorerie, CAF, seuil de rentabilité, BFR, tableaux de financement, bilan, ratios financiers, suivi de TVA, synthèse et dashboard de KPI.",
     },
     {
       short: "11 modules de saisie",
-      long: "Formulaires métier complets pour modéliser un prévisionnel : hypothèses de CA avec saisonnalité, charges fixes/variables, investissements avec amortissements automatiques, financement avec échéancier, masse salariale, IS/IR/TVA, et divers flux de trésorerie.",
+      long: "Des formulaires métier structurés permettent de modéliser chaque composante du projet : chiffre d'affaires et saisonnalité, charges fixes et variables, investissements, amortissements, financements, masse salariale, fiscalité et autres flux de trésorerie.",
     },
     {
       short: "Moteur de paie français",
@@ -128,7 +128,7 @@ export const PREVISIA: Project = {
     },
     {
       short: "Gestion de dossiers",
-      long: "Création et gestion de plusieurs dossiers prévisionnels indépendants, avec paramétrage de la date de démarrage, de la durée de projection (1 à 3 exercices) et du régime fiscal.",
+      long: "L'utilisateur peut créer et gérer plusieurs projets financiers indépendants, en définissant pour chacun la date de démarrage, la durée de projection, le régime fiscal et les principales hypothèses économiques.",
     },
   ],
   technicalHighlights: [

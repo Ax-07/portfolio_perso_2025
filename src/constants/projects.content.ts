@@ -9,7 +9,7 @@ import { PILEAH, DAVEZ_PIZZA, CPTS_ENTRE_FLEUVES, PREVISIA } from './projects';
 
 const PROJECTS: Project[] = [
   PILEAH,
-  DAVEZ_PIZZA,
+  // DAVEZ_PIZZA,
   CPTS_ENTRE_FLEUVES,
   PREVISIA,
 ]

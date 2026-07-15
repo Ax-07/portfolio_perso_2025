@@ -2,7 +2,7 @@
 // LIENS DE NAVIGATION CENTRALISÉS
 // ====================================================================
 
-import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase } from "lucide-react";
+import { User, Mail, Home, Code2, FolderOpen, CloudFog, ShoppingCart, Briefcase, Newspaper } from "lucide-react";
 
 // ==================================
 // NAVIGATION PRINCIPALE (Header)
@@ -35,17 +35,17 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
     description: "Mes réalisations"
   },
   {
+    name: "Blog",
+    href: "#blog",
+    icon: Newspaper,
+    description: "Articles et tutoriels"
+  },
+  {
     name: "Contact",
     href: "#contact",
     icon: Mail,
     description: "Travaillons ensemble"
   },
-  {
-    name: "Blog",
-    href: "#blog",
-    icon: FolderOpen,
-    description: "Articles et tutoriels"
-  }
 ] as const;
 
 // ==================================

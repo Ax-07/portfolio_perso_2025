@@ -107,6 +107,7 @@ export function ContactSection() {
                           {CONTACT_CONTENT.form.successMessage.description}
                         </p>
                         <Button
+                          name="reset-form"
                           onClick={() => setIsSubmitted(false)}
                           variant="outline"
                           className="border-primary-500/50 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/50 text-sm sm:text-base"
@@ -181,6 +182,7 @@ export function ContactSection() {
                                     onValueChange={(newValue) => field.onChange(newValue ?? "")}
                                   >
                                     <ComboboxInput
+                                      id="budget-trigger"
                                       placeholder={CONTACT_CONTENT.form.fields.budget.placeholder}
                                       showClear
                                       className="border-primary-200 focus-within:border-primary-500 dark:border-primary-800 dark:focus-within:border-primary-400"

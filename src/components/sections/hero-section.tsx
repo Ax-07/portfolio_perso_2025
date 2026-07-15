@@ -36,7 +36,6 @@ export const HeroSection: React.FC<React.ComponentProps<"section">> = ({classNam
 
               <div className="text-muted-foreground max-w-2xl leading-relaxed text-center">
                 <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-primary-500 mb-2">{HERO_CONTENT.title}</p>
-                
                   {HERO_CONTENT.description.split("\n").map((line, index) => (
                     <p key={index} className="text-base sm:text-lg md:text-xl lg:text-2xl">
                       {line}

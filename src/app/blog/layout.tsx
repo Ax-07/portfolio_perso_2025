@@ -1,7 +1,8 @@
 import { Header } from "@/components/layouts/header";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { SEO_CONFIG } from "@/config";
 import { getAllBlogPosts, getCategories } from "@/lib/blog-utils";
+import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -25,15 +26,17 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <div className="relative flex flex-1 w-full">
         <nav className="sticky top-16 hidden lg:flex flex-col w-full lg:max-w-50 2xl:max-w-80 shrink-0 border-r border-primary-200/50 dark:border-primary-800/50 py-8 px-4 space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
           <h2 className="text-2xl bold">Articles</h2>
-          <Accordion type="single" collapsible className="w-full">
             {categories.map((category) => (
-              <AccordionItem value={category} key={category}>
-                <AccordionTrigger className="text-left w-full hover:none">{category}</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-2 mt-2 mb-4">
+              <Collapsible key={category} defaultOpen={true}>
+                <CollapsibleTrigger className="text-left w-full flex items-center justify-between text-md font-medium text-muted-foreground hover:text-foreground">
+                {category}
+                <ChevronDown className="ml-2 h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <ul className="space-y-2 ml-2 mt-2 mb-4">
                     {fileNames
                       .filter((file) => file.category === category)
-                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                       .map((file) => (
                         <li key={file.slug}>
                           <Link href={`/blog/${file.slug}`} className="block h-full text-sm text-muted-foreground hover:text-foreground">
@@ -42,10 +45,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
                         </li>
                       ))}
                   </ul>
-                </AccordionContent>
-              </AccordionItem>
+                </CollapsibleContent>
+              </Collapsible>
             ))}
-          </Accordion>
         </nav>
         {children}
       </div>

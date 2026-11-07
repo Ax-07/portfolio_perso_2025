@@ -2,8 +2,8 @@ import { Project } from "@/types/project";
 
 export const PREVISIA: Project = {
   id: 4, // ⚠️ À mettre à jour avec le prochain id disponible dans le portfolio
-  slug: "previsia",
-  title: "Previsia",
+  slug: "previsionnel_app",
+  title: "Previsionnel App",
   description: {
     short:
       "SaaS de pilotage et de prévision financière destiné aux porteurs de projet et aux experts-comptables.",
@@ -141,7 +141,7 @@ export const PREVISIA: Project = {
   ],
   links: {
     // TODO: Renseigner l'URL de démo une fois le projet déployé
-    demo: "https://previsia.vercel.app",
+    demo: "https://previsionnel-financier-app.vercel.app/",
     // github: "https://github.com/Ax-07/previsionnel_financier-app" // TODO: décommenter si repo public
   },
   status: "En développement",

@@ -41,7 +41,7 @@ export function Footer() {
                     return (
                       <Link
                         key={idx}
-                        href={link.href}
+                        href={link.href.startsWith("#") ? `/#${link.href}` : link.href}
                         target={link.href.startsWith('http') ? '_blank' : undefined}
                         rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                         className="w-10 h-10 rounded-lg bg-muted/50 hover:bg-primary-50 dark:hover:bg-primary-950/50 border border-border/50 hover:border-primary-200 dark:hover:border-primary-800 flex items-center justify-center transition-all duration-200 group"
@@ -64,7 +64,7 @@ export function Footer() {
                   return (
                     <li key={idx}>
                       <Link 
-                        href={link.href}
+                        href={link.href.startsWith("#") ? `/#${link.href}` : link.href}
                         className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground hover:text-primary-600 transition-colors duration-200 group"
                       >
                         <IconComponent className="h-4 w-4 group-hover:text-primary-600 transition-colors" />
@@ -83,7 +83,7 @@ export function Footer() {
                 <div className="text-sm text-muted-foreground">
                   <p>Prêt pour votre projet ?</p>
                   <Link 
-                    href="#contact" 
+                    href="/#contact" 
                     className="inline-flex items-center gap-1 mt-2 text-primary-600 hover:text-primary-700 font-medium transition-colors"
                   >
                     Discutons-en

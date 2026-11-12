@@ -7,15 +7,25 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Portfolio",
-  description: SEO_CONFIG.pages.portfolio.description,
+  title: SEO_CONFIG.pages.blog.title,
+  description: SEO_CONFIG.pages.blog.description,
   alternates: {
-    canonical: `${SEO_CONFIG.canonical}/blog`
+    canonical: `${SEO_CONFIG.canonical}/blog`,
   },
+
   openGraph: {
-    title: `Portfolio | ${SEO_CONFIG.openGraph.siteName}`,
-    description: SEO_CONFIG.pages.portfolio.description,
-    url: `${SEO_CONFIG.canonical}/portfolio`,
+    title: SEO_CONFIG.pages.blog.title,
+    description: SEO_CONFIG.pages.blog.description,
+    url: `${SEO_CONFIG.canonical}/blog`,
+    type: "website",
+    images: [
+      {
+        url: "/og-image",
+        width: 1200,
+        height: 630,
+        alt: "Blog de Xavier Affringue",
+      },
+    ],
   },
 };
 

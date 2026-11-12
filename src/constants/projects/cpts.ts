@@ -12,6 +12,16 @@ export const CPTS_ENTRE_FLEUVES: Project = {
   image: "/images/cpts/carte-cpts.png",
   favicon: {},
   category: "Full Stack",
+  tags: [
+    "Next.js",
+    "TypeScript",
+    "Prisma",
+    "PostgreSQL",
+    "Leaflet",
+    "Cartographie",
+    "Santé",
+    "Back-office",
+  ],
   objectif:
     "Faciliter l'accès des habitants aux lieux de vaccination HPV sur les 14 communes de la CPTS Entre-Fleuves. Offrir aux professionnels de santé un outil autonome pour maintenir la carte publique à jour en temps réel.",
   defi:

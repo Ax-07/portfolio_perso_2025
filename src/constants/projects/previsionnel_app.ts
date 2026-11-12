@@ -19,7 +19,16 @@ export const PREVISIONNEL_APP: Project = {
     appleTouch: "/favicons/previsia/apple-touch-icon.png",
   },
   category: "Full Stack",
-  tags: ["SaaS", "Full Stack", "Finance", "Next.js"],
+  tags: [
+    "SaaS",
+    "Next.js",
+    "TypeScript",
+    "Prisma",
+    "PostgreSQL",
+    "Finance",
+    "Prévisionnel financier",
+    "Tableau de bord",
+  ],
   objectif:
     "Proposer une plateforme SaaS accessible permettant aux entrepreneurs, dirigeants et professionnels du chiffre de construire un prévisionnel financier complet, cohérent et exploitable. Previsia centralise la saisie des hypothèses, automatise les calculs financiers et facilite la présentation du projet auprès des partenaires, investisseurs et établissements bancaires.",
   defi:

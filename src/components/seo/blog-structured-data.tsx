@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/config/brand.config";
 import { JSX } from "react";
 
 /**
@@ -60,7 +61,7 @@ interface BlogStructuredDataProps {
  * @see https://developers.google.com/search/docs/appearance/structured-data/article
  */
 export function BlogStructuredData({ post }: BlogStructuredDataProps): JSX.Element {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = SITE_URL;
   
   const structuredData = {
     "@context": "https://schema.org",

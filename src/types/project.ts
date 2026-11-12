@@ -26,7 +26,7 @@ export interface Project {
     appleTouch?: string;
   }
   category: string;
-  tags?: string[]; // Tags pour catégorisation et filtrage
+  tags: string[]; // Tags pour catégorisation et filtrage
   objectif: string;
   defi: string;
   technologies: {
@@ -85,6 +85,7 @@ export interface ProjectsSectionContent {
   description: string;
   projects: Project[];
   categories: string[];
+  tags?: string[];
   cta: {
     title: string;
     description_1: string;

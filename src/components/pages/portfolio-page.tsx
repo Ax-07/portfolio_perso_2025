@@ -16,9 +16,14 @@ const { projects, categories } = PROJECTS_SECTION_CONTENT;
 export function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = useState("Tous");
   
-  const filteredProjects = selectedCategory === "Tous" 
-    ? projects 
-    : projects.filter(project => project.category ? project.tags?.includes(selectedCategory) : false);
+const filteredProjects =
+  selectedCategory === "Tous"
+    ? projects
+    : projects.filter(
+        (project) =>
+          project.category === selectedCategory ||
+          project.tags?.includes(selectedCategory)
+      );
 
   return (
     <main className="min-h-screen bg-background">

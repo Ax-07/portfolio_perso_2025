@@ -134,7 +134,7 @@ export const PREVISIONNEL_APP: Project = {
   ],
   technicalHighlights: [
     "Architecture découplée : seules les données saisies sont persistées en DB (Prisma/PostgreSQL) ; tous les calculs financiers s'exécutent côté client en mémoire, éliminant tout stockage de résultats calculés.",
-    "`React.cache()` côté serveur déduplique les appels `fetchScenarioData` dans la même requête Node.js, consolidant ~32 requêtes Prisma parallèles (`Promise.all`) en un seul point d'entrée réseau.",
+    "`React.cache()` permet de mémoriser les résultats de `fetchScenarioData` dans la même requête serveur, afin d'éviter plusieurs exécutions identiques.",
     "Moteur de calcul `buildFinCalc` : fonctions pures et déterministes, modélisant des séries temporelles mensuelles (12 × N mois) avec saisonnalité, amortissements, échéanciers d'emprunts et accumulation de BFR.",
     "Moteur de paie modulaire avec registre de paramètres réglementaires versionné par millésime (SMIC, PASS, taux Urssaf, Agirc-Arrco, RGDU, exonérations par type de contrat), extensible et testable unitairement via Vitest.",
     "Store Zustand `useScenarioDataStore` comme unique point de chargement des données brutes ; les hooks de calcul par onglet (`useFinCalc`, `useBfrData`, `useCompteResultatData`…) consomment exclusivement ce store via `useMemo`.",

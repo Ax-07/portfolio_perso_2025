@@ -4,15 +4,8 @@
 // ⚠️ Utilise brand.ts comme source de vérité pour les informations personnelles
 
 import { SOCIAL_LINKS } from '@/config';
-import type { Project, ProjectsSectionContent } from '@/types/project';
-import { PILEAH, DAVEZ_PIZZA, CPTS_ENTRE_FLEUVES, PREVISIONNEL_APP } from './projects';
-
-const PROJECTS: Project[] = [
-  PILEAH,
-  // DAVEZ_PIZZA,
-  CPTS_ENTRE_FLEUVES,
-  PREVISIONNEL_APP,
-]
+import type { ProjectsSectionContent } from '@/types/project';
+import { PROJECTS } from './projects';
 
 export const PROJECTS_SECTION_CONTENT: ProjectsSectionContent = {
   badge: "Portfolio",
@@ -36,3 +29,4 @@ export const PROJECTS_SECTION_CONTENT: ProjectsSectionContent = {
   }
 } as const;
 
+ 

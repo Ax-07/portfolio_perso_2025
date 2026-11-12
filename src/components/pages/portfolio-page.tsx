@@ -11,19 +11,21 @@ import { ProjectImage } from "@/components/ui/project-image";
 import { TechList } from "@/components/ui/tech-list";
 import { useState } from "react";
 
-const { projects, categories } = PROJECTS_SECTION_CONTENT;
+const { projects, categories, tags } = PROJECTS_SECTION_CONTENT;
 
 export function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = useState("Tous");
+  const [selectedTag, setSelectedTag] = useState("Tous");
   
-const filteredProjects =
-  selectedCategory === "Tous"
-    ? projects
-    : projects.filter(
-        (project) =>
-          project.category === selectedCategory ||
-          project.tags?.includes(selectedCategory)
-      );
+  // Filtre les projet par catégorie et par tags combinés
+  const filteredProjects =
+    selectedCategory === "Tous" && selectedTag === "Tous"
+      ? projects
+      : projects.filter(
+          (project) =>
+            (selectedCategory === "Tous" || project.category === selectedCategory) &&
+            (selectedTag === "Tous" || project.tags?.includes(selectedTag))
+        );
 
   return (
     <main className="min-h-screen bg-background">
@@ -70,6 +72,23 @@ const filteredProjects =
                   }
                 >
                   {category}
+                </Button>
+              ))}
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {tags?.map((tag) => (
+                <Button
+                  key={tag}
+                  aria-pressed={selectedTag === tag}
+                  variant={selectedTag === tag ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedTag(tag)}
+                  className={selectedTag === tag 
+                    ? "professional-button" 
+                    : "border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:border-primary-800 dark:hover:bg-primary-950/50"
+                  }
+                >
+                  {tag}
                 </Button>
               ))}
             </div>

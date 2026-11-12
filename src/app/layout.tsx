@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { generatePageMetadata, getStructuredData } from "@/config";
+import { getStructuredData } from "@/config";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { Footer } from "@/components/layouts/footer";
@@ -19,11 +19,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Métadonnées SEO optimisées pour la page d'accueil
-const homeMetadata = generatePageMetadata("home");
-
 export const metadata: Metadata = {
-  // ...homeMetadata,
   metadataBase: new URL(SITE_URL),
   icons: {
     icon: [

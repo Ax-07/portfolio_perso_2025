@@ -40,9 +40,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const siteUrl = SITE_URL || "https://portfolio-perso-2025.vercel.app";
+  const siteUrl = SITE_URL;
   const articleUrl = `${siteUrl}/blog/${post.slug}`;
-  const imageUrl = post.coverImage ? `${siteUrl}${post.coverImage}` : `${siteUrl}/og-image-default.png`;
+  const imageUrl = post.coverImage ? `${siteUrl}${post.coverImage}` : `${siteUrl}/og-image`;
 
   return {
     title: post.title,
@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.title,
       description: post.description,
       images: [imageUrl],
-      creator: "@votre_twitter",
+      // creator: "@votre_twitter",
     },
     alternates: {
       canonical: articleUrl,

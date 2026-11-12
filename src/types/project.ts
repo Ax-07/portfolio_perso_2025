@@ -26,6 +26,7 @@ export interface Project {
     appleTouch?: string;
   }
   category: string;
+  tags?: string[]; // Tags pour catégorisation et filtrage
   objectif: string;
   defi: string;
   technologies: {

@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/config/brand.config";
 import { getAllBlogPosts } from "@/lib/blog-utils";
 
 /**
@@ -55,7 +56,7 @@ import { getAllBlogPosts } from "@/lib/blog-utils";
  */
 export async function GET(): Promise<Response> {
   const posts = await getAllBlogPosts();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = SITE_URL;
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

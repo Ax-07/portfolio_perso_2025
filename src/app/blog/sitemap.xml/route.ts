@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/config/brand.config";
 import { getAllBlogPosts } from "@/lib/blog-utils";
 import { MetadataRoute } from "next";
 
@@ -42,7 +43,7 @@ import { MetadataRoute } from "next";
  */
 export async function GET(): Promise<Response> {
   const posts = await getAllBlogPosts();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const siteUrl = SITE_URL
 
   const sitemap: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,

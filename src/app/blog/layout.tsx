@@ -9,6 +9,9 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Portfolio",
   description: SEO_CONFIG.pages.portfolio.description,
+  alternates: {
+    canonical: `${SEO_CONFIG.canonical}/blog`
+  },
   openGraph: {
     title: `Portfolio | ${SEO_CONFIG.openGraph.siteName}`,
     description: SEO_CONFIG.pages.portfolio.description,

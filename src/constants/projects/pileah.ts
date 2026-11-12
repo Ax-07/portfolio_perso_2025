@@ -23,10 +23,6 @@ export const PILEAH: Project = {
   },
   category: "Full Stack",
   tags: [
-    "React",
-    "TypeScript",
-    "Express",
-    "PostgreSQL",
     "Géolocalisation",
     "Cartographie",
     "Multilingue",

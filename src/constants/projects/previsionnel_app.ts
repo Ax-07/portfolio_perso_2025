@@ -21,11 +21,6 @@ export const PREVISIONNEL_APP: Project = {
   category: "Full Stack",
   tags: [
     "SaaS",
-    "Next.js",
-    "TypeScript",
-    "Prisma",
-    "PostgreSQL",
-    "Finance",
     "Prévisionnel financier",
     "Tableau de bord",
   ],

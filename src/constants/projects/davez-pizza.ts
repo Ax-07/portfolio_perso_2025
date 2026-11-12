@@ -20,10 +20,6 @@ export const DAVEZ_PIZZA: Project = {
   },
   category: "Full Stack",
   tags: [
-    "Next.js",
-    "TypeScript",
-    "Prisma",
-    "PostgreSQL",
     "Site vitrine",
     "SEO local",
     "Google Places",

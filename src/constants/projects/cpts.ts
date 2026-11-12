@@ -13,13 +13,7 @@ export const CPTS_ENTRE_FLEUVES: Project = {
   favicon: {},
   category: "Full Stack",
   tags: [
-    "Next.js",
-    "TypeScript",
-    "Prisma",
-    "PostgreSQL",
-    "Leaflet",
     "Cartographie",
-    "Santé",
     "Back-office",
   ],
   objectif:

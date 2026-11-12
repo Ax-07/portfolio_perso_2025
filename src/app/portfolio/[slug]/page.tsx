@@ -52,9 +52,9 @@ export default async function ProjectPage({ params }: ProjectPageProps): Promise
   }
 
   return (
-    <>
+    <main>
       <ProjectStructuredData project={project} />
       <ProjectDetailPage project={project} />
-    </>
+    </main>
   );
 }

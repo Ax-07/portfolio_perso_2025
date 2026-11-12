@@ -20,7 +20,7 @@ interface BlogPost {
 
 /**
  * Props du composant BlogStructuredData.
- * 
+ *
  * @interface BlogStructuredDataProps
  * @property {BlogPost} post - L'article de blog complet avec ses métadonnées
  */
@@ -30,16 +30,16 @@ interface BlogStructuredDataProps {
 
 /**
  * Composant pour injecter des données structurées JSON-LD dans la page.
- * 
+ *
  * Génère un script JSON-LD conforme au schéma Schema.org BlogPosting pour améliorer
  * le référencement et permettre aux moteurs de recherche de mieux comprendre le contenu.
- * 
+ *
  * **Avantages SEO** :
  * - Éligibilité aux Google Rich Results (extraits enrichis)
  * - Meilleure compréhension du contenu par les moteurs de recherche
  * - Affichage amélioré dans les résultats de recherche (auteur, date, image)
  * - Support des assistants vocaux et IA (Google Assistant, Siri, etc.)
- * 
+ *
  * **Données incluses** :
  * - Type de contenu (BlogPosting)
  * - Titre, description et image de couverture
@@ -48,27 +48,28 @@ interface BlogStructuredDataProps {
  * - Informations sur l'éditeur (Organization)
  * - Mots-clés et catégories
  * - Nombre de mots et temps de lecture
- * 
+ *
  * @param {BlogStructuredDataProps} props - Props du composant
  * @param {BlogPost} props.post - L'article de blog à structurer
  * @returns {JSX.Element} Un script JSON-LD à injecter dans le <head>
- * 
+ *
  * @example
  * const post = await getBlogPostBySlug("mon-article");
  * <BlogStructuredData post={post} />
- * 
+ *
  * @see https://schema.org/BlogPosting
  * @see https://developers.google.com/search/docs/appearance/structured-data/article
  */
 export function BlogStructuredData({ post }: BlogStructuredDataProps): JSX.Element {
   const siteUrl = SITE_URL;
-  
+  const imageUrl = post.coverImage ? new URL(post.coverImage, `${siteUrl}/`).toString() : `${siteUrl}/og-image`;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: post.coverImage ? `${siteUrl}${post.coverImage}` : undefined,
+    image: imageUrl,
     datePublished: post.date,
     dateModified: post.lastUpdated || post.date,
     author: {
@@ -81,7 +82,7 @@ export function BlogStructuredData({ post }: BlogStructuredDataProps): JSX.Eleme
       name: "Xavier Affringue - Portfolio",
       logo: {
         "@type": "ImageObject",
-        url: `${siteUrl}/logo.png`,
+        url: `${siteUrl}/android-chrome-512x512.png`,
       },
     },
     mainEntityOfPage: {
@@ -94,10 +95,5 @@ export function BlogStructuredData({ post }: BlogStructuredDataProps): JSX.Eleme
     timeRequired: post.readingTime,
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />;
 }

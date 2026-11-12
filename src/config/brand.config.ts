@@ -14,7 +14,9 @@ import { Github, Linkedin } from "lucide-react";
 export const DEV_SITE_URL = "http://localhost:3000";
 
 // URL de production
-export const PROD_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+export const PROD_SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.ax-07.fr"
+).replace(/\/+$/, "");
 
 // URL utilisée selon l'environnement (dev ou prod)
 export const SITE_URL = process.env.NODE_ENV === "production" ? PROD_SITE_URL : DEV_SITE_URL;

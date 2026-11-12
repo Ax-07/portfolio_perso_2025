@@ -248,6 +248,11 @@ export const SEO_CONFIG = {
       description: 'Découvrez mes dernières réalisations en développement web : applications React, plateformes e-commerce, dashboards et solutions sur mesure.',
       robots: undefined,
     },
+    blog: {
+      title: 'Blog - Articles',
+      description: 'Découvrez mes articles sur le développement web, React, Next.js et Node.js.',
+      robots: undefined,
+    },
     contact: {
       title: 'Contact - Développeur Full Stack',
       description: `Contactez ${SITE_METADATA.author} pour discuter de votre projet web. Développeur freelance disponible pour vos besoins en React, Next.js et Node.js.`,

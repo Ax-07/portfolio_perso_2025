@@ -5,13 +5,13 @@
 
 import { SOCIAL_LINKS } from '@/config';
 import type { Project, ProjectsSectionContent } from '@/types/project';
-import { PILEAH, DAVEZ_PIZZA, CPTS_ENTRE_FLEUVES, PREVISIA } from './projects';
+import { PILEAH, DAVEZ_PIZZA, CPTS_ENTRE_FLEUVES, PREVISIONNEL_APP } from './projects';
 
 const PROJECTS: Project[] = [
   PILEAH,
   // DAVEZ_PIZZA,
   CPTS_ENTRE_FLEUVES,
-  PREVISIA,
+  PREVISIONNEL_APP,
 ]
 
 export const PROJECTS_SECTION_CONTENT: ProjectsSectionContent = {

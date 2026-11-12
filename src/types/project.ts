@@ -85,7 +85,7 @@ export interface ProjectsSectionContent {
   description: string;
   projects: Project[];
   categories: string[];
-  tags?: string[];
+  tags: string[];
   cta: {
     title: string;
     description_1: string;

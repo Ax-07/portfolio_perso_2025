@@ -64,7 +64,7 @@ export function Footer() {
                   return (
                     <li key={idx}>
                       <Link 
-                        href={link.href.startsWith("#") ? `/#${link.href}` : link.href}
+                        href={link.href.startsWith("#") ? `/${link.href}` : link.href}
                         className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground hover:text-primary-600 transition-colors duration-200 group"
                       >
                         <IconComponent className="h-4 w-4 group-hover:text-primary-600 transition-colors" />

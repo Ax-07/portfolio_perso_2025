@@ -19,6 +19,15 @@ export const DAVEZ_PIZZA: Project = {
     appleTouch: "/favicons/davez-pizza/apple-touch-icon.png",
   },
   category: "Full Stack",
+  tags: [
+    "Next.js",
+    "TypeScript",
+    "Prisma",
+    "PostgreSQL",
+    "Site vitrine",
+    "SEO local",
+    "Google Places",
+  ],
   objectif:
     "Offrir à Davez Pizza un site vitrine moderne et performant pour renforcer sa visibilité locale, présenter sa carte et faciliter la prise de contact.",
   defi:

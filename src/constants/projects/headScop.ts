@@ -23,6 +23,14 @@ export const HEADSCOPE: Project = {
     appleTouch: "/favicons/headscope/apple-touch-icon.png",
   },
   category: "Full Stack",
+  tags: [
+    "Next.js",
+    "TypeScript",
+    "SEO",
+    "Open Graph",
+    "JSON-LD",
+    "API Edge",
+  ],
   objectif: "Permettre d’inspecter rapidement les métadonnées d’une page publique et de prévisualiser leur rendu sur moteurs de recherche et réseaux sociaux.",
   defi: "Concevoir une app Next.js unifiée (frontend + API Edge) capable de fetcher et parser les métadonnées d’une URL publique de façon sécurisée et performante, puis restituer une prévisualisation fidèle et un rapport SEO.",
   technologies: {

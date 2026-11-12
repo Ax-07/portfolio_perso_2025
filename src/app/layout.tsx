@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 const homeMetadata = generatePageMetadata("home");
 
 export const metadata: Metadata = {
-  ...homeMetadata,
+  // ...homeMetadata,
   metadataBase: new URL(SITE_URL),
   icons: {
     icon: [

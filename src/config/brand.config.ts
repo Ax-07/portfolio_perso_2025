@@ -26,7 +26,7 @@ export const SITE_URL = process.env.NODE_ENV === "production" ? PROD_SITE_URL : 
 export const PERSONAL_INFO = {
   // Identité
   firstName: "Xavier",
-  lastName: "Affringue", 
+  lastName: "Affringue",
   fullName: "Xavier Affringue",
   initials: "XA",
   
@@ -46,7 +46,7 @@ export const PERSONAL_INFO = {
   stats: {
     experience: "3+",
     experienceLabel: "Années d'expérience",
-    projects: "15+", 
+    projects: "15+",
     projectsLabel: "Projets réalisés",
     satisfaction: "100%",
     satisfactionLabel: "Clients satisfaits"

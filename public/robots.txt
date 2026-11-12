@@ -1,20 +1,8 @@
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://www.ax-07.fr/sitemap.xml
-Sitemap: https://www.ax-07.fr/blog/sitemap.xml
-
-# Bloquer les fichiers sensibles
 Disallow: /api/
 Disallow: /admin/
 
-# Bloquer les pages de développement
-Disallow: /_next/static/chunks/
-Disallow: /_next/static/css/
-
-# Autoriser les images et ressources
-Allow: /images/
-Allow: /favicon.ico
-Allow: /*.css
-Allow: /*.js
+Sitemap: https://www.ax-07.fr/sitemap.xml
+Sitemap: https://www.ax-07.fr/blog/sitemap.xml

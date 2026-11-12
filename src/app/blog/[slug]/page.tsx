@@ -8,6 +8,7 @@ import Image from "next/image";
 import { JSX } from "react";
 import { Metadata } from "next";
 import BackToBlogBtn from "@/components/customs/BackToBlogBtn";
+import { SITE_URL } from "@/config/brand.config";
 
 /**
  * Génère les métadonnées SEO dynamiques pour chaque article de blog.
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio-perso-2025.vercel.app";
+  const siteUrl = SITE_URL || "https://portfolio-perso-2025.vercel.app";
   const articleUrl = `${siteUrl}/blog/${post.slug}`;
   const imageUrl = post.coverImage ? `${siteUrl}${post.coverImage}` : `${siteUrl}/og-image-default.png`;
 

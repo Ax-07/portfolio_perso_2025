@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Portfolio",
   description: SEO_CONFIG.pages.portfolio.description,
+  alternates: {
+    canonical: `${SEO_CONFIG.canonical}/portfolio`,
+  },
   openGraph: {
     title: `Portfolio | ${SEO_CONFIG.openGraph.siteName}`,
     description: SEO_CONFIG.pages.portfolio.description,
@@ -14,10 +17,9 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-  <>
-      <Header/>
-
-  {children}
-  </>
+    <>
+      <Header />
+      {children}
+    </>
   );
 }

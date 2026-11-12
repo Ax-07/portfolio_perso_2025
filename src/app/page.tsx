@@ -6,6 +6,11 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { Header } from "@/components/layouts/header";
 import { ResponsiveNavigation } from "@/components/layouts/responsive-navigation";
 import { BlogSection } from "@/components/sections/blog-section";
+import type { Metadata } from "next";
+import { generatePageMetadata } from "@/config";
+
+export const metadata: Metadata =
+  generatePageMetadata("home");
 
 export default function Home() {
   return (

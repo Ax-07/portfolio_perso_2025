@@ -10,7 +10,7 @@ import { Github, Linkedin } from "lucide-react";
 // URL PRINCIPALE - SOURCE DE VÉRITÉ
 // ===================================
 
-export const SITE_URL = "https://www.ax-07.fr" as const;
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
 // =======================================
 // INFORMATIONS PERSONNELLES PRINCIPALES

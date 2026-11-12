@@ -6,11 +6,11 @@ import { PROJECTS_SECTION_CONTENT } from '@/constants/projects.content';
 const staticPages = [
   '',
   '/portfolio',
+  '/blog',
 ];
 
 export async function GET() {
   const baseUrl = SITE_METADATA.url;
-  const currentDate = new Date().toISOString();
 
   // Générer les URLs des projets dynamiques
   const projectPages = PROJECTS_SECTION_CONTENT.projects.map(project => `/portfolio/${project.slug}`);
@@ -25,7 +25,6 @@ export async function GET() {
       (page) => `
   <url>
     <loc>${baseUrl}${page}</loc>
-    <lastmod>${currentDate}</lastmod>
     <changefreq>${page === '' ? 'weekly' : page.startsWith('/portfolio/') ? 'monthly' : 'monthly'}</changefreq>
     <priority>${page === '' ? '1.0' : page.startsWith('/portfolio/') ? '0.8' : '0.7'}</priority>
   </url>`

@@ -1202,7 +1202,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  const siteUrl = SITE_URL || "https://votre-site.com";
   const articleUrl = `${siteUrl}/blog/${post.slug}`;
   const imageUrl = post.coverImage 
     ? `${siteUrl}${post.coverImage}` 
@@ -1259,7 +1259,7 @@ interface BlogStructuredDataProps {
 }
 
 export function BlogStructuredData({ post }: BlogStructuredDataProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  const siteUrl = SITE_URL || "https://votre-site.com";
   
   const structuredData = {
     "@context": "https://schema.org",
@@ -1331,7 +1331,7 @@ import { MetadataRoute } from "next";
 
 export async function GET(): Promise<Response> {
   const posts = await getAllBlogPosts();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  const siteUrl = SITE_URL || "https://votre-site.com";
 
   const sitemap: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
@@ -1372,7 +1372,7 @@ import { getAllBlogPosts } from "@/lib/blog-utils";
 
 export async function GET(): Promise<Response> {
   const posts = await getAllBlogPosts();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votre-site.com";
+  const siteUrl = SITE_URL || "https://votre-site.com";
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

@@ -1,0 +1,1269 @@
+---
+title: "Guide de Démarrage Rapide Stripe pour un SaaS Next.js"
+description: "Un guide complet pour intégrer Stripe Checkout, les abonnements, les webhooks et le portail client dans une application SaaS Next.js."
+date: "2026-07-17"
+category: "Guide"
+tags: ["Stripe", "Next.js", "SaaS", "Abonnements", "Paiement"]
+readingTime: "20 min"
+coverImage: ""
+published: true
+---
+
+{/* # Guide de Démarrage Rapide Stripe pour un SaaS Next.js */}
+
+## Introduction
+
+Bienvenue dans ce guide de démarrage rapide consacré à **Stripe Billing** dans une application SaaS Next.js.
+
+L’objectif est de mettre en place une intégration simple, sécurisée et maintenable avec :
+
+- une page de tarifs ;
+- Stripe Checkout pour souscrire à un abonnement ;
+- un webhook signé pour synchroniser l’état de l’abonnement ;
+- le portail client Stripe pour gérer la facturation ;
+- une protection serveur des fonctionnalités payantes.
+
+Le guide utilise **Stripe Checkout hébergé par Stripe**. Cette solution réduit la quantité de code de paiement à maintenir et permet de bénéficier directement des moyens de paiement, de l’authentification forte et des évolutions de Checkout.
+
+> La page de succès améliore l’expérience utilisateur, mais elle ne doit jamais être utilisée comme preuve de paiement. Les webhooks Stripe restent la source de vérité pour activer ou retirer les droits d’accès.
+
+## Stack Technique
+
+- **Next.js 15+** avec App Router ;
+- **TypeScript** ;
+- **Stripe Checkout** pour la souscription ;
+- **Stripe Billing** pour les abonnements ;
+- **Stripe Customer Portal** pour la gestion de la facturation ;
+- **Auth.js** pour l’authentification dans les exemples ;
+- **Prisma** pour la persistance dans les exemples ;
+- **shadcn/ui** pour l’interface ;
+- **Vercel** pour le déploiement, recommandé mais facultatif.
+
+Les parties Auth.js et Prisma peuvent être adaptées à un autre système d’authentification ou à un autre ORM.
+
+## Architecture de l’Intégration
+
+```text
+Utilisateur authentifié
+        │
+        ▼
+Page /pricing
+        │ POST /api/stripe/checkout
+        ▼
+Stripe Checkout
+        │
+        ├── redirection UX ──► /dashboard/billing?success=1
+        │
+        └── événements signés ──► /api/stripe/webhook
+                                      │
+                                      ▼
+                              Mise à jour de la base
+                                      │
+                                      ▼
+                              Droits d’accès SaaS
+
+Utilisateur authentifié
+        │
+        ▼
+POST /api/stripe/portal
+        │
+        ▼
+Stripe Customer Portal
+```
+
+## 📋 Prérequis et Installation
+
+### 1. Prérequis
+
+Avant de commencer, vous devez disposer de :
+
+```bash
+Node.js 22+
+pnpm 10+
+Un projet Next.js avec App Router
+Un compte Stripe
+Une authentification utilisateur
+Une base de données
+```
+
+Pour la production, votre application doit être accessible avec une URL HTTPS publique afin que Stripe puisse joindre le webhook.
+
+### 2. Installer Stripe
+
+```bash
+pnpm add stripe
+```
+
+Si Prisma n’est pas encore installé :
+
+```bash
+pnpm add @prisma/client
+pnpm add -D prisma
+```
+
+Initialiser Prisma si nécessaire :
+
+```bash
+pnpm prisma init
+```
+
+## 3. Configurer les Produits et les Prix dans Stripe
+
+Dans le Dashboard Stripe, activez l’environnement de test ou utilisez un sandbox, puis créez :
+
+1. un produit, par exemple **Pro** ;
+2. un prix mensuel récurrent ;
+3. éventuellement un prix annuel récurrent.
+
+Chaque prix possède un identifiant qui commence par `price_`.
+
+Exemple :
+
+```text
+Produit : Pro
+Prix mensuel : price_123_monthly
+Prix annuel : price_456_yearly
+```
+
+Ne saisissez pas directement les montants dans le code de création de l’abonnement. Utilisez les identifiants de prix Stripe afin que le Dashboard reste la référence du catalogue.
+
+### 3.1 Configurer le portail client
+
+Dans les réglages Stripe Billing, configurez le **Customer Portal** pour autoriser les actions souhaitées :
+
+- mise à jour du moyen de paiement ;
+- consultation des factures ;
+- changement d’offre ;
+- résiliation de l’abonnement ;
+- collecte éventuelle d’un motif de résiliation.
+
+Testez cette configuration avant de l’activer en production.
+
+## 4. Variables d’Environnement
+
+Créez ou complétez le fichier `.env` :
+
+```bash
+# URL canonique de l'application
+APP_URL=http://localhost:3000
+
+# Clé API secrète Stripe du sandbox ou du mode test
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxx
+
+# Secret de signature du webhook local ou distant
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
+
+# Prix autorisés par l'application
+STRIPE_PRICE_PRO_MONTHLY=price_xxxxxxxxxxxxxxxxxxxxx
+STRIPE_PRICE_PRO_YEARLY=price_xxxxxxxxxxxxxxxxxxxxx
+```
+
+### Règles de sécurité
+
+- Ne préfixez jamais `STRIPE_SECRET_KEY` ou `STRIPE_WEBHOOK_SECRET` avec `NEXT_PUBLIC_`.
+- Ne commitez jamais le fichier `.env`.
+- Utilisez des secrets distincts entre test et production.
+- Un secret de webhook appartient à un endpoint précis. Le secret généré par Stripe CLI est différent de celui configuré dans le Dashboard.
+- Les identifiants `price_` ne sont pas secrets, mais ils doivent tout de même être validés côté serveur.
+
+## 5. Valider les Variables d’Environnement
+
+Créez le fichier **`src/lib/env.ts`** :
+
+```ts
+import "server-only";
+
+function required(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Variable d'environnement manquante : ${name}`);
+  }
+
+  return value;
+}
+
+export const env = {
+  APP_URL: required("APP_URL"),
+  STRIPE_SECRET_KEY: required("STRIPE_SECRET_KEY"),
+  STRIPE_WEBHOOK_SECRET: required("STRIPE_WEBHOOK_SECRET"),
+  STRIPE_PRICE_PRO_MONTHLY: required("STRIPE_PRICE_PRO_MONTHLY"),
+  STRIPE_PRICE_PRO_YEARLY: required("STRIPE_PRICE_PRO_YEARLY"),
+} as const;
+```
+
+Cette validation provoque une erreur explicite au démarrage ou pendant le build si une variable obligatoire est absente.
+
+## 6. Créer le Client Stripe Serveur
+
+Créez le fichier **`src/lib/stripe.ts`** :
+
+```ts
+import "server-only";
+import Stripe from "stripe";
+
+import { env } from "@/lib/env";
+
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+  maxNetworkRetries: 2,
+  appInfo: {
+    name: "My SaaS",
+  },
+});
+```
+
+Le client Stripe ne doit être importé que dans du code serveur : Route Handlers, Server Actions, Server Components ou tâches backend.
+
+## 7. Définir les Offres Autorisées
+
+Créez le fichier **`src/lib/plans.ts`** :
+
+```ts
+import "server-only";
+
+import { env } from "@/lib/env";
+
+export const plans = {
+  proMonthly: {
+    name: "Pro Mensuel",
+    priceId: env.STRIPE_PRICE_PRO_MONTHLY,
+  },
+  proYearly: {
+    name: "Pro Annuel",
+    priceId: env.STRIPE_PRICE_PRO_YEARLY,
+  },
+} as const;
+
+export const allowedPriceIds = new Set(
+  Object.values(plans).map((plan) => plan.priceId),
+);
+
+export function isAllowedPriceId(priceId: string): boolean {
+  return allowedPriceIds.has(priceId);
+}
+```
+
+Cette liste blanche empêche un client de transmettre un identifiant de prix arbitraire à votre endpoint Checkout.
+
+## 8. Ajouter les Données Stripe dans Prisma
+
+L’exemple ci-dessous suppose que le modèle `User` existe déjà.
+
+Mettez à jour **`prisma/schema.prisma`** en fusionnant les champs suivants avec votre schéma :
+
+```prisma
+model User {
+  id               String        @id @default(cuid())
+  email            String        @unique
+  stripeCustomerId String?       @unique
+  subscriptions    Subscription[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subscription {
+  id                 String   @id
+  userId             String
+  stripeCustomerId   String
+  status             String
+  priceId            String?
+  productId          String?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([stripeCustomerId])
+}
+
+model StripeEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
+}
+```
+
+Appliquez la migration :
+
+```bash
+pnpm prisma migrate dev --name add_stripe_billing
+pnpm prisma generate
+```
+
+Le modèle `StripeEvent` sert à rendre le traitement des webhooks idempotent. Stripe peut renvoyer un événement lorsqu’un endpoint ne répond pas correctement ou lors d’une nouvelle tentative manuelle. Le modèle `Subscription` conserve une ligne par abonnement Stripe, ce qui permet de gérer proprement une résiliation suivie d’une nouvelle souscription.
+
+## 9. Créer le Client Prisma
+
+Créez **`src/lib/prisma.ts`** si votre projet ne possède pas déjà un singleton Prisma :
+
+```ts
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
+```
+
+## 10. Créer un Adaptateur d’Authentification
+
+L’intégration Stripe doit toujours relier une action de facturation à un utilisateur authentifié.
+
+Créez **`src/lib/billing-user.ts`** :
+
+```ts
+import "server-only";
+
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+
+export async function requireBillingUser() {
+  const session = await auth();
+
+  if (!session?.user?.id || !session.user.email) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      subscriptions: {
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  return user;
+}
+```
+
+Adaptez cette fonction si vous utilisez Clerk, Supabase Auth, Firebase Auth ou une authentification personnalisée.
+
+## 11. Créer ou Réutiliser un Customer Stripe
+
+Un utilisateur de l’application doit idéalement être associé à un seul objet `Customer` Stripe.
+
+Créez **`src/lib/stripe-customer.ts`** :
+
+```ts
+import "server-only";
+
+import { prisma } from "@/lib/prisma";
+import { stripe } from "@/lib/stripe";
+
+type BillingUser = {
+  id: string;
+  email: string;
+  stripeCustomerId: string | null;
+};
+
+export async function getOrCreateStripeCustomer(
+  user: BillingUser,
+): Promise<string> {
+  if (user.stripeCustomerId) {
+    return user.stripeCustomerId;
+  }
+
+  const customer = await stripe.customers.create(
+    {
+      email: user.email,
+      metadata: {
+        userId: user.id,
+      },
+    },
+    {
+      idempotencyKey: `customer:${user.id}`,
+    },
+  );
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { stripeCustomerId: customer.id },
+  });
+
+  return customer.id;
+}
+```
+
+La métadonnée `userId` facilite le rapprochement entre Stripe et votre base de données. Elle ne remplace pas l’authentification et ne doit contenir aucune donnée sensible.
+
+## 12. Créer l’Endpoint Stripe Checkout
+
+Créez **`src/app/api/stripe/checkout/route.ts`** :
+
+```ts
+import { NextResponse } from "next/server";
+
+import { requireBillingUser } from "@/lib/billing-user";
+import { env } from "@/lib/env";
+import { isAllowedPriceId } from "@/lib/plans";
+import { stripe } from "@/lib/stripe";
+import { getOrCreateStripeCustomer } from "@/lib/stripe-customer";
+
+export const runtime = "nodejs";
+
+const blockedSubscriptionStatuses = new Set([
+  "active",
+  "trialing",
+  "past_due",
+  "unpaid",
+  "incomplete",
+  "paused",
+]);
+
+export async function POST(request: Request) {
+  try {
+    const user = await requireBillingUser();
+
+    if (
+      user.subscriptions.some((subscription) =>
+        blockedSubscriptionStatuses.has(subscription.status),
+      )
+    ) {
+      return NextResponse.redirect(
+        new URL("/dashboard/billing?alreadySubscribed=1", env.APP_URL),
+        303,
+      );
+    }
+
+    const formData = await request.formData();
+    const priceId = formData.get("priceId");
+
+    if (typeof priceId !== "string" || !isAllowedPriceId(priceId)) {
+      return NextResponse.json(
+        { error: "Identifiant de prix invalide." },
+        { status: 400 },
+      );
+    }
+
+    const customerId = await getOrCreateStripeCustomer(user);
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer: customerId,
+      client_reference_id: user.id,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${env.APP_URL}/dashboard/billing?success=1`,
+      cancel_url: `${env.APP_URL}/pricing?canceled=1`,
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
+      metadata: {
+        userId: user.id,
+      },
+      subscription_data: {
+        metadata: {
+          userId: user.id,
+        },
+      },
+    });
+
+    if (!checkoutSession.url) {
+      throw new Error("CHECKOUT_URL_MISSING");
+    }
+
+    return NextResponse.redirect(checkoutSession.url, 303);
+  } catch (error) {
+    console.error("[STRIPE_CHECKOUT]", error);
+
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      return NextResponse.redirect(new URL("/login", env.APP_URL), 303);
+    }
+
+    return NextResponse.json(
+      { error: "Impossible de créer la session de paiement." },
+      { status: 500 },
+    );
+  }
+}
+```
+
+### Pourquoi utiliser un POST ?
+
+La création d’une Checkout Session est une mutation côté serveur. Elle ne doit pas être déclenchée avec une URL GET partageable ou préchargeable.
+
+### Pourquoi valider le prix côté serveur ?
+
+Le contenu d’un formulaire peut être modifié par l’utilisateur. Le serveur doit donc refuser tout identifiant `priceId` qui n’appartient pas au catalogue autorisé.
+
+## 13. Créer la Page de Tarifs
+
+Installez les composants shadcn/ui nécessaires si besoin :
+
+```bash
+npx shadcn@latest add button card badge
+```
+
+Créez **`src/app/(pages)/pricing/page.tsx`** :
+
+```tsx
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { plans } from "@/lib/plans";
+
+export default function PricingPage() {
+  return (
+    <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 py-12">
+      <div className="space-y-3 text-center">
+        <Badge variant="secondary">Tarifs</Badge>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Choisissez votre abonnement
+        </h1>
+        <p className="text-muted-foreground">
+          Commencez avec le plan adapté à votre rythme.
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Pro Mensuel</CardTitle>
+            <CardDescription>
+              Une formule flexible, facturée chaque mois.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Le montant affiché dans Stripe Checkout provient du prix configuré
+              dans votre Dashboard Stripe.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <form action="/api/stripe/checkout" method="POST" className="w-full">
+              <input
+                type="hidden"
+                name="priceId"
+                value={plans.proMonthly.priceId}
+              />
+              <Button type="submit" className="w-full">
+                Choisir le mensuel
+              </Button>
+            </form>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Pro Annuel</CardTitle>
+            <CardDescription>
+              Une formule annuelle pour les utilisateurs réguliers.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Configurez la remise annuelle directement dans le catalogue Stripe.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <form action="/api/stripe/checkout" method="POST" className="w-full">
+              <input
+                type="hidden"
+                name="priceId"
+                value={plans.proYearly.priceId}
+              />
+              <Button type="submit" className="w-full">
+                Choisir l’annuel
+              </Button>
+            </form>
+          </CardFooter>
+        </Card>
+      </div>
+    </section>
+  );
+}
+```
+
+Le montant final, la devise, la fréquence et les éventuelles taxes sont affichés par Stripe Checkout selon la configuration du prix.
+
+## 14. Synchroniser les Abonnements
+
+Créez **`src/lib/sync-stripe-subscription.ts`** :
+
+```ts
+import type { Prisma } from "@prisma/client";
+import type Stripe from "stripe";
+
+export async function syncStripeSubscription(
+  tx: Prisma.TransactionClient,
+  subscription: Stripe.Subscription,
+) {
+  const customerId =
+    typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer.id;
+
+  const userFromCustomer = await tx.user.findUnique({
+    where: { stripeCustomerId: customerId },
+    select: { id: true },
+  });
+
+  const userId = subscription.metadata.userId ?? userFromCustomer?.id;
+
+  if (!userId) {
+    throw new Error(
+      `Utilisateur introuvable pour l'abonnement ${subscription.id}`,
+    );
+  }
+
+  const subscriptionItem = subscription.items.data[0];
+  const price = subscriptionItem?.price;
+
+  const productId = price
+    ? typeof price.product === "string"
+      ? price.product
+      : price.product.id
+    : null;
+
+  await tx.user.update({
+    where: { id: userId },
+    data: { stripeCustomerId: customerId },
+  });
+
+  await tx.subscription.upsert({
+    where: { id: subscription.id },
+    create: {
+      id: subscription.id,
+      userId,
+      stripeCustomerId: customerId,
+      status: subscription.status,
+      priceId: price?.id ?? null,
+      productId,
+      currentPeriodStart: subscriptionItem?.current_period_start
+        ? new Date(subscriptionItem.current_period_start * 1000)
+        : null,
+      currentPeriodEnd: subscriptionItem?.current_period_end
+        ? new Date(subscriptionItem.current_period_end * 1000)
+        : null,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    },
+    update: {
+      userId,
+      stripeCustomerId: customerId,
+      status: subscription.status,
+      priceId: price?.id ?? null,
+      productId,
+      currentPeriodStart: subscriptionItem?.current_period_start
+        ? new Date(subscriptionItem.current_period_start * 1000)
+        : null,
+      currentPeriodEnd: subscriptionItem?.current_period_end
+        ? new Date(subscriptionItem.current_period_end * 1000)
+        : null,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    },
+  });
+}
+```
+
+La synchronisation utilise la première ligne d’abonnement. Pour un modèle contenant plusieurs produits ou plusieurs quantités, adaptez le schéma afin d’enregistrer tous les `subscription.items`.
+
+## 15. Créer le Webhook Stripe
+
+Créez **`src/app/api/stripe/webhook/route.ts`** :
+
+```ts
+import type Stripe from "stripe";
+
+import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
+import { stripe } from "@/lib/stripe";
+import { syncStripeSubscription } from "@/lib/sync-stripe-subscription";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(request: Request) {
+  const signature = request.headers.get("stripe-signature");
+
+  if (!signature) {
+    return new Response("Signature Stripe absente.", { status: 400 });
+  }
+
+  const rawBody = await request.text();
+
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      env.STRIPE_WEBHOOK_SECRET,
+    );
+  } catch (error) {
+    console.error("[STRIPE_WEBHOOK_SIGNATURE]", error);
+    return new Response("Signature Stripe invalide.", { status: 400 });
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const alreadyProcessed = await tx.stripeEvent.findUnique({
+        where: { id: event.id },
+        select: { id: true },
+      });
+
+      if (alreadyProcessed) {
+        return;
+      }
+
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as Stripe.Checkout.Session;
+          const userId = session.metadata?.userId;
+          const customerId =
+            typeof session.customer === "string"
+              ? session.customer
+              : session.customer?.id;
+
+          if (userId && customerId) {
+            await tx.user.update({
+              where: { id: userId },
+              data: { stripeCustomerId: customerId },
+            });
+          }
+
+          break;
+        }
+
+        case "customer.subscription.created":
+        case "customer.subscription.updated":
+        case "customer.subscription.deleted": {
+          const subscription = event.data.object as Stripe.Subscription;
+          await syncStripeSubscription(tx, subscription);
+          break;
+        }
+
+        case "invoice.payment_failed": {
+          // Ajouter ici une notification email ou une alerte dans l'application.
+          console.warn("Paiement de facture échoué", {
+            eventId: event.id,
+          });
+          break;
+        }
+
+        default: {
+          console.info(`Événement Stripe ignoré : ${event.type}`);
+        }
+      }
+
+      await tx.stripeEvent.create({
+        data: {
+          id: event.id,
+          type: event.type,
+        },
+      });
+    });
+
+    return Response.json({ received: true });
+  } catch (error) {
+    console.error("[STRIPE_WEBHOOK_PROCESSING]", error);
+
+    // Retourner 500 permet à Stripe de retenter l'envoi.
+    return new Response("Erreur de traitement du webhook.", { status: 500 });
+  }
+}
+```
+
+### Points importants
+
+- Utilisez `request.text()` afin de vérifier la signature sur le corps brut.
+- Ne parsez pas le JSON avant `constructEvent()`.
+- Traitez les événements de manière idempotente.
+- Répondez rapidement avec un code `2xx` après un traitement réussi.
+- Retournez une erreur serveur si le traitement métier échoue afin que Stripe puisse effectuer une nouvelle tentative.
+- N’enregistrez jamais les données complètes de paiement ou les numéros de carte dans votre base.
+
+### Événements recommandés
+
+Configurez au minimum les événements suivants :
+
+```text
+checkout.session.completed
+customer.subscription.created
+customer.subscription.updated
+customer.subscription.deleted
+invoice.payment_failed
+```
+
+Vous pouvez également gérer :
+
+```text
+invoice.paid
+invoice.payment_action_required
+customer.subscription.trial_will_end
+```
+
+Le choix dépend de votre politique d’accès, de relance et de période d’essai.
+
+## 16. Créer l’Endpoint du Portail Client
+
+Créez **`src/app/api/stripe/portal/route.ts`** :
+
+```ts
+import { NextResponse } from "next/server";
+
+import { requireBillingUser } from "@/lib/billing-user";
+import { env } from "@/lib/env";
+import { stripe } from "@/lib/stripe";
+
+export const runtime = "nodejs";
+
+export async function POST() {
+  try {
+    const user = await requireBillingUser();
+
+    if (!user.stripeCustomerId) {
+      return NextResponse.redirect(
+        new URL("/pricing?customerMissing=1", env.APP_URL),
+        303,
+      );
+    }
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${env.APP_URL}/dashboard/billing`,
+    });
+
+    return NextResponse.redirect(portalSession.url, 303);
+  } catch (error) {
+    console.error("[STRIPE_PORTAL]", error);
+
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      return NextResponse.redirect(new URL("/login", env.APP_URL), 303);
+    }
+
+    return NextResponse.json(
+      { error: "Impossible d'ouvrir le portail de facturation." },
+      { status: 500 },
+    );
+  }
+}
+```
+
+Le portail doit être ouvert uniquement pour l’utilisateur authentifié lié au `stripeCustomerId`. Ne transmettez jamais un identifiant Customer fourni par le navigateur.
+
+## 17. Créer la Page de Facturation
+
+Créez **`src/app/dashboard/billing/page.tsx`** :
+
+```tsx
+import { redirect } from "next/navigation";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { requireBillingUser } from "@/lib/billing-user";
+
+function formatDate(date: Date | null | undefined): string {
+  if (!date) {
+    return "Non disponible";
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "long",
+  }).format(date);
+}
+
+export default async function BillingPage() {
+  const user = await requireBillingUser().catch(() => redirect("/login"));
+  const managedStatuses = new Set([
+    "active",
+    "trialing",
+    "past_due",
+    "unpaid",
+    "incomplete",
+    "paused",
+  ]);
+
+  const subscription =
+    user.subscriptions.find((item) => managedStatuses.has(item.status)) ??
+    user.subscriptions[0];
+
+  return (
+    <section className="mx-auto w-full max-w-3xl py-12">
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <CardTitle>Facturation</CardTitle>
+              <CardDescription>
+                Consultez et gérez votre abonnement Stripe.
+              </CardDescription>
+            </div>
+            <Badge variant={subscription ? "default" : "secondary"}>
+              {subscription?.status ?? "Aucun abonnement"}
+            </Badge>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-3 text-sm">
+          <p>
+            <span className="font-medium">Prix Stripe :</span>{" "}
+            {subscription?.priceId ?? "Non disponible"}
+          </p>
+          <p>
+            <span className="font-medium">Fin de période :</span>{" "}
+            {formatDate(subscription?.currentPeriodEnd)}
+          </p>
+          {subscription?.cancelAtPeriodEnd ? (
+            <p className="text-destructive">
+              L’abonnement sera résilié à la fin de la période en cours.
+            </p>
+          ) : null}
+        </CardContent>
+
+        <CardFooter className="flex flex-wrap gap-3">
+          {user.stripeCustomerId ? (
+            <form action="/api/stripe/portal" method="POST">
+              <Button type="submit">Gérer mon abonnement</Button>
+            </form>
+          ) : (
+            <Button asChild>
+              <a href="/pricing">Choisir une offre</a>
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    </section>
+  );
+}
+```
+
+## 18. Protéger les Fonctionnalités Payantes
+
+Créez **`src/lib/subscription-access.ts`** :
+
+```ts
+const paidStatuses = new Set(["active", "trialing"]);
+
+type SubscriptionLike = {
+  status: string;
+};
+
+export function hasPaidAccess(
+  subscriptions: SubscriptionLike[],
+): boolean {
+  return subscriptions.some((subscription) =>
+    paidStatuses.has(subscription.status),
+  );
+}
+```
+
+Exemple dans un Server Component :
+
+```tsx
+import { redirect } from "next/navigation";
+
+import { requireBillingUser } from "@/lib/billing-user";
+import { hasPaidAccess } from "@/lib/subscription-access";
+
+export default async function PremiumPage() {
+  const user = await requireBillingUser();
+
+  if (!hasPaidAccess(user.subscriptions)) {
+    redirect("/pricing");
+  }
+
+  return <div>Contenu réservé aux abonnés.</div>;
+}
+```
+
+Appliquez également cette vérification dans les Route Handlers et Server Actions sensibles. Masquer un bouton dans l’interface ne constitue pas une protection d’accès.
+
+### Politique pour `past_due`
+
+Deux stratégies sont possibles :
+
+- **stricte** : retirer immédiatement l’accès lorsque le statut n’est plus `active` ou `trialing` ;
+- **tolérante** : conserver temporairement l’accès pendant les tentatives de recouvrement.
+
+La fonction `hasPaidAccess()` doit refléter la politique commerciale de votre SaaS.
+
+## 19. Tester les Webhooks Localement
+
+Installez Stripe CLI selon votre système, puis authentifiez-vous :
+
+```bash
+stripe login
+```
+
+Démarrez votre application :
+
+```bash
+pnpm dev
+```
+
+Dans un second terminal, transférez les événements Stripe vers votre endpoint local :
+
+```bash
+stripe listen \
+  --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,invoice.payment_failed \
+  --forward-to localhost:3000/api/stripe/webhook
+```
+
+Stripe CLI affiche un secret commençant par `whsec_`. Copiez ce secret dans :
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
+```
+
+Redémarrez ensuite le serveur Next.js.
+
+### Parcours de test conseillé
+
+1. Connectez-vous à l’application.
+2. Ouvrez `/pricing`.
+3. Choisissez une offre.
+4. Utilisez la carte de test `4242 4242 4242 4242`.
+5. Utilisez une date future et un CVC de test.
+6. Vérifiez la redirection vers la page de facturation.
+7. Vérifiez que les tables `User`, `Subscription` et `StripeEvent` sont mises à jour.
+8. Ouvrez le portail client.
+9. Simulez une résiliation ou un changement d’offre.
+10. Vérifiez que le webhook synchronise le nouveau statut.
+
+N’utilisez jamais de véritables coordonnées bancaires en mode production pour effectuer des tests.
+
+## 20. Ajouter le Webhook en Production
+
+Après le déploiement, ajoutez un endpoint dans Stripe :
+
+```text
+https://votre-domaine.com/api/stripe/webhook
+```
+
+Sélectionnez uniquement les événements réellement gérés par votre code.
+
+Ajoutez ensuite dans l’environnement de production :
+
+```bash
+APP_URL=https://votre-domaine.com
+STRIPE_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
+STRIPE_PRICE_PRO_MONTHLY=price_live_xxxxxxxxxxxxx
+STRIPE_PRICE_PRO_YEARLY=price_live_xxxxxxxxxxxxxx
+```
+
+Les produits et les prix du mode test ne sont pas automatiquement les mêmes que ceux du mode production. Vérifiez donc tous les identifiants `price_` lors du passage en production.
+
+## 21. Checklist de Mise en Production
+
+- [ ] Le compte Stripe est activé et les informations légales sont complètes.
+- [ ] Les produits et prix de production sont configurés.
+- [ ] Les clés de test ont été remplacées par les clés de production.
+- [ ] Le webhook de production est enregistré avec son propre secret.
+- [ ] Seuls les événements nécessaires sont abonnés au webhook.
+- [ ] L’URL `APP_URL` utilise HTTPS et correspond au domaine canonique.
+- [ ] Les endpoints Checkout et Portal exigent une authentification.
+- [ ] Les prix sont validés côté serveur avec une liste blanche.
+- [ ] La signature du webhook est vérifiée sur le corps brut.
+- [ ] Les événements sont traités de manière idempotente.
+- [ ] Les droits sont contrôlés côté serveur.
+- [ ] Les erreurs de paiement sont testées.
+- [ ] Le changement d’offre et la résiliation sont testés.
+- [ ] Les journaux ne contiennent aucune clé ou donnée bancaire sensible.
+- [ ] Les pages légales, les conditions tarifaires et la politique de remboursement sont publiées.
+
+## 22. Bonnes Pratiques de Sécurité
+
+### Ne jamais faire confiance au navigateur
+
+Le navigateur peut proposer un `priceId`, mais le serveur doit vérifier qu’il appartient à une offre autorisée.
+
+### Ne jamais activer un abonnement depuis la page de succès
+
+Un utilisateur peut ouvrir ou partager une URL. Seul un événement Stripe vérifié doit modifier les droits en base.
+
+### Vérifier systématiquement la signature du webhook
+
+Utilisez le corps brut, l’en-tête `stripe-signature` et le secret de l’endpoint concerné.
+
+### Rendre le traitement idempotent
+
+Un événement peut être livré plusieurs fois. Stockez son identifiant `event.id` afin d’éviter les doubles traitements.
+
+### Prévoir les événements dans le désordre
+
+Un système distribué ne doit pas dépendre d’un ordre parfait de livraison. Les événements d’abonnement contiennent les données nécessaires pour reconstruire l’état courant.
+
+### Utiliser les identifiants internes dans les métadonnées
+
+La métadonnée `userId` permet de rapprocher les objets, mais n’y placez jamais de token, de mot de passe, de donnée bancaire ou d’information confidentielle.
+
+### Séparer les environnements
+
+Utilisez des clés, prix et secrets de webhook distincts entre développement, test et production.
+
+## 📁 Structure du Projet
+
+```text
+my-saas/
+├── prisma/
+│   └── schema.prisma
+├── src/
+│   ├── app/
+│   │   ├── (pages)/
+│   │   │   └── pricing/
+│   │   │       └── page.tsx
+│   │   ├── api/
+│   │   │   └── stripe/
+│   │   │       ├── checkout/
+│   │   │       │   └── route.ts
+│   │   │       ├── portal/
+│   │   │       │   └── route.ts
+│   │   │       └── webhook/
+│   │   │           └── route.ts
+│   │   └── dashboard/
+│   │       └── billing/
+│   │           └── page.tsx
+│   ├── components/
+│   │   └── ui/
+│   └── lib/
+│       ├── billing-user.ts
+│       ├── env.ts
+│       ├── plans.ts
+│       ├── prisma.ts
+│       ├── stripe.ts
+│       ├── stripe-customer.ts
+│       ├── subscription-access.ts
+│       └── sync-stripe-subscription.ts
+├── .env
+├── package.json
+└── tsconfig.json
+```
+
+## 🎯 Scripts Utiles
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
+  }
+}
+```
+
+Utilisation :
+
+```bash
+# Démarrer l'application
+pnpm dev
+
+# Ouvrir la base avec Prisma Studio
+pnpm db:studio
+
+# Vérifier le build avant déploiement
+pnpm build
+
+# Vérifier le code
+pnpm lint
+```
+
+## Extensions Possibles
+
+Une fois l’intégration de base fonctionnelle, vous pouvez ajouter :
+
+- une période d’essai avec `trial_period_days` ;
+- Stripe Tax avec `automatic_tax` ;
+- des codes promotionnels ;
+- plusieurs niveaux d’abonnement ;
+- un changement d’offre depuis le portail ;
+- des quotas ou crédits associés au plan ;
+- des emails lors d’un échec de paiement ;
+- des métriques de revenu mensuel récurrent ;
+- des abonnements par organisation plutôt que par utilisateur ;
+- une facturation à l’usage avec les outils de metering Stripe.
+
+Pour un SaaS B2B, il est souvent préférable de rattacher `stripeCustomerId` et `Subscription` à une entité `Organization` ou `Workspace` plutôt qu’au modèle `User`.
+
+## 📚 Ressources Supplémentaires
+
+- [Stripe Checkout](https://docs.stripe.com/checkout/quickstart)
+- [Abonnements avec Checkout](https://docs.stripe.com/payments/checkout/build-subscriptions)
+- [Webhooks Stripe](https://docs.stripe.com/webhooks)
+- [Webhooks pour les abonnements](https://docs.stripe.com/billing/subscriptions/webhooks)
+- [Customer Portal](https://docs.stripe.com/customer-management/integrate-customer-portal)
+- [Tests Stripe](https://docs.stripe.com/testing)
+- [Stripe CLI](https://docs.stripe.com/stripe-cli)
+- [Route Handlers Next.js](https://nextjs.org/docs/app/getting-started/route-handlers)
+- [Variables d’environnement Next.js](https://nextjs.org/docs/app/guides/environment-variables)
+
+## 🤖 Copilot Instructions — Stripe
+
+Vous pouvez ajouter la section suivante à votre fichier `.github/copilot-instructions.md` :
+
+```md
+# Stripe & Billing
+
+- Utiliser Stripe uniquement dans du code serveur.
+- Ne jamais exposer `STRIPE_SECRET_KEY` ou `STRIPE_WEBHOOK_SECRET` au client.
+- Utiliser Stripe Checkout pour la création des abonnements.
+- Créer une nouvelle Checkout Session côté serveur pour chaque tentative.
+- Valider les identifiants `price_` avec une liste blanche serveur.
+- Exiger un utilisateur authentifié pour Checkout et Customer Portal.
+- Ne jamais accepter un `stripeCustomerId` fourni par le navigateur.
+- Utiliser les webhooks comme source de vérité pour les droits d'accès.
+- Vérifier la signature Stripe avec le corps brut de la requête.
+- Rendre chaque traitement de webhook idempotent avec `event.id`.
+- Gérer au minimum les événements de création, mise à jour et suppression d'abonnement.
+- Protéger les routes et actions premium côté serveur.
+- Ne jamais journaliser de clé API, de secret de webhook ou de donnée bancaire.
+- Maintenir des clés, prix et endpoints séparés entre test et production.
+```
+
+## Conclusion
+
+Vous disposez maintenant d’une base complète pour intégrer Stripe dans un SaaS Next.js :
+
+- création d’un Customer Stripe ;
+- souscription avec Checkout ;
+- synchronisation fiable par webhook ;
+- gestion autonome avec le Customer Portal ;
+- protection serveur des fonctionnalités payantes.
+
+Avant d’ajouter des fonctionnalités avancées, validez le parcours complet en environnement de test : souscription, renouvellement, échec de paiement, changement d’offre et résiliation.

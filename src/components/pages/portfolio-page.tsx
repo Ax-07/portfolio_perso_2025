@@ -18,10 +18,10 @@ export function PortfolioPage() {
   
   const filteredProjects = selectedCategory === "Tous" 
     ? projects 
-    : projects.filter(project => project.category === selectedCategory);
+    : projects.filter(project => project.category ? project.tags?.includes(selectedCategory) : false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       {/* Header */}
       <section className="py-12 md:py-20 relative overflow-hidden">
         <div className="container px-4 md:px-6 mx-auto relative z-10">
@@ -55,6 +55,7 @@ export function PortfolioPage() {
               {categories.map((category) => (
                 <Button
                   key={category}
+                  aria-pressed={selectedCategory === category}
                   variant={selectedCategory === category ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
@@ -74,7 +75,8 @@ export function PortfolioPage() {
       {/* Projets en format liste/grid */}
       <section className="pb-20">
         <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.length > 0 ? 
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project, index) => (
               <Link 
                 key={project.id}
@@ -144,7 +146,10 @@ export function PortfolioPage() {
                 </Card>
               </Link>
             ))}
-          </div>
+            </div>
+          : 
+            <div className="text-center text-foreground text-xl">Aucun projet trouvé</div>
+          }
 
           {/* CTA de contact */}
           <div className="text-center mt-16">
@@ -166,6 +171,6 @@ export function PortfolioPage() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

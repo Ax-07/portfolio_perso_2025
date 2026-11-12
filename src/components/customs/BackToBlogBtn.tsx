@@ -9,7 +9,7 @@ const BackToBlogBtn = () => {
           <Button asChild variant="outline" size="sm">
             <Link href="/blog">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Retour au blogs
+              Retour au blog
             </Link>
           </Button>
         </div>

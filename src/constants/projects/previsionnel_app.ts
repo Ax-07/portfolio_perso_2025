@@ -1,13 +1,13 @@
 import { Project } from "@/types/project";
 
-export const PREVISIA: Project = {
+export const PREVISIONNEL_APP: Project = {
   id: 4, // ⚠️ À mettre à jour avec le prochain id disponible dans le portfolio
   slug: "previsionnel_app",
   title: "Previsionnel App",
   description: {
     short:
       "SaaS de pilotage et de prévision financière destiné aux porteurs de projet et aux experts-comptables.",
-    long: `Conçu avec Next.js 16, TypeScript strict, Prisma, PostgreSQL et Tailwind CSS v4, Previsia permet de construire, analyser et présenter un prévisionnel financier complet. Son moteur de calcul en TypeScript génère en temps réel 14 états financiers, notamment le compte de résultat, le bilan, la trésorerie et le BFR. L'application intègre également un moteur de paie autonome adapté à la réglementation sociale française 2026.`,
+    long: `Conçu avec Next.js 16, TypeScript strict, Prisma, PostgreSQL et Tailwind CSS v4, Previsionnel App permet de construire, analyser et présenter un prévisionnel financier complet. Son moteur de calcul en TypeScript génère en temps réel 14 états financiers, notamment le compte de résultat, le bilan, la trésorerie et le BFR. L'application intègre également un moteur de paie autonome adapté à la réglementation sociale française 2026.`,
   },
   image: "/images/previsia/landing_previsia.png",
   favicon: {
@@ -19,6 +19,7 @@ export const PREVISIA: Project = {
     appleTouch: "/favicons/previsia/apple-touch-icon.png",
   },
   category: "Full Stack",
+  tags: ["SaaS", "Full Stack", "Finance", "Next.js"],
   objectif:
     "Proposer une plateforme SaaS accessible permettant aux entrepreneurs, dirigeants et professionnels du chiffre de construire un prévisionnel financier complet, cohérent et exploitable. Previsia centralise la saisie des hypothèses, automatise les calculs financiers et facilite la présentation du projet auprès des partenaires, investisseurs et établissements bancaires.",
   defi:

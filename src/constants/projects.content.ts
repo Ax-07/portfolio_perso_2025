@@ -13,7 +13,8 @@ export const PROJECTS_SECTION_CONTENT: ProjectsSectionContent = {
   titleHighlight: "réalisations",
   description: "Voici quelques projets sur lesquels j'ai travaillé récemment.",
   projects: PROJECTS,
-  categories: ["Tous", "Full Stack", "Frontend", "Backend", "SaaS"],
+  categories: ["Tous", ...Array.from(new Set(PROJECTS.map(project => project.category)))],
+  tags: ["Tous",...Array.from(new Set(PROJECTS.flatMap(project => project.tags)))],
   cta: {
     title: "Intéressé par mon travail ?",
     description_1: "Ces projets ne représentent qu'un aperçu de mes compétences.",

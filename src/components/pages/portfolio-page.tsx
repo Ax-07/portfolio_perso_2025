@@ -17,15 +17,35 @@ export function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = useState("Tous");
   const [selectedTag, setSelectedTag] = useState("Tous");
   
-  // Filtre les projet par catégorie et par tags combinés
-  const filteredProjects =
-    selectedCategory === "Tous" && selectedTag === "Tous"
+// Projets appartenant à la catégorie sélectionnée
+  const projectsInCategory =
+    selectedCategory === "Tous"
       ? projects
       : projects.filter(
-          (project) =>
-            (selectedCategory === "Tous" || project.category === selectedCategory) &&
-            (selectedTag === "Tous" || project.tags?.includes(selectedTag))
+          (project) => project.category === selectedCategory
         );
+
+  // Tags disponibles uniquement dans cette catégorie
+  const availableTags = tags.filter(
+    (tag) =>
+      tag === "Tous" ||
+      projectsInCategory.some((project) =>
+        project.tags.includes(tag)
+      )
+  );
+
+  // Filtrage final : catégorie ET tag
+  const filteredProjects = projectsInCategory.filter(
+    (project) =>
+      selectedTag === "Tous" ||
+      project.tags.includes(selectedTag)
+  );
+
+  // Réinitialisation du tag lors d'un changement de catégorie
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setSelectedTag("Tous");
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -65,7 +85,7 @@ export function PortfolioPage() {
                   aria-pressed={selectedCategory === category}
                   variant={selectedCategory === category ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleCategoryChange(category)}
                   className={selectedCategory === category 
                     ? "professional-button" 
                     : "border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:border-primary-800 dark:hover:bg-primary-950/50"
@@ -76,7 +96,7 @@ export function PortfolioPage() {
               ))}
             </div>
             <div className="flex flex-wrap justify-center gap-2">
-              {tags?.map((tag) => (
+              {availableTags.map((tag) => (
                 <Button
                   key={tag}
                   aria-pressed={selectedTag === tag}

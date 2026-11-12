@@ -10,7 +10,14 @@ import { Github, Linkedin } from "lucide-react";
 // URL PRINCIPALE - SOURCE DE VÉRITÉ
 // ===================================
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+// URL de développement
+export const DEV_SITE_URL = "http://localhost:3000";
+
+// URL de production
+export const PROD_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+
+// URL utilisée selon l'environnement (dev ou prod)
+export const SITE_URL = process.env.NODE_ENV === "production" ? PROD_SITE_URL : DEV_SITE_URL;
 
 // =======================================
 // INFORMATIONS PERSONNELLES PRINCIPALES
